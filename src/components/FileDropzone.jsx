@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { UploadCloud, Image as ImageIcon, X, RefreshCw, FileText, CheckCircle2 } from 'lucide-react';
+import { UploadCloud, Link as LinkIcon, X, RefreshCw, CheckCircle2, Globe, FileImage } from 'lucide-react';
 
 /**
  * Format bytes to human readable format
  */
 function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes';
+  if (!bytes || bytes === 0) return '0 Bytes';
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -16,12 +16,16 @@ export default function FileDropzone({
   selectedFile,
   previewUrl,
   onFileSelect,
+  onUrlSubmit,
   onFileRemove,
   onSubmit,
   isLoading,
   statusMessage,
 }) {
+  const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'url'
   const [isDragOver, setIsDragOver] = useState(false);
+  const [urlInputValue, setUrlInputValue] = useState('');
+  const [urlInputError, setUrlInputError] = useState('');
   const fileInputRef = useRef(null);
 
   const handleDragEnter = (e) => {
@@ -39,7 +43,6 @@ export default function FileDropzone({
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Only turn off if leaving the drop container
     if (e.currentTarget.contains(e.relatedTarget)) return;
     setIsDragOver(false);
   };
@@ -78,10 +81,27 @@ export default function FileDropzone({
     }
   };
 
+  const handleUrlFormSubmit = (e) => {
+    e.preventDefault();
+    const trimmed = urlInputValue.trim();
+    if (!trimmed) {
+      setUrlInputError('Please enter an image URL.');
+      return;
+    }
+    try {
+      new URL(trimmed);
+    } catch {
+      setUrlInputError('Please enter a valid URL (including https://).');
+      return;
+    }
+    setUrlInputError('');
+    onUrlSubmit(trimmed);
+  };
+
   return (
     <section aria-labelledby="upload-section-title" className="w-full">
       <h2 id="upload-section-title" className="sr-only">
-        Upload Image for Alt Text Generation
+        Select or Upload Image for Alt Text Generation
       </h2>
 
       <div className="brutal-card-lg p-6 sm:p-8 bg-white relative">
@@ -98,44 +118,153 @@ export default function FileDropzone({
         />
 
         {!selectedFile ? (
-          /* Dropzone state: No file selected */
-          <div
-            role="button"
-            tabIndex={isLoading ? -1 : 0}
-            onClick={triggerFileInput}
-            onKeyDown={handleKeyDown}
-            onDragEnter={handleDragEnter}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`cursor-pointer border-[3px] border-dashed border-ink p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
-              isDragOver
-                ? 'bg-amber-100 border-violet-600 scale-[0.99]'
-                : 'bg-cream hover:bg-violet-50'
-            }`}
-            aria-label="Upload image drop zone. Press Enter or Space to open file dialog."
-          >
-            <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink shadow-brutal flex items-center justify-center mb-5">
-              <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11" aria-hidden="true" />
-            </div>
-
-            <h3 className="text-xl sm:text-2xl font-display font-bold text-ink mb-2">
-              Drag & Drop Image Here
-            </h3>
-
-            <p className="text-sm sm:text-base text-ink/80 mb-4 font-medium">
-              or <span className="underline decoration-2 decoration-violet-600 font-bold text-violet-700">browse files</span> from your device
-            </p>
-
+          <div>
+            {/* Source Selection Tabs */}
             <div
-              id="file-upload-help"
-              className="inline-flex items-center gap-2 px-3 py-1 bg-white border-2 border-ink text-xs font-bold text-ink/70 shadow-brutal-sm"
+              role="tablist"
+              aria-label="Image source options"
+              className="flex border-b-2 border-ink mb-6 gap-2"
             >
-              <span>PNG, JPEG, or WEBP up to 10MB</span>
+              <button
+                type="button"
+                role="tab"
+                id="tab-upload"
+                aria-selected={activeTab === 'upload'}
+                aria-controls="panel-upload"
+                onClick={() => {
+                  setActiveTab('upload');
+                  setUrlInputError('');
+                }}
+                className={`flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+                  activeTab === 'upload'
+                    ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
+                    : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
+                }`}
+              >
+                <UploadCloud className="w-4 h-4" aria-hidden="true" />
+                <span>Upload File</span>
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                id="tab-url"
+                aria-selected={activeTab === 'url'}
+                aria-controls="panel-url"
+                onClick={() => {
+                  setActiveTab('url');
+                  setUrlInputError('');
+                }}
+                className={`flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+                  activeTab === 'url'
+                    ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
+                    : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
+                }`}
+              >
+                <LinkIcon className="w-4 h-4" aria-hidden="true" />
+                <span>Image URL</span>
+              </button>
             </div>
+
+            {/* TAB PANEL 1: Upload File */}
+            {activeTab === 'upload' && (
+              <div
+                role="tabpanel"
+                id="panel-upload"
+                aria-labelledby="tab-upload"
+              >
+                <div
+                  role="button"
+                  tabIndex={isLoading ? -1 : 0}
+                  onClick={triggerFileInput}
+                  onKeyDown={handleKeyDown}
+                  onDragEnter={handleDragEnter}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`cursor-pointer border-[3px] border-dashed border-ink p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
+                    isDragOver
+                      ? 'bg-amber-100 border-violet-600 scale-[0.99]'
+                      : 'bg-cream hover:bg-violet-50'
+                  }`}
+                  aria-label="Upload image drop zone. Press Enter or Space to open file dialog."
+                >
+                  <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink shadow-brutal flex items-center justify-center mb-5">
+                    <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11" aria-hidden="true" />
+                  </div>
+
+                  <h3 className="text-xl sm:text-2xl font-display font-bold text-ink mb-2">
+                    Drag & Drop Image Here
+                  </h3>
+
+                  <p className="text-sm sm:text-base text-ink/80 mb-4 font-medium">
+                    or <span className="underline decoration-2 decoration-violet-600 font-bold text-violet-700">browse files</span> from your device
+                  </p>
+
+                  <div
+                    id="file-upload-help"
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-white border-2 border-ink text-xs font-bold text-ink/70 shadow-brutal-sm"
+                  >
+                    <span>PNG, JPEG, or WEBP up to 10MB</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB PANEL 2: Image URL Input */}
+            {activeTab === 'url' && (
+              <div
+                role="tabpanel"
+                id="panel-url"
+                aria-labelledby="tab-url"
+                className="p-6 sm:p-8 border-[3px] border-dashed border-ink bg-cream"
+              >
+                <form onSubmit={handleUrlFormSubmit} className="space-y-4 max-w-2xl mx-auto">
+                  <div className="text-center sm:text-left space-y-1">
+                    <label htmlFor="image-url-input" className="block text-base sm:text-lg font-display font-bold text-ink">
+                      Enter Image URL
+                    </label>
+                    <p className="text-xs sm:text-sm text-ink/75 font-medium">
+                      Paste a direct link to any public image on the web (JPEG, PNG, or WebP).
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <input
+                      id="image-url-input"
+                      type="url"
+                      value={urlInputValue}
+                      onChange={(e) => {
+                        setUrlInputValue(e.target.value);
+                        if (urlInputError) setUrlInputError('');
+                      }}
+                      placeholder="https://example.com/photos/image.jpg"
+                      disabled={isLoading}
+                      required
+                      className="flex-1 p-3 border-2 border-ink bg-white font-mono text-sm text-ink placeholder:text-ink/40 shadow-brutal-sm focus-ring"
+                    />
+
+                    <button
+                      type="submit"
+                      disabled={isLoading || !urlInputValue.trim()}
+                      className="brutal-btn bg-amber-400 hover:bg-amber-500 text-ink px-6 py-3 text-sm font-bold flex items-center justify-center gap-2 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <LinkIcon className="w-4 h-4" aria-hidden="true" />
+                      <span>Load Image</span>
+                    </button>
+                  </div>
+
+                  {urlInputError && (
+                    <p className="text-xs font-bold text-rose-700 bg-rose-50 border-2 border-rose-600 p-2">
+                      {urlInputError}
+                    </p>
+                  )}
+                </form>
+              </div>
+            )}
           </div>
         ) : (
-          /* File Selected State */
+          /* File Selected State (both upload and URL) */
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row items-center gap-6 p-4 sm:p-5 border-[3px] border-ink bg-cream shadow-brutal">
               {/* Thumbnail Preview */}
@@ -152,9 +281,22 @@ export default function FileDropzone({
               <div className="flex-1 w-full space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink shadow-brutal-sm mb-1">
-                      Ready to Analyze
-                    </span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink shadow-brutal-sm">
+                        Ready to Analyze
+                      </span>
+                      {selectedFile.isUrl ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink shadow-brutal-sm">
+                          <Globe className="w-3 h-3" aria-hidden="true" />
+                          <span>Web URL</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-violet-100 text-ink border-2 border-ink shadow-brutal-sm">
+                          <FileImage className="w-3 h-3" aria-hidden="true" />
+                          <span>Local File</span>
+                        </span>
+                      )}
+                    </div>
                     <h3 className="text-lg sm:text-xl font-display font-bold text-ink break-all">
                       {selectedFile.name}
                     </h3>
@@ -175,18 +317,20 @@ export default function FileDropzone({
                 <div className="grid grid-cols-2 gap-2 text-xs font-mono text-ink/80 pt-1">
                   <div className="bg-white border-2 border-ink p-2 shadow-brutal-sm">
                     <span className="font-sans text-[11px] block font-bold text-ink/60">SIZE</span>
-                    <span className="font-bold">{formatFileSize(selectedFile.size)}</span>
+                    <span className="font-bold">
+                      {selectedFile.size ? formatFileSize(selectedFile.size) : 'Web Image'}
+                    </span>
                   </div>
                   <div className="bg-white border-2 border-ink p-2 shadow-brutal-sm">
                     <span className="font-sans text-[11px] block font-bold text-ink/60">TYPE</span>
-                    <span className="font-bold">{selectedFile.type || 'image'}</span>
+                    <span className="font-bold">{selectedFile.type || 'image/jpeg'}</span>
                   </div>
                 </div>
 
                 <div className="pt-2 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={triggerFileInput}
+                    onClick={onFileRemove}
                     disabled={isLoading}
                     className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white border-2 border-ink shadow-brutal-sm hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring"
                   >

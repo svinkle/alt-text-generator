@@ -91,11 +91,33 @@ const fallbackResult = await checkAvailableEngine();
 assert(fallbackResult.engine === 'cloud-fallback', 'Without window.ai, should report cloud-fallback');
 console.log('  ✓ Engine detection correctly identifies cloud fallback in non-AI environments');
 
-// 7. Verify Cloud Function request validation logic
-console.log('\n7. Verifying Cloud Function export and handler structure...');
-import('../functions/index.js').then((module) => {
-  const { generateAlt } = module.default || module;
-  assert(generateAlt, 'generateAlt function must be exported');
-  console.log('  ✓ generateAlt exported successfully');
-  console.log('\n✨ All verification checks passed with 100% compliance!\n');
-});
+// 7. Verify Modal positioning and createPortal
+console.log('\n7. Verifying Modal Portal & Viewport centering...');
+const engineBadgeSrc = readFileSync(join(root, 'src/components/EngineBadge.jsx'), 'utf-8');
+assert(engineBadgeSrc.includes('createPortal'), 'EngineBadge.jsx must use createPortal to escape header containing block');
+assert(engineBadgeSrc.includes('document.body'), 'EngineBadge.jsx must mount portal into document.body');
+console.log('  ✓ Modal uses createPortal to ensure true viewport centering');
+
+// 8. Verify demo URLs and "Team Collaboration" label
+console.log('\n8. Verifying Demo images & "Team Collaboration" button...');
+const appSrc = readFileSync(join(root, 'src/App.jsx'), 'utf-8');
+assert(appSrc.includes('hiker-looks-out-over-view-from-mountain-summit.jpg'), 'App.jsx missing mountain summit Shopify CDN demo URL');
+assert(appSrc.includes('business-team-meeting-boardroom.jpg'), 'App.jsx missing business team Shopify CDN demo URL');
+assert(appSrc.includes('Team Collaboration'), 'App.jsx missing "Team Collaboration" button label');
+console.log('  ✓ Demo images use real Shopify Burst CDN assets with "Team Collaboration" label');
+
+// 9. Verify Image URL input in FileDropzone
+console.log('\n9. Verifying Image URL input capability...');
+const fileDropzoneSrc = readFileSync(join(root, 'src/components/FileDropzone.jsx'), 'utf-8');
+assert(fileDropzoneSrc.includes('image-url-input'), 'FileDropzone.jsx must contain image URL input');
+assert(fileDropzoneSrc.includes('onUrlSubmit'), 'FileDropzone.jsx must accept onUrlSubmit prop');
+console.log('  ✓ Image URL input tab & form properly implemented in FileDropzone');
+
+// 10. Verify Cloud Function export and handler structure
+console.log('\n10. Verifying Cloud Function export and handler structure...');
+const functionsModule = await import('../functions/index.js');
+const { generateAlt } = functionsModule.default || functionsModule;
+assert(generateAlt, 'generateAlt function must be exported');
+console.log('  ✓ generateAlt exported successfully');
+
+console.log('\n✨ All verification checks passed with 100% compliance!\n');

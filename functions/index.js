@@ -29,10 +29,31 @@ exports.generateAlt = onRequest(
       });
     }
 
-    const { image, mimeType } = req.body || {};
-    if (!image || !mimeType) {
+    let imageBase64 = req.body?.image;
+    let imageMimeType = req.body?.mimeType;
+
+    // If an imageUrl is provided instead of base64 data, fetch the image server-side
+    if (!imageBase64 && req.body?.imageUrl) {
+      try {
+        const imageRes = await fetch(req.body.imageUrl);
+        if (!imageRes.ok) {
+          return res.status(400).json({
+            error: `Failed to fetch image from URL: ${imageRes.status} ${imageRes.statusText}`,
+          });
+        }
+        const arrayBuffer = await imageRes.arrayBuffer();
+        imageBase64 = Buffer.from(arrayBuffer).toString("base64");
+        imageMimeType = imageRes.headers.get("content-type") || "image/jpeg";
+      } catch (err) {
+        return res.status(400).json({
+          error: `Could not download image from provided URL: ${err.message}`,
+        });
+      }
+    }
+
+    if (!imageBase64 || !imageMimeType) {
       return res.status(400).json({
-        error: "Missing image data. Both 'image' (base64) and 'mimeType' are required.",
+        error: "Missing image data. Provide either 'image' (base64) and 'mimeType', or a valid 'imageUrl'.",
       });
     }
 

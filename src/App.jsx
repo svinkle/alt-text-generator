@@ -3,7 +3,7 @@ import Header from './components/Header';
 import FileDropzone from './components/FileDropzone';
 import OutputSnippet from './components/OutputSnippet';
 import { generateAltText, checkAvailableEngine } from './utils/aiEngine';
-import { AlertCircle, HelpCircle, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ShieldCheck } from 'lucide-react';
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -56,6 +56,79 @@ export default function App() {
     setStatusMessage(`Selected image ${file.name}. Ready to generate alt text.`);
   };
 
+  const handleUrlSelect = (url, customFilename = null) => {
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    let filename = customFilename;
+    if (!filename) {
+      try {
+        const parsed = new URL(url);
+        const segments = parsed.pathname.split('/').filter(Boolean);
+        filename = segments[segments.length - 1] || 'web-image.jpg';
+      } catch {
+        filename = 'web-image.jpg';
+      }
+    }
+
+    const imageItem = {
+      name: filename,
+      url: url,
+      isUrl: true,
+      size: null,
+      type: 'image/jpeg',
+    };
+
+    setSelectedFile(imageItem);
+    setPreviewUrl(url);
+    setError(null);
+    setAltText('');
+    setEngineUsed(null);
+    setStatusMessage(`Loaded image from URL: ${filename}. Ready to generate alt text.`);
+  };
+
+  const handleUrlSubmit = async (url) => {
+    setIsLoading(true);
+    setError(null);
+    setStatusMessage(`Fetching image from ${url}...`);
+
+    let filename = 'web-image.jpg';
+    try {
+      const parsed = new URL(url);
+      const segments = parsed.pathname.split('/').filter(Boolean);
+      filename = segments[segments.length - 1] || 'web-image.jpg';
+    } catch {
+      setError('Please enter a valid URL.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const blob = await res.blob();
+        const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
+        handleFileSelect(file);
+        setIsLoading(false);
+        return;
+      }
+    } catch (e) {
+      console.warn('Direct fetch failed (possibly CORS), verifying via image element:', e);
+    }
+
+    // Fallback: Verify image can load via standard browser Image object
+    const img = new Image();
+    img.onload = () => {
+      handleUrlSelect(url, filename);
+      setIsLoading(false);
+    };
+    img.onerror = () => {
+      setError('Unable to load image from the provided URL. Please verify the link is accessible.');
+      setIsLoading(false);
+    };
+    img.src = url;
+  };
+
   const handleFileRemove = () => {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
@@ -90,31 +163,36 @@ export default function App() {
     }
   };
 
-  // Quick preset loader for testing/demo purposes
+  // Preset demo loader using user-specified Burst Shopify CDN images
   const handleLoadSample = async (sampleType) => {
-    try {
-      let sampleData;
-      let filename;
-      if (sampleType === 'nature') {
-        filename = 'mountain-sunrise.png';
-        sampleData = createSampleCanvas('A golden sunrise casting light across snow-capped alpine mountains and a tranquil blue lake.', '#1E3A8A', '#F59E0B');
-      } else {
-        filename = 'team-collaboration.png';
-        sampleData = createSampleCanvas('A diverse group of software designers collaborating around a whiteboard with flowcharts.', '#4C1D95', '#10B981');
-      }
+    setIsLoading(true);
+    setError(null);
 
-      const res = await fetch(sampleData);
-      const blob = await res.blob();
-      const file = new File([blob], filename, { type: 'image/png' });
+    const isNature = sampleType === 'nature';
+    const demoUrl = isNature
+      ? 'https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=1850&format=pjpg&exif=0&iptc=0'
+      : 'https://burst.shopifycdn.com/photos/business-team-meeting-boardroom.jpg?width=1850&format=pjpg&exif=0&iptc=0';
+    const demoFilename = isNature ? 'mountain-sunrise.png' : 'team-collaboration.png';
+
+    setStatusMessage(`Loading demo image: ${demoFilename}...`);
+
+    try {
+      const response = await fetch(demoUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const blob = await response.blob();
+      const file = new File([blob], demoFilename, { type: blob.type || 'image/jpeg' });
       handleFileSelect(file);
-    } catch (e) {
-      console.warn('Could not generate sample image:', e);
+    } catch (err) {
+      console.warn('Fetch demo image failed, loading via URL directly:', err);
+      handleUrlSelect(demoUrl, demoFilename);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-cream flex flex-col font-body selection:bg-violet-600 selection:text-white">
-      {/* Header */}
+      {/* Header with Engine Badge and GitHub Link */}
       <Header
         engine={engineUsed || engineInfo.engine}
         label={engineUsed ? (engineUsed === 'on-device' ? 'Engine: On-Device (Gemini Nano)' : 'Engine: Cloud Edge (Gemini Flash)') : engineInfo.label}
@@ -139,16 +217,20 @@ export default function App() {
             <button
               type="button"
               onClick={() => handleLoadSample('nature')}
-              className="text-xs font-bold px-2.5 py-1 bg-amber-100 hover:bg-amber-200 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring"
+              disabled={isLoading}
+              className="text-xs font-bold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
+              aria-label="Load Mountain Sunrise demo image"
             >
               Mountain Sunrise
             </button>
             <button
               type="button"
               onClick={() => handleLoadSample('team')}
-              className="text-xs font-bold px-2.5 py-1 bg-mint-100 hover:bg-mint/40 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring"
+              disabled={isLoading}
+              className="text-xs font-bold px-3 py-1.5 bg-mint-100 hover:bg-mint/40 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
+              aria-label="Load Team Collaboration demo image"
             >
-              Team Design
+              Team Collaboration
             </button>
           </div>
         </div>
@@ -174,11 +256,12 @@ export default function App() {
           </div>
         )}
 
-        {/* Upload Dropzone */}
+        {/* Upload / URL Dropzone */}
         <FileDropzone
           selectedFile={selectedFile}
           previewUrl={previewUrl}
           onFileSelect={handleFileSelect}
+          onUrlSubmit={handleUrlSubmit}
           onFileRemove={handleFileRemove}
           onSubmit={handleGenerate}
           isLoading={isLoading}
@@ -238,45 +321,4 @@ export default function App() {
       </footer>
     </div>
   );
-}
-
-/**
- * Creates a simple canvas-based test graphic for instant demo loading
- */
-function createSampleCanvas(text, bg1, bg2) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 600;
-  canvas.height = 400;
-  const ctx = canvas.getContext('2d');
-
-  // Gradient background
-  const grad = ctx.createLinearGradient(0, 0, 600, 400);
-  grad.addColorStop(0, bg1);
-  grad.addColorStop(1, bg2);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 600, 400);
-
-  // Border
-  ctx.lineWidth = 12;
-  ctx.strokeStyle = '#1E1B18';
-  ctx.strokeRect(0, 0, 600, 400);
-
-  // Decorative shapes
-  ctx.fillStyle = '#FFFFFF';
-  ctx.beginPath();
-  ctx.arc(300, 180, 80, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#F59E0B';
-  ctx.beginPath();
-  ctx.arc(300, 180, 60, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Label text
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'bold 22px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('WCAG Test Sample Graphic', 300, 320);
-
-  return canvas.toDataURL('image/png');
 }

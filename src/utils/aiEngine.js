@@ -65,51 +65,82 @@ export async function checkAvailableEngine() {
  * @param {File} file - Selected image file
  * @returns {Promise<{ text: string, engine: 'on-device' | 'cloud-fallback' }>}
  */
-export async function generateAltText(file) {
-  // Step 1: Check for Chrome Built-in AI Prompt API
-  const LM = window.LanguageModel || window.ai?.languageModel;
-  if (typeof window !== "undefined" && LM) {
+export async function generateAltText(imageInput) {
+  let file = imageInput instanceof File || imageInput instanceof Blob ? imageInput : imageInput?.file;
+  const imageUrl = typeof imageInput === "string" ? imageInput : imageInput?.url;
+  const filename = imageInput?.filename || imageInput?.name || (file ? file.name : "image.jpg");
+
+  // If input is an imageUrl and we don't have a File/Blob yet, try fetching it as a Blob so we can use Tier 1 (On-Device AI)
+  if (!file && imageUrl) {
     try {
-      let isAvailable = false;
-      if (typeof LM.availability === "function") {
-        const availability = await LM.availability();
-        isAvailable = availability === "available" || availability === "readily";
-      } else if (typeof LM.capabilities === "function") {
-        const caps = await LM.capabilities();
-        isAvailable = caps.available === "readily" || caps.available === "after-download";
-      }
-
-      if (isAvailable) {
-        const session = await LM.create({
-          expectedInputs: [{ type: "image" }],
-        });
-
-        const imageBitmap = await createImageBitmap(file);
-
-        const response = await session.prompt([
-          PROMPT_INSTRUCTION,
-          { type: "image", content: imageBitmap },
-        ]);
-
-        if (response && response.trim()) {
-          return { text: cleanAltResponse(response.trim()), engine: "on-device" };
-        }
+      const response = await fetch(imageUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        file = new File([blob], filename, { type: blob.type || "image/jpeg" });
       }
     } catch (err) {
-      console.warn("On-device AI failed or unsupported, falling back to API.", err);
+      console.warn("Client-side direct fetch failed (possibly CORS restricted). Delegating to Cloud Fallback.", err);
+    }
+  }
+
+  // Step 1: Check for Chrome Built-in AI Prompt API
+  if (file) {
+    const LM = window.LanguageModel || window.ai?.languageModel;
+    if (typeof window !== "undefined" && LM) {
+      try {
+        let isAvailable = false;
+        if (typeof LM.availability === "function") {
+          const availability = await LM.availability();
+          isAvailable = availability === "available" || availability === "readily";
+        } else if (typeof LM.capabilities === "function") {
+          const caps = await LM.capabilities();
+          isAvailable = caps.available === "readily" || caps.available === "after-download";
+        }
+
+        if (isAvailable) {
+          const session = await LM.create({
+            expectedInputs: [{ type: "image" }],
+          });
+
+          const imageBitmap = await createImageBitmap(file);
+
+          const response = await session.prompt([
+            PROMPT_INSTRUCTION,
+            { type: "image", content: imageBitmap },
+          ]);
+
+          if (response && response.trim()) {
+            return { text: cleanAltResponse(response.trim()), engine: "on-device" };
+          }
+        }
+      } catch (err) {
+        console.warn("On-device AI failed or unsupported, falling back to API.", err);
+      }
     }
   }
 
   // Step 2: Fallback to Serverless Endpoint
-  const base64Data = await fileToBase64(file);
+  let payload;
+  if (file) {
+    const base64Data = await fileToBase64(file);
+    payload = {
+      image: base64Data,
+      mimeType: file.type || "image/jpeg",
+      filename: filename,
+    };
+  } else if (imageUrl) {
+    payload = {
+      imageUrl: imageUrl,
+      filename: filename,
+    };
+  } else {
+    throw new Error("No image data or URL provided for inference.");
+  }
+
   const res = await fetch("/api/generate-alt", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      image: base64Data,
-      mimeType: file.type || "image/jpeg",
-      filename: file.name,
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {

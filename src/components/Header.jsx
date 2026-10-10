@@ -4,7 +4,7 @@ import EngineBadge from './EngineBadge';
 
 export default function Header({ engine, label, details }) {
   return (
-    <header className="w-full border-b-[3px] border-ink bg-white/80 backdrop-blur-sm sticky top-0 z-30 shadow-brutal-sm">
+    <header className="w-full border-b-[3px] border-ink bg-white sticky top-0 z-30 shadow-brutal-sm">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-violet-600 border-[3px] border-ink shadow-brutal-sm flex items-center justify-center text-white flex-shrink-0">
