@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Default focus-visible style for all interactive elements to ensure high contrast & WCAG compliance */
+  :focus-visible {
+    outline: 5px dotted #7C3AED !important;
+    outline-offset: 4px !important;
+  }
+
+  body {
+    background-color: #FBF8F1;
+    color: #1E1B18;
+    margin: 0;
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  /* Explicit 5px dotted focus indicator class matching specification */
+  .focus-ring {
+    @apply focus-visible:outline focus-visible:outline-[5px] focus-visible:outline-dotted focus-visible:outline-violet-600 focus-visible:outline-offset-4;
+  }
+
+  /* Tactile button micro-interaction states */
+  .brutal-btn-base {
+    @apply transition-all duration-150 ease-out border-[3px] border-ink font-bold;
+  }
+
+  .brutal-btn {
+    @apply brutal-btn-base shadow-brutal hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm focus-ring;
+  }
+
+  .brutal-card {
+    @apply border-[3px] border-ink bg-white shadow-brutal;
+  }
+
+  .brutal-card-lg {
+    @apply border-[3px] border-ink bg-white shadow-brutal-lg;
+  }
+}
