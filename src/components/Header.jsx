@@ -42,6 +42,7 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
           <div className="flex items-center gap-2 sm:gap-3 self-stretch sm:self-auto justify-between sm:justify-end flex-wrap">
             <EngineBadge engine={engine} label={label} details={details} />
 
+            {/* Optional BYOK API Key button (kept for future use if needed):
             <button
               type="button"
               onClick={() => setIsKeyModalOpen(true)}
@@ -54,6 +55,7 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
               <Key className="w-4 h-4 text-amber-600" aria-hidden="true" />
               <span className="hidden sm:inline">{hasApiKey ? 'API Key Set' : 'API Key'}</span>
             </button>
+            */}
 
             <a
               href="https://github.com/svinkle/alt-text-generator"
