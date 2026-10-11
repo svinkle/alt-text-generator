@@ -254,73 +254,26 @@ export default function App() {
             </p>
           </div>
 
-          <div className="flex flex-col items-start md:items-end gap-2 flex-shrink-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-bold text-ink/70">Try a demo image:</span>
-              <button
-                type="button"
-                onClick={() => handleLoadSample('nature')}
-                disabled={isLoading}
-                className="text-xs font-bold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
-                aria-label="Load Mountain Sunrise demo image"
-              >
-                Mountain Sunrise
-              </button>
-              <button
-                type="button"
-                onClick={() => handleLoadSample('team')}
-                disabled={isLoading}
-                className="text-xs font-bold px-3 py-1.5 bg-mint-100 hover:bg-mint/40 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
-                aria-label="Load Team Collaboration demo image"
-              >
-                Team Collaboration
-              </button>
-            </div>
-
-            {/* Photographer Credits in Banner */}
-            <div className="text-[11px] text-ink/75 flex flex-wrap items-center gap-x-2">
-              <span>
-                Mountain:{' '}
-                <a
-                  href={PHOTO_ATTRIBUTIONS.nature.photographerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
-                >
-                  Daniel Moroder
-                </a>{' '}
-                from{' '}
-                <a
-                  href={PHOTO_ATTRIBUTIONS.nature.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
-                >
-                  Burst
-                </a>
-              </span>
-              <span>•</span>
-              <span>
-                Team:{' '}
-                <a
-                  href={PHOTO_ATTRIBUTIONS.team.photographerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
-                >
-                  Matthew Henry
-                </a>{' '}
-                from{' '}
-                <a
-                  href={PHOTO_ATTRIBUTIONS.team.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
-                >
-                  Burst
-                </a>
-              </span>
-            </div>
+          <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+            <span className="text-xs font-bold text-ink/70">Try a demo image:</span>
+            <button
+              type="button"
+              onClick={() => handleLoadSample('nature')}
+              disabled={isLoading}
+              className="text-xs font-bold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
+              aria-label="Load Mountain Sunrise demo image"
+            >
+              Mountain Sunrise
+            </button>
+            <button
+              type="button"
+              onClick={() => handleLoadSample('team')}
+              disabled={isLoading}
+              className="text-xs font-bold px-3 py-1.5 bg-mint-100 hover:bg-mint/40 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
+              aria-label="Load Team Collaboration demo image"
+            >
+              Team Collaboration
+            </button>
           </div>
         </div>
 
