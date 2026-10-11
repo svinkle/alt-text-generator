@@ -91,7 +91,7 @@ function localApiPlugin(env) {
           try {
             const { GoogleGenAI } = await import('@google/genai');
             const ai = new GoogleGenAI({ apiKey });
-            const preferredModel = env.GEMINI_MODEL || process.env.GEMINI_MODEL || 'gemini-3-flash';
+            const preferredModel = env.GEMINI_MODEL || process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 
             let response;
             try {
@@ -117,7 +117,7 @@ function localApiPlugin(env) {
             } catch (primaryErr) {
               console.warn(`Dev inference with ${preferredModel} failed, trying fallback:`, primaryErr.message);
               response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: 'gemini-flash-latest',
                 contents: [
                   {
                     role: 'user',

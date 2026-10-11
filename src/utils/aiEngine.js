@@ -180,18 +180,24 @@ export async function generateAltText(imageInput) {
         return { text: cleanAltResponse(data.altText), engine: "cloud-fallback" };
       }
     } else {
-      const errorData = await res.json().catch(() => ({}));
-      // If server returned specific error message, inspect it
-      if (errorData.error) {
-        // If it's a demo image and error was missing API key, fallback cleanly to demo
-        if ((isMountainDemo || isTeamDemo) && errorData.error.includes("key")) {
-          return {
-            text: isMountainDemo ? DEMO_ALT_TEXTS.mountain : DEMO_ALT_TEXTS.team,
-            engine: "cloud-fallback",
-          };
+      let errorMessage = `Server returned status ${res.status}`;
+      try {
+        const errorData = await res.json();
+        if (errorData.error) {
+          errorMessage = errorData.error;
         }
-        throw new Error(errorData.error);
+      } catch (parseErr) {
+        // Response was not JSON
       }
+
+      // If it's a demo image and error was missing API key, fallback cleanly to demo
+      if ((isMountainDemo || isTeamDemo) && errorMessage.toLowerCase().includes("key")) {
+        return {
+          text: isMountainDemo ? DEMO_ALT_TEXTS.mountain : DEMO_ALT_TEXTS.team,
+          engine: "cloud-fallback",
+        };
+      }
+      throw new Error(errorMessage);
     }
   } catch (apiErr) {
     console.warn("Call to /api/generate-alt failed:", apiErr.message);
@@ -199,7 +205,7 @@ export async function generateAltText(imageInput) {
     // If client has a direct API key saved, call Google AI Studio REST endpoint directly
     if (userKey && base64Data) {
       try {
-        const directText = await callGoogleGeminiDirect(userKey, base64Data, file.type || "image/jpeg");
+        const directText = await callGoogleGeminiDirect(userKey, base64Data, file?.type || "image/jpeg");
         return { text: cleanAltResponse(directText), engine: "cloud-fallback" };
       } catch (directErr) {
         console.error("Direct Gemini API call failed:", directErr);
@@ -258,10 +264,10 @@ async function callGoogleGeminiDirect(apiKey, base64Data, mimeType) {
     });
   };
 
-  let response = await tryGenerate("gemini-3-flash");
-  if (!response.ok && response.status === 404) {
-    // If gemini-3-flash is not available in user tier, fallback to gemini-2.5-flash
-    response = await tryGenerate("gemini-2.5-flash");
+  let response = await tryGenerate("gemini-3.8-flash");
+  if (!response.ok && (response.status === 404 || response.status === 400)) {
+    // If gemini-3.8-flash is not available in user tier, fallback to gemini-flash-latest
+    response = await tryGenerate("gemini-flash-latest");
   }
 
   if (!response.ok) {

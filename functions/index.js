@@ -21,7 +21,7 @@ exports.generateAlt = onRequest(
       return res.status(405).json({ error: "Method Not Allowed. Use POST." });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = req.headers["x-gemini-api-key"] || process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.error("GEMINI_API_KEY secret is not set in environment.");
       return res.status(500).json({
@@ -59,7 +59,7 @@ exports.generateAlt = onRequest(
 
     try {
       const ai = new GoogleGenAI({ apiKey });
-      const preferredModel = process.env.GEMINI_MODEL || "gemini-3-flash";
+      const preferredModel = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 
       let response;
       try {
@@ -83,10 +83,9 @@ exports.generateAlt = onRequest(
           ],
         });
       } catch (primaryErr) {
-        // Fallback to gemini-2.5-flash if 3.x model name differs in user project
         console.warn(`Inference with ${preferredModel} failed, trying fallback:`, primaryErr.message);
         response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
+          model: "gemini-flash-latest",
           contents: [
             {
               role: "user",

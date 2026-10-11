@@ -116,10 +116,10 @@ console.log('  ✓ Image URL input tab & form properly implemented in FileDropzo
 // 11. Verify Gemini 3.x model configuration
 console.log('\n11. Verifying Gemini 3.x model configuration...');
 const aiEngineFull = readFileSync(join(root, 'src/utils/aiEngine.js'), 'utf-8');
-assert(aiEngineFull.includes('gemini-3-flash'), 'aiEngine.js must reference gemini-3-flash');
+assert(aiEngineFull.includes('gemini-3'), 'aiEngine.js must reference gemini-3 model');
 assert(aiEngineFull.includes('Gemini 3.x Flash'), 'aiEngine.js must label engine as Gemini 3.x Flash');
 const functionsFull = readFileSync(join(root, 'functions/index.js'), 'utf-8');
-assert(functionsFull.includes('gemini-3-flash'), 'functions/index.js must default to gemini-3-flash');
+assert(functionsFull.includes('gemini-3'), 'functions/index.js must default to gemini-3 model');
 // 12. Verify photographer attributions for demo images
 console.log('\n12. Verifying photographer attributions...');
 assert(appSrc.includes('Daniel Moroder'), 'App.jsx missing Daniel Moroder attribution');
