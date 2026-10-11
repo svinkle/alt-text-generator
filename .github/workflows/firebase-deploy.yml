@@ -24,6 +24,9 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
+      - name: Run verification test suite
+        run: npm test
+
       - name: Build frontend application
         run: npm run build
 
@@ -32,7 +35,7 @@ jobs:
           cd functions
           npm ci
 
-      - name: Deploy to Firebase Hosting (PR Preview)
+      - name: Deploy to Firebase Hosting (PR Preview Channel)
         if: github.event_name == 'pull_request' && env.FIREBASE_SERVICE_ACCOUNT != ''
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -45,6 +48,11 @@ jobs:
       - name: Deploy to Firebase Production (Main branch)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.FIREBASE_TOKEN != ''
         run: |
-          npx firebase-tools deploy --non-interactive --token "${{ secrets.FIREBASE_TOKEN }}"
+          if [ -n "$FIREBASE_PROJECT_ID" ]; then
+            npx firebase-tools deploy --non-interactive --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+          else
+            npx firebase-tools deploy --non-interactive --token "$FIREBASE_TOKEN"
+          fi
         env:
           FIREBASE_TOKEN: '${{ secrets.FIREBASE_TOKEN }}'
+          FIREBASE_PROJECT_ID: '${{ secrets.FIREBASE_PROJECT_ID }}'
