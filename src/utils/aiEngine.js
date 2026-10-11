@@ -59,15 +59,15 @@ export async function checkAvailableEngine() {
 
   return {
     engine: "cloud-fallback",
-    label: "Cloud Edge (Gemini Flash)",
-    details: "Using serverless Gemini 2.0 Flash fallback.",
+    label: "Cloud Edge (Gemini 3.x Flash)",
+    details: "Using serverless Gemini 3.x Flash fallback.",
   };
 }
 
 /**
  * Main inference router implementing progressive enhancement:
  * 1. Attempts On-Device inference via Chrome Built-in AI (Gemini Nano).
- * 2. Attempts Serverless Gemini 2.0 Flash (/api/generate-alt).
+ * 2. Attempts Serverless Gemini 3.x Flash (/api/generate-alt).
  * 3. Falls back to direct Google AI Studio API if a custom key is provided.
  * 4. Gracefully serves demo text for sample images in offline/unconfigured environments.
  *
@@ -232,29 +232,37 @@ export async function generateAltText(imageInput) {
  * Direct browser call to Google AI Studio REST API when running without a backend
  */
 async function callGoogleGeminiDirect(apiKey, base64Data, mimeType) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              inlineData: {
-                mimeType,
-                data: base64Data,
+  const tryGenerate = async (model) => {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                inlineData: {
+                  mimeType,
+                  data: base64Data,
+                },
               },
-            },
-            {
-              text: PROMPT_INSTRUCTION,
-            },
-          ],
-        },
-      ],
-    }),
-  });
+              {
+                text: PROMPT_INSTRUCTION,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+  };
+
+  let response = await tryGenerate("gemini-3-flash");
+  if (!response.ok && response.status === 404) {
+    // If gemini-3-flash is not available in user tier, fallback to gemini-2.5-flash
+    response = await tryGenerate("gemini-2.5-flash");
+  }
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));

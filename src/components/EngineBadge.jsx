@@ -11,7 +11,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
   const [showInfoModal, setShowInfoModal] = useState(false);
   const isOnDevice = engine === 'on-device';
 
-  const displayLabel = label || (isOnDevice ? 'Engine: On-Device (Gemini Nano)' : 'Engine: Cloud Edge (Gemini Flash)');
+  const displayLabel = label || (isOnDevice ? 'Engine: On-Device (Gemini Nano)' : 'Engine: Cloud Edge (Gemini 3.x Flash)');
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -70,10 +70,10 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
           <div className="p-3.5 border-2 border-ink bg-white shadow-brutal-sm">
             <div className="flex items-center gap-2 font-bold text-ink mb-1">
               <span className="inline-block w-3 h-3 rounded-full bg-amber-500 border border-ink"></span>
-              <span>Tier 2: Cloud Edge (Serverless Gemini 2.0 Flash)</span>
+              <span>Tier 2: Cloud Edge (Serverless Gemini 3.x Flash)</span>
             </div>
             <p className="text-xs text-ink/80 leading-relaxed">
-              When local AI is unsupported (e.g. Safari, Firefox, iOS, non-flagged Chrome), inference seamlessly routes via Firebase Cloud Function to Google AI Studio Gemini 2.0 Flash at the edge.
+              When local AI is unsupported (e.g. Safari, Firefox, iOS, non-flagged Chrome), inference seamlessly routes via Firebase Cloud Function to Google AI Studio Gemini 3.x Flash at the edge.
             </p>
           </div>
 

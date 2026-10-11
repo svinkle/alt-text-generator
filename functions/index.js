@@ -5,7 +5,7 @@ const PROMPT_INSTRUCTION =
   "You are an expert in digital accessibility and WCAG standards. Write a concise, objective, and descriptive alt text for this image. Focus on the core subject, action, context, and any legible text. Do not start with 'Image of' or 'Picture of'. Limit the response to 1 to 2 clear sentences.";
 
 /**
- * Cloud Function fallback for alt text generation using Gemini 2.0 Flash.
+ * Cloud Function fallback for alt text generation using Gemini 3.x Flash.
  * Invoked via /api/generate-alt rewrite or direct HTTPS call.
  */
 exports.generateAlt = onRequest(
@@ -59,26 +59,52 @@ exports.generateAlt = onRequest(
 
     try {
       const ai = new GoogleGenAI({ apiKey });
+      const preferredModel = process.env.GEMINI_MODEL || "gemini-3-flash";
 
-      const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                inlineData: {
-                  mimeType: mimeType,
-                  data: image,
+      let response;
+      try {
+        response = await ai.models.generateContent({
+          model: preferredModel,
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: imageMimeType,
+                    data: imageBase64,
+                  },
                 },
-              },
-              {
-                text: PROMPT_INSTRUCTION,
-              },
-            ],
-          },
-        ],
-      });
+                {
+                  text: PROMPT_INSTRUCTION,
+                },
+              ],
+            },
+          ],
+        });
+      } catch (primaryErr) {
+        // Fallback to gemini-2.5-flash if 3.x model name differs in user project
+        console.warn(`Inference with ${preferredModel} failed, trying fallback:`, primaryErr.message);
+        response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: imageMimeType,
+                    data: imageBase64,
+                  },
+                },
+                {
+                  text: PROMPT_INSTRUCTION,
+                },
+              ],
+            },
+          ],
+        });
+      }
 
       const text = response?.text?.trim() || "";
       if (!text) {
@@ -87,7 +113,7 @@ exports.generateAlt = onRequest(
 
       return res.status(200).json({ altText: text });
     } catch (error) {
-      console.error("Gemini 2.0 Flash inference error:", error);
+      console.error("Gemini 3.x Flash inference error:", error);
       return res.status(500).json({
         error: error.message || "Alt text inference failed on cloud fallback.",
       });

@@ -91,26 +91,51 @@ function localApiPlugin(env) {
           try {
             const { GoogleGenAI } = await import('@google/genai');
             const ai = new GoogleGenAI({ apiKey });
+            const preferredModel = env.GEMINI_MODEL || process.env.GEMINI_MODEL || 'gemini-3-flash';
 
-            const response = await ai.models.generateContent({
-              model: 'gemini-2.0-flash',
-              contents: [
-                {
-                  role: 'user',
-                  parts: [
-                    {
-                      inlineData: {
-                        mimeType,
-                        data: imageBase64,
+            let response;
+            try {
+              response = await ai.models.generateContent({
+                model: preferredModel,
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [
+                      {
+                        inlineData: {
+                          mimeType,
+                          data: imageBase64,
+                        },
                       },
-                    },
-                    {
-                      text: PROMPT_INSTRUCTION,
-                    },
-                  ],
-                },
-              ],
-            });
+                      {
+                        text: PROMPT_INSTRUCTION,
+                      },
+                    ],
+                  },
+                ],
+              });
+            } catch (primaryErr) {
+              console.warn(`Dev inference with ${preferredModel} failed, trying fallback:`, primaryErr.message);
+              response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [
+                      {
+                        inlineData: {
+                          mimeType,
+                          data: imageBase64,
+                        },
+                      },
+                      {
+                        text: PROMPT_INSTRUCTION,
+                      },
+                    ],
+                  },
+                ],
+              });
+            }
 
             const text = response?.text?.trim() || '';
             if (!text) throw new Error('Empty response from Gemini model.');

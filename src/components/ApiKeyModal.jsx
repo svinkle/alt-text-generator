@@ -84,7 +84,7 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
 
         <form onSubmit={handleSave} className="space-y-4">
           <p className="text-xs sm:text-sm text-ink/85 font-medium leading-relaxed">
-            Provide a Google AI Studio API key for live Gemini 2.0 Flash inference during local development or preview mode.
+            Provide a Google AI Studio API key for live Gemini 3.x Flash inference during local development or preview mode.
           </p>
 
           <div>

@@ -14,7 +14,7 @@ export default function App() {
   const [engineUsed, setEngineUsed] = useState(null);
   const [engineInfo, setEngineInfo] = useState({
     engine: 'cloud-fallback',
-    label: 'Engine: Cloud Edge (Gemini Flash)',
+    label: 'Engine: Cloud Edge (Gemini 3.x Flash)',
     details: 'Detecting available inference capabilities...',
   });
   const [statusMessage, setStatusMessage] = useState('Ready for image upload.');
@@ -152,7 +152,7 @@ export default function App() {
       const result = await generateAltText(selectedFile);
       setAltText(result.text);
       setEngineUsed(result.engine);
-      setStatusMessage(`Alt text generated successfully using ${result.engine === 'on-device' ? 'On-Device Gemini Nano' : 'Cloud Edge Gemini Flash'}.`);
+      setStatusMessage(`Alt text generated successfully using ${result.engine === 'on-device' ? 'On-Device Gemini Nano' : 'Cloud Edge Gemini 3.x Flash'}.`);
     } catch (err) {
       console.error('Error generating alt text:', err);
       const message = err.message || 'Inference failed. Please check your network connection or API settings.';
@@ -195,7 +195,7 @@ export default function App() {
       {/* Header with Engine Badge and GitHub Link */}
       <Header
         engine={engineUsed || engineInfo.engine}
-        label={engineUsed ? (engineUsed === 'on-device' ? 'Engine: On-Device (Gemini Nano)' : 'Engine: Cloud Edge (Gemini Flash)') : engineInfo.label}
+        label={engineUsed ? (engineUsed === 'on-device' ? 'Engine: On-Device (Gemini Nano)' : 'Engine: Cloud Edge (Gemini 3.x Flash)') : engineInfo.label}
         details={engineInfo.details}
       />
 
@@ -208,7 +208,7 @@ export default function App() {
               Two-Tier Progressive Enhancement
             </span>
             <p className="text-sm sm:text-base text-ink/90 font-medium leading-relaxed">
-              Generates concise, objective alt text adhering to WCAG 2.2 guidelines. Runs <strong>locally on-device via Chrome Built-in AI</strong> with fallback to <strong>Gemini 2.0 Flash</strong> in the cloud.
+              Generates concise, objective alt text adhering to WCAG 2.2 guidelines. Runs <strong>locally on-device via Chrome Built-in AI</strong> with fallback to <strong>Gemini 3.x Flash</strong> in the cloud.
             </p>
           </div>
 

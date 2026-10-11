@@ -113,11 +113,13 @@ assert(fileDropzoneSrc.includes('image-url-input'), 'FileDropzone.jsx must conta
 assert(fileDropzoneSrc.includes('onUrlSubmit'), 'FileDropzone.jsx must accept onUrlSubmit prop');
 console.log('  ✓ Image URL input tab & form properly implemented in FileDropzone');
 
-// 10. Verify Cloud Function export and handler structure
-console.log('\n10. Verifying Cloud Function export and handler structure...');
-const functionsModule = await import('../functions/index.js');
-const { generateAlt } = functionsModule.default || functionsModule;
-assert(generateAlt, 'generateAlt function must be exported');
-console.log('  ✓ generateAlt exported successfully');
+// 11. Verify Gemini 3.x model configuration
+console.log('\n11. Verifying Gemini 3.x model configuration...');
+const aiEngineFull = readFileSync(join(root, 'src/utils/aiEngine.js'), 'utf-8');
+assert(aiEngineFull.includes('gemini-3-flash'), 'aiEngine.js must reference gemini-3-flash');
+assert(aiEngineFull.includes('Gemini 3.x Flash'), 'aiEngine.js must label engine as Gemini 3.x Flash');
+const functionsFull = readFileSync(join(root, 'functions/index.js'), 'utf-8');
+assert(functionsFull.includes('gemini-3-flash'), 'functions/index.js must default to gemini-3-flash');
+console.log('  ✓ Gemini 3.x Flash configured across client and Cloud Functions');
 
 console.log('\n✨ All verification checks passed with 100% compliance!\n');

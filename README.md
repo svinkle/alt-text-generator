@@ -1,6 +1,6 @@
 # Alt Text Generator
 
-> Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 2.0 Flash on Firebase Cloud Functions.
+> Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
 
 [![Deploy to Firebase](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml)
 
@@ -10,7 +10,7 @@
 
 - **Two-Tier Progressive AI Architecture:**
   - **Tier 1 (On-Device via Chrome Built-in AI / Gemini Nano):** Checks for `window.LanguageModel` or `window.ai.languageModel`. Executes locally on your device with **zero server cost**, zero network token latency, and 100% client-side privacy.
-  - **Tier 2 (Serverless Fallback via Gemini 2.0 Flash):** When on-device AI is unsupported (Safari, Firefox, unsupported mobile, or disabled flags), requests route seamlessly to `/api/generate-alt` served by a Firebase Cloud Function.
+  - **Tier 2 (Serverless Fallback via Gemini 3.x Flash):** When on-device AI is unsupported (Safari, Firefox, unsupported mobile, or disabled flags), requests route seamlessly to `/api/generate-alt` served by a Firebase Cloud Function.
 - **Neo-Brutalist & Tactile Aesthetic:**
   - High-contrast retro palette: Soft cream (`#FBF8F1`), deep dark ink (`#1E1B18`), vibrant violet (`#7C3AED`), electric mint (`#10B981`), and warm amber (`#F59E0B`).
   - Tactile buttons with hard offset shadows (`4px 4px 0px 0px #1E1B18`) shifting dynamically on active press.
@@ -46,7 +46,7 @@
       │ On-Device     │───────────────────────► ┌───────────────────────────┐
       │ Gemini Nano   │                         │ Tier 2: Cloud Fallback    │
       └───────────────┘                         │ Firebase Cloud Function   │
-                                                │ (Gemini 2.0 Flash)        │
+                                                │ (Gemini 3.x Flash)        │
                                                 └───────────────────────────┘
 ```
 
