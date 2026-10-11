@@ -5,6 +5,25 @@ import OutputSnippet from './components/OutputSnippet';
 import { generateAltText, checkAvailableEngine } from './utils/aiEngine';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
 
+export const PHOTO_ATTRIBUTIONS = {
+  nature: {
+    photographerName: 'Daniel Moroder',
+    photographerUrl:
+      'https://www.shopify.com/stock-photos/@daniel_moroder?utm_campaign=photo_credit&utm_content=Browse+Free+HD+Images+of+Hiker+Looks+Out+Over+View+From+Mountain+Summit&utm_medium=referral&utm_source=credit',
+    sourceName: 'Burst',
+    sourceUrl:
+      'https://www.shopify.com/stock-photos/sunrise?utm_campaign=photo_credit&utm_content=Browse+Free+HD+Images+of+Hiker+Looks+Out+Over+View+From+Mountain+Summit&utm_medium=referral&utm_source=credit',
+  },
+  team: {
+    photographerName: 'Matthew Henry',
+    photographerUrl:
+      'https://www.shopify.com/stock-photos/@matthew_henry?utm_campaign=photo_credit&utm_content=High+Res+Business+Team+Meeting+In+Boardroom+Picture+%E2%80%94+Free+Images&utm_medium=referral&utm_source=credit',
+    sourceName: 'Burst',
+    sourceUrl:
+      'https://www.shopify.com/stock-photos/meetings?utm_campaign=photo_credit&utm_content=High+Res+Business+Team+Meeting+In+Boardroom+Picture+%E2%80%94+Free+Images&utm_medium=referral&utm_source=credit',
+  },
+};
+
 export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -43,11 +62,14 @@ export default function App() {
     };
   }, [previewUrl]);
 
-  const handleFileSelect = (file) => {
+  const handleFileSelect = (file, attribution = null) => {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
     const url = URL.createObjectURL(file);
+    if (attribution) {
+      file.attribution = attribution;
+    }
     setSelectedFile(file);
     setPreviewUrl(url);
     setError(null);
@@ -56,7 +78,7 @@ export default function App() {
     setStatusMessage(`Selected image ${file.name}. Ready to generate alt text.`);
   };
 
-  const handleUrlSelect = (url, customFilename = null) => {
+  const handleUrlSelect = (url, customFilename = null, attribution = null) => {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -71,12 +93,23 @@ export default function App() {
       }
     }
 
+    // Auto-detect attribution for known Burst photos if not explicitly supplied
+    let matchedAttribution = attribution;
+    if (!matchedAttribution) {
+      if (url.includes('hiker') || url.includes('mountain')) {
+        matchedAttribution = PHOTO_ATTRIBUTIONS.nature;
+      } else if (url.includes('boardroom') || url.includes('business-team')) {
+        matchedAttribution = PHOTO_ATTRIBUTIONS.team;
+      }
+    }
+
     const imageItem = {
       name: filename,
       url: url,
       isUrl: true,
       size: null,
       type: 'image/jpeg',
+      attribution: matchedAttribution,
     };
 
     setSelectedFile(imageItem);
@@ -103,12 +136,20 @@ export default function App() {
       return;
     }
 
+    // Check if URL matches demo photos for attribution
+    let attribution = null;
+    if (url.includes('hiker') || url.includes('mountain')) {
+      attribution = PHOTO_ATTRIBUTIONS.nature;
+    } else if (url.includes('boardroom') || url.includes('business-team')) {
+      attribution = PHOTO_ATTRIBUTIONS.team;
+    }
+
     try {
       const res = await fetch(url);
       if (res.ok) {
         const blob = await res.blob();
         const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
-        handleFileSelect(file);
+        handleFileSelect(file, attribution);
         setIsLoading(false);
         return;
       }
@@ -119,7 +160,7 @@ export default function App() {
     // Fallback: Verify image can load via standard browser Image object
     const img = new Image();
     img.onload = () => {
-      handleUrlSelect(url, filename);
+      handleUrlSelect(url, filename, attribution);
       setIsLoading(false);
     };
     img.onerror = () => {
@@ -173,6 +214,7 @@ export default function App() {
       ? 'https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=1850&format=pjpg&exif=0&iptc=0'
       : 'https://burst.shopifycdn.com/photos/business-team-meeting-boardroom.jpg?width=1850&format=pjpg&exif=0&iptc=0';
     const demoFilename = isNature ? 'mountain-sunrise.png' : 'team-collaboration.png';
+    const attribution = isNature ? PHOTO_ATTRIBUTIONS.nature : PHOTO_ATTRIBUTIONS.team;
 
     setStatusMessage(`Loading demo image: ${demoFilename}...`);
 
@@ -181,10 +223,10 @@ export default function App() {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const blob = await response.blob();
       const file = new File([blob], demoFilename, { type: blob.type || 'image/jpeg' });
-      handleFileSelect(file);
+      handleFileSelect(file, attribution);
     } catch (err) {
       console.warn('Fetch demo image failed, loading via URL directly:', err);
-      handleUrlSelect(demoUrl, demoFilename);
+      handleUrlSelect(demoUrl, demoFilename, attribution);
     } finally {
       setIsLoading(false);
     }
@@ -212,26 +254,73 @@ export default function App() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-            <span className="text-xs font-bold text-ink/70">Try a demo image:</span>
-            <button
-              type="button"
-              onClick={() => handleLoadSample('nature')}
-              disabled={isLoading}
-              className="text-xs font-bold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
-              aria-label="Load Mountain Sunrise demo image"
-            >
-              Mountain Sunrise
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLoadSample('team')}
-              disabled={isLoading}
-              className="text-xs font-bold px-3 py-1.5 bg-mint-100 hover:bg-mint/40 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
-              aria-label="Load Team Collaboration demo image"
-            >
-              Team Collaboration
-            </button>
+          <div className="flex flex-col items-start md:items-end gap-2 flex-shrink-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-ink/70">Try a demo image:</span>
+              <button
+                type="button"
+                onClick={() => handleLoadSample('nature')}
+                disabled={isLoading}
+                className="text-xs font-bold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
+                aria-label="Load Mountain Sunrise demo image"
+              >
+                Mountain Sunrise
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLoadSample('team')}
+                disabled={isLoading}
+                className="text-xs font-bold px-3 py-1.5 bg-mint-100 hover:bg-mint/40 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
+                aria-label="Load Team Collaboration demo image"
+              >
+                Team Collaboration
+              </button>
+            </div>
+
+            {/* Photographer Credits in Banner */}
+            <div className="text-[11px] text-ink/75 flex flex-wrap items-center gap-x-2">
+              <span>
+                Mountain:{' '}
+                <a
+                  href={PHOTO_ATTRIBUTIONS.nature.photographerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                >
+                  Daniel Moroder
+                </a>{' '}
+                from{' '}
+                <a
+                  href={PHOTO_ATTRIBUTIONS.nature.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                >
+                  Burst
+                </a>
+              </span>
+              <span>•</span>
+              <span>
+                Team:{' '}
+                <a
+                  href={PHOTO_ATTRIBUTIONS.team.photographerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                >
+                  Matthew Henry
+                </a>{' '}
+                from{' '}
+                <a
+                  href={PHOTO_ATTRIBUTIONS.team.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                >
+                  Burst
+                </a>
+              </span>
+            </div>
           </div>
         </div>
 

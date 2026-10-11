@@ -266,15 +266,40 @@ export default function FileDropzone({
         ) : (
           /* File Selected State (both upload and URL) */
           <div className="space-y-6">
-            <div className="flex flex-col md:flex-row items-center gap-6 p-4 sm:p-5 border-[3px] border-ink bg-cream shadow-brutal">
-              {/* Thumbnail Preview */}
-              <div className="w-full md:w-48 h-48 sm:h-44 flex-shrink-0 border-[3px] border-ink bg-white overflow-hidden shadow-brutal-sm relative group">
-                <img
-                  src={previewUrl}
-                  alt={`Preview of selected image ${selectedFile.name}`}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-ink/10 pointer-events-none" />
+            <div className="flex flex-col md:flex-row items-center sm:items-start gap-6 p-4 sm:p-5 border-[3px] border-ink bg-cream shadow-brutal">
+              {/* Thumbnail Preview & Attribution */}
+              <div className="w-full md:w-48 flex-shrink-0 flex flex-col gap-2">
+                <div className="w-full h-44 sm:h-40 border-[3px] border-ink bg-white overflow-hidden shadow-brutal-sm relative group">
+                  <img
+                    src={previewUrl}
+                    alt={`Preview of selected image ${selectedFile.name}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-ink/10 pointer-events-none" />
+                </div>
+
+                {selectedFile.attribution && (
+                  <div className="text-[11px] text-ink/80 font-medium leading-tight p-2 bg-white border-2 border-ink shadow-brutal-sm">
+                    <span>Photo by </span>
+                    <a
+                      href={selectedFile.attribution.photographerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                    >
+                      {selectedFile.attribution.photographerName}
+                    </a>
+                    <span> from </span>
+                    <a
+                      href={selectedFile.attribution.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                    >
+                      {selectedFile.attribution.sourceName}
+                    </a>
+                  </div>
+                )}
               </div>
 
               {/* Metadata & Actions */}

@@ -120,6 +120,13 @@ assert(aiEngineFull.includes('gemini-3-flash'), 'aiEngine.js must reference gemi
 assert(aiEngineFull.includes('Gemini 3.x Flash'), 'aiEngine.js must label engine as Gemini 3.x Flash');
 const functionsFull = readFileSync(join(root, 'functions/index.js'), 'utf-8');
 assert(functionsFull.includes('gemini-3-flash'), 'functions/index.js must default to gemini-3-flash');
-console.log('  ✓ Gemini 3.x Flash configured across client and Cloud Functions');
+// 12. Verify photographer attributions for demo images
+console.log('\n12. Verifying photographer attributions...');
+assert(appSrc.includes('Daniel Moroder'), 'App.jsx missing Daniel Moroder attribution');
+assert(appSrc.includes('Matthew Henry'), 'App.jsx missing Matthew Henry attribution');
+assert(appSrc.includes('daniel_moroder'), 'App.jsx missing Daniel Moroder Burst profile URL');
+assert(appSrc.includes('matthew_henry'), 'App.jsx missing Matthew Henry Burst profile URL');
+assert(fileDropzoneSrc.includes('selectedFile.attribution'), 'FileDropzone.jsx must display selectedFile.attribution');
+console.log('  ✓ Photographer attributions correctly linked and rendered for both demo photos');
 
 console.log('\n✨ All verification checks passed with 100% compliance!\n');
