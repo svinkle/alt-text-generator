@@ -47,7 +47,7 @@ jobs:
           fi
 
           if [ -n "$FIREBASE_PROJECT_ID" ]; then
-            npx firebase-tools deploy --non-interactive --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+            npx firebase-tools deploy --force --non-interactive --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
           else
-            npx firebase-tools deploy --non-interactive --token "$FIREBASE_TOKEN"
+            npx firebase-tools deploy --force --non-interactive --token "$FIREBASE_TOKEN"
           fi
