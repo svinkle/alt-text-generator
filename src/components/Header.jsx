@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Github, Eye, Key, Download } from 'lucide-react';
+import { Github, Key, Download } from 'lucide-react';
 import EngineBadge from './EngineBadge';
 import ApiKeyModal from './ApiKeyModal';
 
@@ -48,9 +48,17 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
       <header className="w-full border-b-[3px] border-ink bg-white sticky top-0 z-30 shadow-brutal-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-violet-600 border-[3px] border-ink shadow-brutal-sm flex items-center justify-center text-white flex-shrink-0">
-              <Eye className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5]" aria-hidden="true" />
-            </div>
+            <svg
+              className="w-10 h-10 sm:w-12 sm:h-12 shadow-brutal-sm rounded flex-shrink-0"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <rect x="2" y="2" width="28" height="28" rx="4" fill="#7C3AED" stroke="#1E1B18" strokeWidth="3" />
+              <circle cx="11" cy="11" r="3" fill="#10B981" stroke="#1E1B18" strokeWidth="2" />
+              <path d="M4 23L11 16L18 23L23 18L28 23" stroke="#FBF8F1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-ink">
