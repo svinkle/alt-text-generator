@@ -3,7 +3,7 @@ import Header from './components/Header';
 import FileDropzone from './components/FileDropzone';
 import OutputSnippet from './components/OutputSnippet';
 import { generateAltText, checkAvailableEngine } from './utils/aiEngine';
-import { AlertCircle, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Github } from 'lucide-react';
 
 export const PHOTO_ATTRIBUTIONS = {
   nature: {
@@ -204,19 +204,20 @@ export default function App() {
     }
   };
 
-  // Preset demo loader using user-specified Burst Shopify CDN images
+  // Preset demo loader for 'Mountain Sunrise' and 'Team Collaboration'
   const handleLoadSample = async (sampleType) => {
     setIsLoading(true);
     setError(null);
 
     const isNature = sampleType === 'nature';
+    const sampleLabel = isNature ? 'Mountain Sunrise' : 'Team Collaboration';
     const demoUrl = isNature
       ? 'https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=1850&format=pjpg&exif=0&iptc=0'
       : 'https://burst.shopifycdn.com/photos/business-team-meeting-boardroom.jpg?width=1850&format=pjpg&exif=0&iptc=0';
     const demoFilename = isNature ? 'mountain-sunrise.png' : 'team-collaboration.png';
     const attribution = isNature ? PHOTO_ATTRIBUTIONS.nature : PHOTO_ATTRIBUTIONS.team;
 
-    setStatusMessage(`Loading demo image: ${demoFilename}...`);
+    setStatusMessage(`Loading demo image: ${sampleLabel} (${demoFilename})...`);
 
     try {
       const response = await fetch(demoUrl);
@@ -243,40 +244,6 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
-        {/* Intro banner */}
-        <div className="border-[3px] border-ink bg-white p-5 sm:p-6 shadow-brutal flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="inline-block px-2 py-0.5 text-xs font-black uppercase tracking-wider bg-violet-100 text-violet-700 border-2 border-ink shadow-brutal-sm">
-              Two-Tier Progressive Enhancement
-            </span>
-            <p className="text-sm sm:text-base text-ink/90 font-medium leading-relaxed">
-              Generates concise, objective alt text adhering to WCAG 2.2 guidelines. Runs <strong>locally on-device via Chrome Built-in AI</strong> with fallback to <strong>Gemini 3.x Flash</strong> in the cloud.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-            <span className="text-xs font-bold text-ink/70">Try a demo image:</span>
-            <button
-              type="button"
-              onClick={() => handleLoadSample('nature')}
-              disabled={isLoading}
-              className="text-xs font-bold px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
-              aria-label="Load Mountain Sunrise demo image"
-            >
-              Mountain Sunrise
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLoadSample('team')}
-              disabled={isLoading}
-              className="text-xs font-bold px-3 py-1.5 bg-mint-100 hover:bg-mint/40 border-2 border-ink shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring disabled:opacity-50"
-              aria-label="Load Team Collaboration demo image"
-            >
-              Team Collaboration
-            </button>
-          </div>
-        </div>
-
         {/* Error notification */}
         {error && (
           <div
@@ -298,12 +265,13 @@ export default function App() {
           </div>
         )}
 
-        {/* Upload / URL Dropzone */}
+        {/* Upload / URL / Demo Dropzone */}
         <FileDropzone
           selectedFile={selectedFile}
           previewUrl={previewUrl}
           onFileSelect={handleFileSelect}
           onUrlSubmit={handleUrlSubmit}
+          onLoadSample={handleLoadSample}
           onFileRemove={handleFileRemove}
           onSubmit={handleGenerate}
           isLoading={isLoading}
@@ -348,17 +316,31 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t-[3px] border-ink bg-white mt-12 py-6 text-center text-xs font-medium text-ink/75">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p>
-            Made with <span role="img" aria-label="love">❤️</span> by{' '}
+          <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
+            <p>
+              Made with <span role="img" aria-label="love">❤️</span> by{' '}
+              <a
+                href="https://scottvinkle.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-bold text-ink hover:text-violet-700 focus-ring"
+              >
+                svinkle
+              </a>
+            </p>
+            <span aria-hidden="true" className="text-ink/40">•</span>
             <a
-              href="https://scottvinkle.com"
+              href="https://github.com/svinkle/alt-text-generator"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline font-bold text-ink hover:text-violet-700 focus-ring"
+              className="inline-flex items-center gap-1 font-bold text-ink hover:text-violet-700 focus-ring"
+              aria-label="View source code on GitHub"
+              title="GitHub Repository"
             >
-              svinkle
+              <Github className="w-3.5 h-3.5" aria-hidden="true" />
+              <span className="underline">GitHub</span>
             </a>
-          </p>
+          </div>
           <a
             href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
             target="_blank"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Github, Key, Download } from 'lucide-react';
+import { Key, Download } from 'lucide-react';
 import EngineBadge from './EngineBadge';
 import ApiKeyModal from './ApiKeyModal';
 
@@ -104,17 +104,6 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
                 <span>Install</span>
               </button>
             )}
-
-            <a
-              href="https://github.com/svinkle/alt-text-generator"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 bg-white border-2 border-ink shadow-brutal-sm hover:bg-cream active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring text-ink"
-              aria-label="View source code on GitHub"
-              title="GitHub Repository"
-            >
-              <Github className="w-5 h-5" aria-hidden="true" />
-            </a>
           </div>
         </div>
       </header>

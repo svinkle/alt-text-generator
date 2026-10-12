@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { UploadCloud, Link as LinkIcon, X, RefreshCw, CheckCircle2, Globe, FileImage } from 'lucide-react';
+import { UploadCloud, Link as LinkIcon, Sparkles, X, RefreshCw, CheckCircle2, Globe, FileImage } from 'lucide-react';
 
 /**
  * Format bytes to human readable format
@@ -17,12 +17,13 @@ export default function FileDropzone({
   previewUrl,
   onFileSelect,
   onUrlSubmit,
+  onLoadSample,
   onFileRemove,
   onSubmit,
   isLoading,
   statusMessage,
 }) {
-  const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'url'
+  const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'url' | 'demo'
   const [isDragOver, setIsDragOver] = useState(false);
   const [urlInputValue, setUrlInputValue] = useState('');
   const [urlInputError, setUrlInputError] = useState('');
@@ -164,6 +165,26 @@ export default function FileDropzone({
                 <LinkIcon className="w-4 h-4" aria-hidden="true" />
                 <span>Image URL</span>
               </button>
+
+              <button
+                type="button"
+                role="tab"
+                id="tab-demo"
+                aria-selected={activeTab === 'demo'}
+                aria-controls="panel-demo"
+                onClick={() => {
+                  setActiveTab('demo');
+                  setUrlInputError('');
+                }}
+                className={`flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+                  activeTab === 'demo'
+                    ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
+                    : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" aria-hidden="true" />
+                <span>Try Demo</span>
+              </button>
             </div>
 
             {/* TAB PANEL 1: Upload File */}
@@ -260,6 +281,87 @@ export default function FileDropzone({
                     </p>
                   )}
                 </form>
+              </div>
+            )}
+
+            {/* TAB PANEL 3: Try Demo */}
+            {activeTab === 'demo' && (
+              <div
+                role="tabpanel"
+                id="panel-demo"
+                aria-labelledby="tab-demo"
+                className="p-6 sm:p-8 border-[3px] border-dashed border-ink bg-cream"
+              >
+                <div className="max-w-2xl mx-auto space-y-6">
+                  <div className="text-center">
+                    <h3 className="text-xl sm:text-2xl font-display font-bold text-ink mb-1">
+                      Try a Demo Image
+                    </h3>
+                    <p className="text-sm sm:text-base text-ink/80 font-medium">
+                      Select one of the sample images below to test instant WCAG 2.2-compliant alt text generation without uploading your own file.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Demo Card 1: Mountain Sunrise */}
+                    <div className="border-[3px] border-ink bg-white p-4 shadow-brutal flex flex-col justify-between">
+                      <div>
+                        <div className="h-32 sm:h-36 w-full border-2 border-ink mb-3 overflow-hidden bg-amber-50">
+                          <img
+                            src="https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=600&format=pjpg&exif=0&iptc=0"
+                            alt="Mountain Sunrise preview"
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                        <h4 className="font-display font-bold text-base text-ink">
+                          Mountain Sunrise
+                        </h4>
+                        <p className="text-xs text-ink/70 font-medium mt-0.5 mb-3">
+                          Hiker on summit with mountain sunrise view
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => onLoadSample && onLoadSample('nature')}
+                        disabled={isLoading}
+                        className="w-full brutal-btn bg-amber-300 hover:bg-amber-400 text-ink py-2 text-xs font-bold shadow-brutal-sm disabled:opacity-50"
+                        aria-label="Load Mountain Sunrise demo image"
+                      >
+                        {isLoading ? 'Loading...' : 'Load Mountain Sunrise'}
+                      </button>
+                    </div>
+
+                    {/* Demo Card 2: Team Collaboration */}
+                    <div className="border-[3px] border-ink bg-white p-4 shadow-brutal flex flex-col justify-between">
+                      <div>
+                        <div className="h-32 sm:h-36 w-full border-2 border-ink mb-3 overflow-hidden bg-mint-50">
+                          <img
+                            src="https://burst.shopifycdn.com/photos/business-team-meeting-boardroom.jpg?width=600&format=pjpg&exif=0&iptc=0"
+                            alt="Team Collaboration preview"
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                        <h4 className="font-display font-bold text-base text-ink">
+                          Team Collaboration
+                        </h4>
+                        <p className="text-xs text-ink/70 font-medium mt-0.5 mb-3">
+                          Colleagues discussing ideas in a conference room
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => onLoadSample && onLoadSample('team')}
+                        disabled={isLoading}
+                        className="w-full brutal-btn bg-mint hover:bg-mint/80 text-ink py-2 text-xs font-bold shadow-brutal-sm disabled:opacity-50"
+                        aria-label="Load Team Collaboration demo image"
+                      >
+                        {isLoading ? 'Loading...' : 'Load Team Collaboration'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
