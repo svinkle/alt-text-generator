@@ -349,7 +349,15 @@ export default function App() {
       <footer className="border-t-[3px] border-ink bg-white mt-12 py-6 text-center text-xs font-medium text-ink/75">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>
-            Built for digital accessibility with <span className="font-bold text-ink">React</span>, <span className="font-bold text-ink">Tailwind CSS</span>, and <span className="font-bold text-ink">Google Gemini</span>.
+            Made with <span role="img" aria-label="love">❤️</span> by{' '}
+            <a
+              href="https://scottvinkle.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline font-bold text-ink hover:text-violet-700 focus-ring"
+            >
+              svinkle
+            </a>
           </p>
           <a
             href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
