@@ -22,6 +22,13 @@ const requiredFiles = [
   '.gitignore',
   'README.md',
   'public/favicon.svg',
+  'public/manifest.webmanifest',
+  'public/sw.js',
+  'public/icon-192.png',
+  'public/icon-512.png',
+  'public/icon-maskable-192.png',
+  'public/icon-maskable-512.png',
+  'public/apple-touch-icon.png',
   'src/main.jsx',
   'src/App.jsx',
   'src/index.css',
@@ -128,5 +135,27 @@ assert(appSrc.includes('daniel_moroder'), 'App.jsx missing Daniel Moroder Burst 
 assert(appSrc.includes('matthew_henry'), 'App.jsx missing Matthew Henry Burst profile URL');
 assert(fileDropzoneSrc.includes('selectedFile.attribution'), 'FileDropzone.jsx must display selectedFile.attribution');
 console.log('  ✓ Photographer attributions correctly linked and rendered for both demo photos');
+
+// 13. Verify PWA Configuration
+console.log('\n13. Verifying PWA Configuration...');
+const manifestSrc = readFileSync(join(root, 'public/manifest.webmanifest'), 'utf-8');
+const manifestObj = JSON.parse(manifestSrc);
+assert.strictEqual(manifestObj.display, 'standalone', 'PWA manifest must have display standalone');
+assert(manifestObj.icons?.length >= 3, 'PWA manifest must define at least 3 icon variants');
+assert(manifestObj.icons?.some(i => i.src.includes('favicon.svg')), 'PWA manifest must include favicon.svg icon');
+assert(manifestObj.icons?.some(i => i.purpose === 'maskable'), 'PWA manifest must include maskable icon');
+
+const indexHtmlSrc = readFileSync(join(root, 'index.html'), 'utf-8');
+assert(indexHtmlSrc.includes('manifest.webmanifest'), 'index.html must link to manifest.webmanifest');
+assert(indexHtmlSrc.includes('apple-touch-icon'), 'index.html must include apple-touch-icon');
+assert(indexHtmlSrc.includes('theme-color'), 'index.html must include theme-color meta tag');
+
+const swSrc = readFileSync(join(root, 'public/sw.js'), 'utf-8');
+assert(swSrc.includes('addEventListener(\'fetch\''), 'sw.js must contain fetch event listener');
+assert(swSrc.includes('caches.open'), 'sw.js must open cache for offline shell');
+
+console.log('  ✓ Web App Manifest configured with standalone display and maskable icons');
+console.log('  ✓ Service Worker installed and caching app shell');
+console.log('  ✓ index.html configured with PWA meta tags and Apple Touch Icons');
 
 console.log('\n✨ All verification checks passed with 100% compliance!\n');

@@ -1,16 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Github, Eye, Key } from 'lucide-react';
+import { Github, Eye, Key, Download } from 'lucide-react';
 import EngineBadge from './EngineBadge';
 import ApiKeyModal from './ApiKeyModal';
 
 export default function Header({ engine, label, details, onOpenApiKeyModal }) {
   const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
     const key = typeof localStorage !== 'undefined' ? localStorage.getItem('gemini_api_key') : null;
     setHasApiKey(Boolean(key));
+
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   const handleKeySaved = (key) => {
     setHasApiKey(Boolean(key));
@@ -56,6 +83,19 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
               <span className="hidden sm:inline">{hasApiKey ? 'API Key Set' : 'API Key'}</span>
             </button>
             */}
+
+            {deferredPrompt && (
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                className="px-2.5 py-1.5 sm:px-3 sm:py-2 bg-emerald-100 hover:bg-emerald-200 border-2 border-ink shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring text-ink flex items-center gap-1.5 text-xs font-bold"
+                aria-label="Install Alt Text Generator application"
+                title="Install PWA"
+              >
+                <Download className="w-4 h-4 text-emerald-800" aria-hidden="true" />
+                <span>Install</span>
+              </button>
+            )}
 
             <a
               href="https://github.com/svinkle/alt-text-generator"
