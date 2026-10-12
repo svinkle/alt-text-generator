@@ -62,14 +62,15 @@ export default function App() {
     };
   }, [previewUrl]);
 
-  const handleFileSelect = (file, attribution = null) => {
+  const handleFileSelect = (file, attribution = null, source = 'upload') => {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
     const url = URL.createObjectURL(file);
-    if (attribution) {
-      file.attribution = attribution;
-    }
+    file.attribution = attribution;
+    file.isDemo = source === 'demo';
+    file.source = source;
+    file.isUrl = source === 'url';
     setSelectedFile(file);
     setPreviewUrl(url);
     setError(null);
@@ -78,7 +79,7 @@ export default function App() {
     setStatusMessage(`Selected image ${file.name}. Ready to generate alt text.`);
   };
 
-  const handleUrlSelect = (url, customFilename = null, attribution = null) => {
+  const handleUrlSelect = (url, customFilename = null, attribution = null, source = 'url') => {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -106,7 +107,9 @@ export default function App() {
     const imageItem = {
       name: filename,
       url: url,
-      isUrl: true,
+      isUrl: source === 'url',
+      isDemo: source === 'demo',
+      source: source,
       size: null,
       type: 'image/jpeg',
       attribution: matchedAttribution,
@@ -149,7 +152,7 @@ export default function App() {
       if (res.ok) {
         const blob = await res.blob();
         const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
-        handleFileSelect(file, attribution);
+        handleFileSelect(file, attribution, 'url');
         setIsLoading(false);
         return;
       }
@@ -160,7 +163,7 @@ export default function App() {
     // Fallback: Verify image can load via standard browser Image object
     const img = new Image();
     img.onload = () => {
-      handleUrlSelect(url, filename, attribution);
+      handleUrlSelect(url, filename, attribution, 'url');
       setIsLoading(false);
     };
     img.onerror = () => {
@@ -224,10 +227,10 @@ export default function App() {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const blob = await response.blob();
       const file = new File([blob], demoFilename, { type: blob.type || 'image/jpeg' });
-      handleFileSelect(file, attribution);
+      handleFileSelect(file, attribution, 'demo');
     } catch (err) {
       console.warn('Fetch demo image failed, loading via URL directly:', err);
-      handleUrlSelect(demoUrl, demoFilename, attribution);
+      handleUrlSelect(demoUrl, demoFilename, attribution, 'demo');
     } finally {
       setIsLoading(false);
     }
