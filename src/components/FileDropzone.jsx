@@ -98,6 +98,17 @@ export default function FileDropzone({
     onUrlSubmit(trimmed);
   };
 
+  React.useEffect(() => {
+    const tabUpload = document.getElementById('tab-upload');
+    const tabUrl = document.getElementById('tab-url');
+    if (tabUpload) {
+      tabUpload.setAttribute('tabindex', activeTab === 'upload' ? '0' : '-1');
+    }
+    if (tabUrl) {
+      tabUrl.setAttribute('tabindex', activeTab === 'url' ? '0' : '-1');
+    }
+  }, [activeTab]);
+
   return (
     <section aria-labelledby="upload-section-title" className="w-full">
       <h2 id="upload-section-title" className="sr-only">
@@ -123,12 +134,32 @@ export default function FileDropzone({
             <div
               role="tablist"
               aria-label="Image source options"
+              onKeyDown={(e) => {
+                let nextTab = null;
+                if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                  e.preventDefault();
+                  nextTab = activeTab === 'upload' ? 'url' : 'upload';
+                } else if (e.key === 'Home') {
+                  e.preventDefault();
+                  nextTab = 'upload';
+                } else if (e.key === 'End') {
+                  e.preventDefault();
+                  nextTab = 'url';
+                }
+                if (nextTab) {
+                  setActiveTab(nextTab);
+                  setUrlInputError('');
+                  const nextBtn = document.getElementById(`tab-${nextTab}`);
+                  if (nextBtn) nextBtn.focus();
+                }
+              }}
               className="flex border-b-2 border-ink mb-6 gap-2"
             >
               <button
                 type="button"
                 role="tab"
                 id="tab-upload"
+                tabIndex={activeTab === 'upload' ? 0 : -1}
                 aria-selected={activeTab === 'upload'}
                 aria-controls="panel-upload"
                 onClick={() => {
