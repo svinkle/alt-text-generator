@@ -44,16 +44,27 @@ jobs:
       - name: Deploy to Firebase Hosting & Functions
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
-          if [ -z "$FIREBASE_TOKEN" ]; then
-            echo "::error::FIREBASE_TOKEN secret is missing. Please add FIREBASE_TOKEN in GitHub repository Settings > Secrets and variables > Actions."
-            exit 1
-          fi
-
-          if [ -n "$FIREBASE_PROJECT_ID" ]; then
-            npx firebase-tools deploy --force --non-interactive --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/gcp-sa-key.json"
+            export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/gcp-sa-key.json"
+            echo "Authenticating via Google Cloud Service Account (permanent credentials)..."
+            if [ -n "$FIREBASE_PROJECT_ID" ]; then
+              npx firebase-tools deploy --force --non-interactive --project "$FIREBASE_PROJECT_ID"
+            else
+              npx firebase-tools deploy --force --non-interactive
+            fi
+          elif [ -n "$FIREBASE_TOKEN" ]; then
+            echo "Authenticating via legacy FIREBASE_TOKEN..."
+            if [ -n "$FIREBASE_PROJECT_ID" ]; then
+              npx firebase-tools deploy --force --non-interactive --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+            else
+              npx firebase-tools deploy --force --non-interactive --token "$FIREBASE_TOKEN"
+            fi
           else
-            npx firebase-tools deploy --force --non-interactive --token "$FIREBASE_TOKEN"
+            echo "::error::Authentication secret missing. Add FIREBASE_SERVICE_ACCOUNT (recommended, never expires) in GitHub Settings > Secrets and variables > Actions."
+            exit 1
           fi
