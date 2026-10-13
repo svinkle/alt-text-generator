@@ -45,6 +45,12 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
 
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-ink focus:border-2 focus:border-ink focus:font-bold focus:shadow-brutal-sm"
+      >
+        Skip to main content
+      </a>
       <header className="w-full border-b-[3px] border-ink bg-white sticky top-0 z-30 shadow-brutal-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
