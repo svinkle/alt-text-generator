@@ -24,6 +24,26 @@ export const PHOTO_ATTRIBUTIONS = {
   },
 };
 
+export function parseImageFilename(url) {
+  try {
+    const parsed = new URL(url);
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    return segments[segments.length - 1] || 'web-image.jpg';
+  } catch {
+    return 'web-image.jpg';
+  }
+}
+
+export function detectAttribution(url) {
+  if (url && (url.includes('hiker') || url.includes('mountain'))) {
+    return PHOTO_ATTRIBUTIONS.nature;
+  }
+  if (url && (url.includes('boardroom') || url.includes('business-team'))) {
+    return PHOTO_ATTRIBUTIONS.team;
+  }
+  return null;
+}
+
 export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -83,26 +103,8 @@ export default function App() {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
-    let filename = customFilename;
-    if (!filename) {
-      try {
-        const parsed = new URL(url);
-        const segments = parsed.pathname.split('/').filter(Boolean);
-        filename = segments[segments.length - 1] || 'web-image.jpg';
-      } catch {
-        filename = 'web-image.jpg';
-      }
-    }
-
-    // Auto-detect attribution for known Burst photos if not explicitly supplied
-    let matchedAttribution = attribution;
-    if (!matchedAttribution) {
-      if (url.includes('hiker') || url.includes('mountain')) {
-        matchedAttribution = PHOTO_ATTRIBUTIONS.nature;
-      } else if (url.includes('boardroom') || url.includes('business-team')) {
-        matchedAttribution = PHOTO_ATTRIBUTIONS.team;
-      }
-    }
+    const filename = customFilename || parseImageFilename(url);
+    const matchedAttribution = attribution || detectAttribution(url);
 
     const imageItem = {
       name: filename,
@@ -128,24 +130,8 @@ export default function App() {
     setError(null);
     setStatusMessage(`Fetching image from ${url}...`);
 
-    let filename = 'web-image.jpg';
-    try {
-      const parsed = new URL(url);
-      const segments = parsed.pathname.split('/').filter(Boolean);
-      filename = segments[segments.length - 1] || 'web-image.jpg';
-    } catch {
-      setError('Please enter a valid URL.');
-      setIsLoading(false);
-      return;
-    }
-
-    // Check if URL matches demo photos for attribution
-    let attribution = null;
-    if (url.includes('hiker') || url.includes('mountain')) {
-      attribution = PHOTO_ATTRIBUTIONS.nature;
-    } else if (url.includes('boardroom') || url.includes('business-team')) {
-      attribution = PHOTO_ATTRIBUTIONS.team;
-    }
+    const filename = parseImageFilename(url);
+    const attribution = detectAttribution(url);
 
     try {
       const res = await fetch(url);

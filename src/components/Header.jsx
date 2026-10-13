@@ -9,6 +9,12 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
+    if (typeof onOpenApiKeyModal === 'function') {
+      onOpenApiKeyModal(() => setIsKeyModalOpen(true));
+    }
+  }, [onOpenApiKeyModal]);
+
+  useEffect(() => {
     const key = typeof localStorage !== 'undefined' ? localStorage.getItem('gemini_api_key') : null;
     setHasApiKey(Boolean(key));
 

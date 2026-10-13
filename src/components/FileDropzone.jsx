@@ -44,7 +44,7 @@ export default function FileDropzone({
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.currentTarget.contains(e.relatedTarget)) return;
+    if (e.relatedTarget && e.currentTarget && e.currentTarget.contains(e.relatedTarget)) return;
     setIsDragOver(false);
   };
 
@@ -100,13 +100,20 @@ export default function FileDropzone({
   };
 
   const isDemoLoaded = Boolean(
-    selectedFile && (selectedFile.source === 'demo' || selectedFile.isDemo || selectedFile.attribution)
+    selectedFile &&
+      (selectedFile.source === 'demo' ||
+        (Boolean(selectedFile.isDemo || selectedFile.attribution) &&
+          selectedFile.source !== 'url' &&
+          selectedFile.source !== 'upload'))
   );
   const isUrlLoaded = Boolean(
-    selectedFile && !isDemoLoaded && (selectedFile.source === 'url' || selectedFile.isUrl)
+    selectedFile &&
+      (selectedFile.source === 'url' || selectedFile.isUrl) &&
+      selectedFile.source !== 'demo'
   );
   const isUploadLoaded = Boolean(
-    selectedFile && !isDemoLoaded && !isUrlLoaded
+    selectedFile &&
+      (selectedFile.source === 'upload' || (!isDemoLoaded && !isUrlLoaded))
   );
   const isNatureActive = Boolean(
     isDemoLoaded &&
@@ -420,7 +427,7 @@ export default function FileDropzone({
             {isUrlLoaded && selectedFile ? (
               renderPreviewCard()
             ) : (
-              <form onSubmit={handleUrlFormSubmit} className="space-y-4 max-w-2xl mx-auto">
+              <form noValidate onSubmit={handleUrlFormSubmit} className="space-y-4 max-w-2xl mx-auto">
                 <div className="text-center sm:text-left space-y-1">
                   <label htmlFor="image-url-input" className="block text-base sm:text-lg font-display font-bold text-ink">
                     Enter Image URL

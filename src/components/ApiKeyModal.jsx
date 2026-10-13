@@ -156,5 +156,5 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
     </div>
   );
 
-  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
+  return createPortal(modalContent, document.body);
 }

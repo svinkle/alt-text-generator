@@ -130,7 +130,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
       </div>
 
       {/* Render modal directly into document.body to ensure true viewport centering */}
-      {typeof document !== 'undefined' && modalContent && createPortal(modalContent, document.body)}
+      {modalContent && createPortal(modalContent, document.body)}
     </>
   );
 }

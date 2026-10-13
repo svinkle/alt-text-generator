@@ -1,0 +1,125 @@
+import React from 'react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import OutputSnippet from '../../src/components/OutputSnippet';
+import * as clipboardModule from '../../src/utils/copyToClipboard';
+
+describe('OutputSnippet', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('renders title, snippets, and fallback filename when filename is not passed', () => {
+    render(<OutputSnippet altText="Sample description" onAltTextChange={vi.fn()} />);
+
+    expect(screen.getByRole('heading', { level: 2, name: /Generated Alt Text & Snippets/i })).toBeInTheDocument();
+    expect(screen.getByText('"Sample description"')).toBeInTheDocument();
+    expect(screen.getByText('<img src="image.jpg" alt="Sample description" />')).toBeInTheDocument();
+    expect(screen.getByText('![Sample description](image.jpg)')).toBeInTheDocument();
+  });
+
+  it('renders on-device engine badge when engineUsed is on-device', () => {
+    render(
+      <OutputSnippet
+        altText="Description"
+        filename="photo.png"
+        engineUsed="on-device"
+        onAltTextChange={vi.fn()}
+      />
+    );
+    expect(screen.getByText(/Generated On-Device/i)).toBeInTheDocument();
+  });
+
+  it('renders cloud engine badge when engineUsed is cloud-fallback', () => {
+    render(
+      <OutputSnippet
+        altText="Description"
+        filename="photo.png"
+        engineUsed="cloud-fallback"
+        onAltTextChange={vi.fn()}
+      />
+    );
+    expect(screen.getByText(/Generated via Cloud Edge Fallback/i)).toBeInTheDocument();
+  });
+
+  it('copies raw alt text to clipboard and shows Copied! state', async () => {
+    vi.useFakeTimers();
+    vi.spyOn(clipboardModule, 'copyToClipboard').mockResolvedValue(true);
+
+    render(<OutputSnippet altText="Copy me" onAltTextChange={vi.fn()} filename="test.jpg" />);
+
+    const copyRawBtn = screen.getByRole('button', { name: 'Copy raw alt text to clipboard' });
+    await act(async () => {
+      fireEvent.click(copyRawBtn);
+    });
+
+    expect(clipboardModule.copyToClipboard).toHaveBeenCalledWith('Copy me');
+    expect(screen.getByText('Copied!')).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(2100);
+    });
+
+    expect(screen.queryByText('Copied!')).not.toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
+  it('does not display Copied! when copyToClipboard fails', async () => {
+    vi.spyOn(clipboardModule, 'copyToClipboard').mockResolvedValue(false);
+
+    render(<OutputSnippet altText="Copy me" onAltTextChange={vi.fn()} filename="test.jpg" />);
+
+    const copyRawBtn = screen.getByRole('button', { name: 'Copy raw alt text to clipboard' });
+    await act(async () => {
+      fireEvent.click(copyRawBtn);
+    });
+
+    expect(screen.queryByText('Copied!')).not.toBeInTheDocument();
+  });
+
+  it('copies HTML snippet to clipboard', async () => {
+    vi.spyOn(clipboardModule, 'copyToClipboard').mockResolvedValue(true);
+
+    render(<OutputSnippet altText="Alt" onAltTextChange={vi.fn()} filename="img.png" />);
+
+    const copyHtmlBtn = screen.getByRole('button', { name: 'Copy HTML image tag snippet to clipboard' });
+    await act(async () => {
+      fireEvent.click(copyHtmlBtn);
+    });
+
+    expect(clipboardModule.copyToClipboard).toHaveBeenCalledWith('<img src="img.png" alt="Alt" />');
+  });
+
+  it('copies Markdown snippet to clipboard', async () => {
+    vi.spyOn(clipboardModule, 'copyToClipboard').mockResolvedValue(true);
+
+    render(<OutputSnippet altText="Alt" onAltTextChange={vi.fn()} filename="img.png" />);
+
+    const copyMdBtn = screen.getByRole('button', { name: 'Copy Markdown image syntax to clipboard' });
+    await act(async () => {
+      fireEvent.click(copyMdBtn);
+    });
+
+    expect(clipboardModule.copyToClipboard).toHaveBeenCalledWith('![Alt](img.png)');
+  });
+
+  it('toggles edit mode and allows changing alt text', () => {
+    const onAltTextChange = vi.fn();
+    render(<OutputSnippet altText="Original text" onAltTextChange={onAltTextChange} filename="test.png" />);
+
+    const editBtn = screen.getByRole('button', { name: 'Edit alt text' });
+    fireEvent.click(editBtn);
+
+    const textarea = screen.getByRole('textbox', { name: 'Edit alt text' });
+    expect(textarea).toBeInTheDocument();
+    expect(textarea.value).toBe('Original text');
+
+    fireEvent.change(textarea, { target: { value: 'New text' } });
+    expect(onAltTextChange).toHaveBeenCalledWith('New text');
+
+    // Click Done editing
+    const doneBtn = screen.getByRole('button', { name: 'Done editing alt text' });
+    fireEvent.click(doneBtn);
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  });
+});

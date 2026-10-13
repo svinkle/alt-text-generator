@@ -24,8 +24,14 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
-      - name: Run verification test suite
+      - name: Run verification and unit tests with coverage
         run: npm test
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E tests
+        run: npm run test:e2e
 
       - name: Build frontend application
         run: npm run build
