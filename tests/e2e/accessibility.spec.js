@@ -68,4 +68,18 @@ test.describe('Accessibility & Keyboard Navigation Verification', () => {
     const themeColorMeta = page.locator('meta[name="theme-color"]');
     await expect(themeColorMeta).toHaveAttribute('content', '#7C3AED');
   });
+
+  test('Skip to main content link is focusable and targets main landmark', async ({ page }) => {
+    const skipLink = page.getByRole('link', { name: 'Skip to main content' });
+    await expect(skipLink).toBeAttached();
+
+    // Tab into page
+    await page.keyboard.press('Tab');
+    await expect(skipLink).toBeFocused();
+
+    // Click skip link
+    await page.keyboard.press('Enter');
+    const mainLandmark = page.locator('main#main');
+    await expect(mainLandmark).toBeFocused();
+  });
 });

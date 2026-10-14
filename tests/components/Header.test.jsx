@@ -122,4 +122,35 @@ describe('Header', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close dialog' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  it('handles skip to main content link click by focusing main element', () => {
+    const mainEl = document.createElement('main');
+    mainEl.id = 'main';
+    document.body.appendChild(mainEl);
+    const focusSpy = vi.spyOn(mainEl, 'focus');
+
+    render(<Header engine="cloud-fallback" />);
+    const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
+    expect(skipLink).toBeInTheDocument();
+    expect(skipLink).toHaveAttribute('href', '#main');
+
+    // Click when main does not have tabindex yet
+    fireEvent.click(skipLink);
+
+    expect(mainEl.getAttribute('tabindex')).toBe('-1');
+    expect(focusSpy).toHaveBeenCalled();
+
+    // Click again when main already has tabindex
+    fireEvent.click(skipLink);
+    expect(mainEl.getAttribute('tabindex')).toBe('-1');
+
+    document.body.removeChild(mainEl);
+  });
+
+  it('handles skip link click gracefully when main element is not in DOM', () => {
+    render(<Header engine="cloud-fallback" />);
+    const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
+    // Should not throw even when main landmark is missing
+    fireEvent.click(skipLink);
+  });
 });
