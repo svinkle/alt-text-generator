@@ -52,11 +52,21 @@ jobs:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
           if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            # Unset expired FIREBASE_TOKEN so firebase-tools uses the service account credentials exclusively
+            unset FIREBASE_TOKEN
             echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/gcp-sa-key.json"
             export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/gcp-sa-key.json"
             echo "Authenticating via Google Cloud Service Account (permanent credentials)..."
-            if [ -n "$FIREBASE_PROJECT_ID" ]; then
-              npx firebase-tools deploy --force --non-interactive --project "$FIREBASE_PROJECT_ID"
+
+            # Resolve project ID from secret or auto-extract from service account JSON
+            PROJECT_ID="$FIREBASE_PROJECT_ID"
+            if [ -z "$PROJECT_ID" ]; then
+              PROJECT_ID=$(node -e 'try { console.log(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT).project_id || ""); } catch { console.log(""); }')
+            fi
+
+            if [ -n "$PROJECT_ID" ]; then
+              echo "Deploying to Firebase project: $PROJECT_ID"
+              npx firebase-tools deploy --force --non-interactive --project "$PROJECT_ID"
             else
               npx firebase-tools deploy --force --non-interactive
             fi
