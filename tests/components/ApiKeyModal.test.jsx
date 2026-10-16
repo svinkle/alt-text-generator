@@ -124,4 +124,34 @@ describe('ApiKeyModal', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save Key' }));
     expect(localStorage.getItem('gemini_api_key')).toBe('NewKey');
   });
+
+  it('traps Tab and Shift+Tab focus within the modal and cleans up timer on early unmount', () => {
+    vi.useFakeTimers();
+    const onClose = vi.fn();
+    const { unmount } = render(<ApiKeyModal isOpen={true} onClose={onClose} />);
+
+    const closeBtn = screen.getByRole('button', { name: 'Close dialog' });
+    const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
+
+    // Focus first focusable element and press Shift+Tab -> wraps to last enabled focusable element (Cancel button when input is empty)
+    closeBtn.focus();
+    expect(document.activeElement).toBe(closeBtn);
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(cancelBtn);
+
+    // Focus last focusable element and press Tab -> wraps to first focusable element
+    cancelBtn.focus();
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: false });
+    expect(document.activeElement).toBe(closeBtn);
+
+    // Trigger save to start closeTimerRef, then unmount before 1000ms
+    const input = screen.getByLabelText(/Google AI Studio Key/i);
+    fireEvent.change(input, { target: { value: 'TimerCleanupKey' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Key' }));
+    unmount();
+
+    vi.advanceTimersByTime(1100);
+    expect(onClose).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
 });

@@ -49,8 +49,26 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
     setHasApiKey(Boolean(key));
   };
 
+  const handleSkipToMain = (e) => {
+    const mainEl = document.getElementById('main') || document.querySelector('main');
+    if (mainEl) {
+      e.preventDefault();
+      if (!mainEl.hasAttribute('tabindex')) {
+        mainEl.setAttribute('tabindex', '-1');
+      }
+      mainEl.focus();
+    }
+  };
+
   return (
     <>
+      <a
+        href="#main"
+        onClick={handleSkipToMain}
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-ink focus:font-bold focus:border-[3px] focus:border-ink focus:shadow-brutal-sm"
+      >
+        Skip to main content
+      </a>
       <header className="w-full border-b-[3px] border-ink bg-white sticky top-0 z-30 shadow-brutal-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">

@@ -72,6 +72,12 @@ describe('App Component', () => {
     const textarea = screen.getByRole('textbox', { name: 'Edit alt text' });
     fireEvent.change(textarea, { target: { value: 'Updated alt text description.' } });
     expect(screen.getByDisplayValue('Updated alt text description.')).toBeInTheDocument();
+
+    // Re-generate to exercise aborting previous controller, then remove image
+    await act(async () => {
+      fireEvent.click(generateBtn);
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Remove selected image' }));
   });
 
   it('loads team demo image on successful fetch and generates alt text via cloud-fallback engine', async () => {

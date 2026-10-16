@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Key, X, Check, ExternalLink, Trash2 } from 'lucide-react';
 
@@ -6,6 +6,8 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
   const [apiKey, setApiKey] = useState('');
   const [hasExistingKey, setHasExistingKey] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const modalRef = useRef(null);
+  const closeTimerRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -14,12 +16,36 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
       setHasExistingKey(Boolean(stored));
       setSavedSuccess(false);
     }
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
   }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (!isOpen) return;
+      if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) {
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     };
     if (isOpen) {
@@ -42,7 +68,7 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
       setHasExistingKey(true);
       setSavedSuccess(true);
       if (onKeySaved) onKeySaved(trimmed);
-      setTimeout(() => {
+      closeTimerRef.current = setTimeout(() => {
         onClose();
       }, 1000);
     }
@@ -64,6 +90,7 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
       onClick={onClose}
     >
       <div
+        ref={modalRef}
         className="w-full max-w-md bg-cream border-[3px] border-ink p-6 shadow-brutal-xl rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >

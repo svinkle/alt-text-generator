@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Cpu, Zap, Info, X } from 'lucide-react';
 
@@ -9,15 +9,34 @@ import { Cpu, Zap, Info, X } from 'lucide-react';
  */
 export default function EngineBadge({ engine = 'cloud-fallback', label, details }) {
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const modalRef = useRef(null);
   const isOnDevice = engine === 'on-device';
 
   const displayLabel = label || (isOnDevice ? 'Engine: On-Device (Gemini Nano)' : 'Engine: Cloud Edge (Gemini 3.x Flash)');
 
-  // Close modal on Escape key press
+  // Close modal on Escape key press and trap Tab focus within dialog
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && showInfoModal) {
+      if (!showInfoModal) return;
+      if (e.key === 'Escape') {
         setShowInfoModal(false);
+        return;
+      }
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll(
+          'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) {
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     };
     if (showInfoModal) {
@@ -39,6 +58,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
       onClick={() => setShowInfoModal(false)}
     >
       <div
+        ref={modalRef}
         className="w-full max-w-lg bg-cream border-[3px] border-ink p-6 sm:p-7 shadow-brutal-xl rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >

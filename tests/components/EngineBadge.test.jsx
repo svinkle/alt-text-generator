@@ -71,11 +71,26 @@ describe('EngineBadge', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('does not close modal on non-Escape key', () => {
+  it('traps Tab and Shift+Tab focus within the modal without closing it', () => {
     render(<EngineBadge />);
     fireEvent.click(screen.getByRole('button', { name: /Click for engine details/i }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    fireEvent.keyDown(window, { key: 'Tab' });
+
+    const closeBtn = screen.getByRole('button', { name: 'Close dialog' });
+    const gotItBtn = screen.getByRole('button', { name: 'Got it' });
+
+    // Shift+Tab on first focusable element wraps to last
+    closeBtn.focus();
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(gotItBtn);
+
+    // Tab on last focusable element wraps to first
+    gotItBtn.focus();
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: false });
+    expect(document.activeElement).toBe(closeBtn);
+
+    // Non-Tab, non-Escape key does nothing
+    fireEvent.keyDown(window, { key: 'Enter' });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 

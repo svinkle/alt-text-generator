@@ -122,4 +122,23 @@ describe('OutputSnippet', () => {
     fireEvent.click(doneBtn);
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
   });
+
+  it('escapes HTML attribute characters and Markdown delimiters in generated snippets', () => {
+    render(
+      <OutputSnippet
+        altText='A "quoted" <tag> & [brackets]'
+        filename='photo"onerror="alert(1).jpg'
+        onAltTextChange={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.getByText(
+        '<img src="photo&quot;onerror=&quot;alert(1).jpg" alt="A &quot;quoted&quot; &lt;tag&gt; &amp; [brackets]" />'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('![A "quoted" <tag> & \\[brackets\\]](photo"onerror="alert\\(1\\).jpg)')
+    ).toBeInTheDocument();
+  });
 });

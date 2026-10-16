@@ -48,31 +48,38 @@ export default function FileDropzone({
     setIsDragOver(false);
   };
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+  const validateAndSelectFile = (file) => {
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      alert('Please drop a supported image file (PNG, JPEG, or WebP).');
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      alert('File size exceeds the 10MB maximum limit.');
+      return;
+    }
+    onFileSelect(file);
+  };
+
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      if (['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-        onFileSelect(file);
-      } else {
-        alert('Please drop a supported image file (PNG, JPEG, or WebP).');
-      }
+      validateAndSelectFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleInputChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      onFileSelect(e.target.files[0]);
+      validateAndSelectFile(e.target.files[0]);
     }
   };
 
   const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    fileInputRef.current.click();
   };
 
   const handleKeyDown = (e) => {
@@ -90,7 +97,10 @@ export default function FileDropzone({
       return;
     }
     try {
-      new URL(trimmed);
+      const parsed = new URL(trimmed);
+      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+        throw new Error('Unsupported URL protocol');
+      }
     } catch {
       setUrlInputError('Please enter a valid URL (including https://).');
       return;

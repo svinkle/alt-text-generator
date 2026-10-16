@@ -123,21 +123,28 @@ describe('aiEngine', () => {
       await expect(generateAltText({})).rejects.toThrow('No image data or URL provided for inference.');
     });
 
-    it('uses on-device LanguageModel via availability() when available', async () => {
+    it('uses on-device LanguageModel via availability() when available and cleans up ImageBitmap and session', async () => {
       const promptMock = vi.fn().mockResolvedValue('"A photo of a mountain summit with morning sky."');
+      const destroyMock = vi.fn();
+      const closeMock = vi.fn();
       window.LanguageModel = {
         availability: vi.fn().mockResolvedValue('available'),
         create: vi.fn().mockResolvedValue({
           prompt: promptMock,
+          destroy: destroyMock,
         }),
       };
-      global.createImageBitmap = vi.fn().mockResolvedValue({});
+      global.createImageBitmap = vi.fn().mockResolvedValue({
+        close: closeMock,
+      });
 
       const file = new File(['dummy'], 'mountain.jpg', { type: 'image/jpeg' });
       const result = await generateAltText(file);
 
       expect(result.engine).toBe('on-device');
       expect(result.text).toBe('A photo of a mountain summit with morning sky.');
+      expect(closeMock).toHaveBeenCalledTimes(1);
+      expect(destroyMock).toHaveBeenCalledTimes(1);
     });
 
     it('uses on-device LanguageModel via capabilities() when available', async () => {

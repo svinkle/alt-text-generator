@@ -1,15 +1,10 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { PROMPT_INSTRUCTION, DEMO_ALT_TEXTS } from './src/utils/aiEngine.js';
 
-const PROMPT_INSTRUCTION =
-  "You are an expert in digital accessibility and WCAG standards. Write a concise, objective, and descriptive alt text for this image. Focus on the core subject, action, context, and any legible text. Do not start with 'Image of' or 'Picture of'. Limit the response to 1 to 2 clear sentences.";
-
-const DEMO_ALT_TEXTS = {
-  mountain:
-    "A hiker carrying a backpack stands atop a rocky mountain summit, looking across a vast valley and distant rugged peaks under bright morning light.",
-  team:
-    "A diverse team of business colleagues sits around a modern boardroom conference table, reviewing documents and discussing a project.",
-};
+const MAX_BODY_BYTES = 15 * 1024 * 1024; // 15MB max JSON request payload
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB max binary image size
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 /**
  * Custom Vite plugin providing local /api/generate-alt middleware for both
@@ -20,11 +15,24 @@ function localApiPlugin(env) {
     // Only intercept POST /api/generate-alt
     if (req.method === 'POST' && (req.url === '/api/generate-alt' || req.url?.startsWith('/api/generate-alt?'))) {
       let bodyData = '';
+      let bodyBytes = 0;
+      let abortedForSize = false;
+
       req.on('data', (chunk) => {
+        bodyBytes += chunk.length;
+        if (bodyBytes > MAX_BODY_BYTES) {
+          abortedForSize = true;
+          res.statusCode = 413;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'Request payload exceeds the 10MB image size limit.' }));
+          req.destroy();
+          return;
+        }
         bodyData += chunk;
       });
 
       req.on('end', async () => {
+        if (abortedForSize) return;
         res.setHeader('Content-Type', 'application/json');
 
         try {
@@ -68,14 +76,31 @@ function localApiPlugin(env) {
 
           if (!imageBase64 && body.imageUrl) {
             try {
-              const imgRes = await fetch(body.imageUrl);
+              const parsedUrl = new URL(body.imageUrl);
+              if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+                res.statusCode = 400;
+                return res.end(JSON.stringify({ error: 'Only HTTP/HTTPS image URLs are allowed.' }));
+              }
+              const imgRes = await fetch(parsedUrl.toString(), {
+                signal: AbortSignal.timeout(8000),
+                redirect: 'error',
+              });
               if (!imgRes.ok) {
                 res.statusCode = 400;
                 return res.end(JSON.stringify({ error: `Failed to download image from URL (${imgRes.status})` }));
               }
+              const detectedMime = (imgRes.headers.get('content-type') || 'image/jpeg').split(';')[0].trim().toLowerCase();
+              if (!ALLOWED_MIME_TYPES.has(detectedMime)) {
+                res.statusCode = 400;
+                return res.end(JSON.stringify({ error: `Unsupported image MIME type: ${detectedMime}` }));
+              }
               const arrayBuffer = await imgRes.arrayBuffer();
+              if (arrayBuffer.byteLength > MAX_IMAGE_BYTES) {
+                res.statusCode = 413;
+                return res.end(JSON.stringify({ error: 'Remote image exceeds the 10MB limit.' }));
+              }
               imageBase64 = Buffer.from(arrayBuffer).toString('base64');
-              mimeType = imgRes.headers.get('content-type') || 'image/jpeg';
+              mimeType = detectedMime;
             } catch (fetchErr) {
               res.statusCode = 400;
               return res.end(JSON.stringify({ error: `Could not fetch image from URL: ${fetchErr.message}` }));

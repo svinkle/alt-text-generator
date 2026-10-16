@@ -38,8 +38,17 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // 1. Do not intercept non-GET requests or backend API routes
-  if (request.method !== 'GET' || url.pathname.startsWith('/api/')) {
+  const isSameOrigin = url.origin === self.location.origin;
+  const isGoogleFonts =
+    url.origin === 'https://fonts.googleapis.com' ||
+    url.origin === 'https://fonts.gstatic.com';
+
+  // 1. Do not intercept non-GET requests, backend API routes, or arbitrary cross-origin URLs
+  if (
+    request.method !== 'GET' ||
+    url.pathname.startsWith('/api/') ||
+    (!isSameOrigin && !isGoogleFonts)
+  ) {
     return;
   }
 

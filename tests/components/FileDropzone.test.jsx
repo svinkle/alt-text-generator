@@ -77,6 +77,16 @@ describe('FileDropzone', () => {
     });
     expect(alertMock).toHaveBeenCalledWith('Please drop a supported image file (PNG, JPEG, or WebP).');
 
+    // Drop oversized file (> 10MB) alerts
+    const largeFile = new File(['x'], 'huge.png', { type: 'image/png' });
+    Object.defineProperty(largeFile, 'size', { value: 11 * 1024 * 1024 });
+    fireEvent.drop(dropZone, {
+      dataTransfer: {
+        files: [largeFile],
+      },
+    });
+    expect(alertMock).toHaveBeenCalledWith('File size exceeds the 10MB maximum limit.');
+
     // KeyDown Enter & Space triggers file input click
     fireEvent.keyDown(dropZone, { key: 'Enter' });
     fireEvent.keyDown(dropZone, { key: ' ' });
@@ -90,7 +100,7 @@ describe('FileDropzone', () => {
     expect(onFileSelect).toHaveBeenCalledTimes(2);
   });
 
-  it('validates URL input on form submit', () => {
+  it('validates URL input on form submit including protocol restriction', () => {
     const onUrlSubmit = vi.fn();
     render(<FileDropzone {...defaultProps} onUrlSubmit={onUrlSubmit} />);
 
@@ -105,6 +115,11 @@ describe('FileDropzone', () => {
 
     // Submit invalid URL
     fireEvent.change(input, { target: { value: 'not-a-valid-url' } });
+    fireEvent.submit(form);
+    expect(screen.getByText('Please enter a valid URL (including https://).')).toBeInTheDocument();
+
+    // Submit disallowed protocol (javascript:)
+    fireEvent.change(input, { target: { value: 'javascript:alert(1)' } });
     fireEvent.submit(form);
     expect(screen.getByText('Please enter a valid URL (including https://).')).toBeInTheDocument();
 

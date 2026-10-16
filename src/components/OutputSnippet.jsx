@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { Copy, Check, Code, FileText, Sparkles, Cpu, Zap, Edit3 } from 'lucide-react';
 import { copyToClipboard } from '../utils/copyToClipboard';
 
+function escapeHtmlAttr(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export default function OutputSnippet({
   altText,
   onAltTextChange,
@@ -12,8 +20,10 @@ export default function OutputSnippet({
   const [isEditing, setIsEditing] = useState(false);
 
   const cleanFilename = filename || 'image.jpg';
-  const htmlSnippet = `<img src="${cleanFilename}" alt="${altText}" />`;
-  const markdownSnippet = `![${altText}](${cleanFilename})`;
+  const htmlSnippet = `<img src="${escapeHtmlAttr(cleanFilename)}" alt="${escapeHtmlAttr(altText)}" />`;
+  const safeMdAlt = String(altText).replace(/[[\]]/g, '\\$&');
+  const safeMdUrl = String(cleanFilename).replace(/[()]/g, '\\$&');
+  const markdownSnippet = `![${safeMdAlt}](${safeMdUrl})`;
 
   const handleCopy = async (key, textToCopy) => {
     const success = await copyToClipboard(textToCopy);

@@ -1,7 +1,7 @@
 export const PROMPT_INSTRUCTION =
   "You are an expert in digital accessibility and WCAG standards. Write a concise, objective, and descriptive alt text for this image. Focus on the core subject, action, context, and any legible text. Do not start with 'Image of' or 'Picture of'. Limit the response to 1 to 2 clear sentences.";
 
-const DEMO_ALT_TEXTS = {
+export const DEMO_ALT_TEXTS = {
   mountain:
     "A hiker carrying a backpack stands atop a rocky mountain summit, looking across a vast valley and distant rugged peaks under bright morning light.",
   team:
@@ -72,19 +72,22 @@ export async function checkAvailableEngine() {
  * 4. Gracefully serves demo text for sample images in offline/unconfigured environments.
  *
  * @param {File|Object|string} imageInput - Selected image file or URL object
+ * @param {{ signal?: AbortSignal }} [options] - Optional abort signal
  * @returns {Promise<{ text: string, engine: 'on-device' | 'cloud-fallback' }>}
  */
-export async function generateAltText(imageInput) {
+export async function generateAltText(imageInput, options = {}) {
   let file = imageInput instanceof File || imageInput instanceof Blob ? imageInput : imageInput?.file;
   const imageUrl = typeof imageInput === "string" ? imageInput : imageInput?.url;
   const filename = imageInput?.filename || imageInput?.name || (file ? file.name : "image.jpg");
 
   const isMountainDemo =
+    imageInput?.sampleType === "nature" ||
     filename.includes("mountain") ||
     imageUrl?.includes("mountain") ||
     imageUrl?.includes("hiker");
 
   const isTeamDemo =
+    imageInput?.sampleType === "team" ||
     filename.includes("team") ||
     imageUrl?.includes("team") ||
     imageUrl?.includes("boardroom");
@@ -92,7 +95,7 @@ export async function generateAltText(imageInput) {
   // If input is an imageUrl and we don't have a File/Blob yet, try fetching it as a Blob so we can use Tier 1 (On-Device AI)
   if (!file && imageUrl) {
     try {
-      const response = await fetch(imageUrl);
+      const response = await fetch(imageUrl, { signal: options.signal });
       if (response.ok) {
         const blob = await response.blob();
         file = new File([blob], filename, { type: blob.type || "image/jpeg" });
@@ -117,19 +120,30 @@ export async function generateAltText(imageInput) {
         }
 
         if (isAvailable) {
-          const session = await LM.create({
-            expectedInputs: [{ type: "image" }],
-          });
+          let session;
+          let imageBitmap;
+          try {
+            session = await LM.create({
+              expectedInputs: [{ type: "image" }],
+            });
 
-          const imageBitmap = await createImageBitmap(file);
+            imageBitmap = await createImageBitmap(file);
 
-          const response = await session.prompt([
-            PROMPT_INSTRUCTION,
-            { type: "image", content: imageBitmap },
-          ]);
+            const response = await session.prompt([
+              PROMPT_INSTRUCTION,
+              { type: "image", content: imageBitmap },
+            ]);
 
-          if (response && response.trim()) {
-            return { text: cleanAltResponse(response.trim()), engine: "on-device" };
+            if (response && response.trim()) {
+              return { text: cleanAltResponse(response.trim()), engine: "on-device" };
+            }
+          } finally {
+            if (typeof imageBitmap?.close === "function") {
+              imageBitmap.close();
+            }
+            if (typeof session?.destroy === "function") {
+              session.destroy();
+            }
           }
         }
       } catch (err) {
@@ -172,6 +186,7 @@ export async function generateAltText(imageInput) {
       method: "POST",
       headers,
       body: JSON.stringify(payload),
+      signal: options.signal,
     });
 
     if (res.ok) {
@@ -205,7 +220,12 @@ export async function generateAltText(imageInput) {
     // If client has a direct API key saved, call Google AI Studio REST endpoint directly
     if (userKey && base64Data) {
       try {
-        const directText = await callGoogleGeminiDirect(userKey, base64Data, file?.type || "image/jpeg");
+        const directText = await callGoogleGeminiDirect(
+          userKey,
+          base64Data,
+          file?.type || "image/jpeg",
+          options.signal
+        );
         return { text: cleanAltResponse(directText), engine: "cloud-fallback" };
       } catch (directErr) {
         console.error("Direct Gemini API call failed:", directErr);
@@ -237,12 +257,16 @@ export async function generateAltText(imageInput) {
 /**
  * Direct browser call to Google AI Studio REST API when running without a backend
  */
-async function callGoogleGeminiDirect(apiKey, base64Data, mimeType) {
+async function callGoogleGeminiDirect(apiKey, base64Data, mimeType, signal) {
   const tryGenerate = async (model) => {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     return fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      signal,
       body: JSON.stringify({
         contents: [
           {
