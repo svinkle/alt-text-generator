@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, Code, FileText, Sparkles, Cpu, Zap, Edit3 } from 'lucide-react';
+import { Copy, Check, Code, FileText, Sparkles, Cpu, Edit3 } from 'lucide-react';
 import { copyToClipboard } from '../utils/copyToClipboard';
 
 function escapeHtmlAttr(str) {
@@ -45,19 +45,10 @@ export default function OutputSnippet({
           </h2>
         </div>
 
-        {engineUsed && (
+        {engineUsed === 'on-device' && (
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border-2 border-ink text-xs font-bold shadow-brutal-sm">
-            {engineUsed === 'on-device' ? (
-              <>
-                <Cpu className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
-                <span>Generated On-Device (0 Network Latency)</span>
-              </>
-            ) : (
-              <>
-                <Zap className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
-                <span>Generated via Cloud Edge Fallback</span>
-              </>
-            )}
+            <Cpu className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
+            <span>Generated On-Device (0 Network Latency)</span>
           </div>
         )}
       </div>

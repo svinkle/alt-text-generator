@@ -10,9 +10,9 @@
   <a href="https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml"><img src="https://img.shields.io/badge/Deploy%20to%20Firebase-passing-0284C7?logo=firebase&logoColor=white" alt="Deploy to Firebase" /></a>
 </p>
 
-> Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
+Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
 
-🌐 **Live Demo:** [https://alt-text-generator.scottvinkle.com/](https://alt-text-generator.scottvinkle.com/)
+🌐 **Live Demo:** [alt-text-generator.scottvinkle.com](https://alt-text-generator.scottvinkle.com/)
 
 ---
 
@@ -21,9 +21,6 @@
 - **Two-Tier Progressive AI Architecture:**
   - **Tier 1 (On-Device via Chrome Built-in AI / Gemini Nano):** Checks for `window.LanguageModel` or `window.ai.languageModel`. Executes locally on your device with **zero server cost**, zero network token latency, and 100% client-side privacy.
   - **Tier 2 (Serverless Fallback via Gemini 3.x Flash):** When on-device AI is unsupported (Safari, Firefox, unsupported mobile, or disabled flags), requests route seamlessly to `/api/generate-alt` served by a Firebase Cloud Function.
-- **Neo-Brutalist & Tactile Aesthetic:**
-  - High-contrast retro palette: Soft cream (`#FBF8F1`), deep dark ink (`#1E1B18`), vibrant violet (`#7C3AED`), electric mint (`#10B981`), and warm amber (`#F59E0B`).
-  - Tactile buttons with hard offset shadows (`4px 4px 0px 0px #1E1B18`) shifting dynamically on active press.
 - **Strict WCAG 2.2 Accessibility:**
   - **5px Dotted Focus Rings:** Every interactive element features high-visibility outline: `focus-visible:outline-[5px] focus-visible:outline-dotted focus-visible:outline-violet-600 focus-visible:outline-offset-4`.
   - Accessible file dropzone with keyboard activation (`Enter` / `Space`).

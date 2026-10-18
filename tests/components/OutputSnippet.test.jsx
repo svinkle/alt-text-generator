@@ -30,7 +30,7 @@ describe('OutputSnippet', () => {
     expect(screen.getByText(/Generated On-Device/i)).toBeInTheDocument();
   });
 
-  it('renders cloud engine badge when engineUsed is cloud-fallback', () => {
+  it('does not render cloud fallback banner when engineUsed is cloud-fallback', () => {
     render(
       <OutputSnippet
         altText="Description"
@@ -39,7 +39,7 @@ describe('OutputSnippet', () => {
         onAltTextChange={vi.fn()}
       />
     );
-    expect(screen.getByText(/Generated via Cloud Edge Fallback/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Generated via Cloud Edge Fallback/i)).not.toBeInTheDocument();
   });
 
   it('copies raw alt text to clipboard and shows Copied! state', async () => {
