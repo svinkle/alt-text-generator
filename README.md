@@ -5,11 +5,9 @@
 </p>
 
 <p align="center">
-
-[![Release](https://img.shields.io/badge/release-v1.0.0-7C3AED?style=flat)](https://github.com/svinkle/alt-text-generator/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-10B981.svg)](LICENSE)
-[![Deploy to Firebase](https://img.shields.io/badge/Deploy%20to%20Firebase-passing-0284C7?logo=firebase&logoColor=white)](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml)
-
+  <a href="https://github.com/svinkle/alt-text-generator/releases"><img src="https://img.shields.io/badge/release-v1.0.0-7C3AED?style=flat" alt="Release" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-10B981.svg" alt="License: MIT" /></a>
+  <a href="https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml"><img src="https://img.shields.io/badge/Deploy%20to%20Firebase-passing-0284C7?logo=firebase&logoColor=white" alt="Deploy to Firebase" /></a>
 </p>
 
 > Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
