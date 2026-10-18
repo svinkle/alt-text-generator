@@ -1,10 +1,16 @@
 # Alt Text Generator
 
-<img src="public/favicon.svg" alt="Alt Text Generator logo" width="64" height="64" />
+<p align="center">
+  <img src="public/favicon.svg" alt="Alt Text Generator logo" width="64" height="64" />
+</p>
+
+<p align="center">
 
 [![Release](https://img.shields.io/badge/release-v1.0.0-7C3AED?style=flat)](https://github.com/svinkle/alt-text-generator/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-10B981.svg)](LICENSE)
-[![Deploy to Firebase](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml)
+[![Deploy to Firebase](https://img.shields.io/badge/Deploy%20to%20Firebase-passing-0284C7?logo=firebase&logoColor=white)](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml)
+
+</p>
 
 > Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
 
@@ -92,10 +98,12 @@
 ## 🚀 Getting Started
 
 ### 1. Prerequisites
+
 - [Node.js](https://nodejs.org/) v20+
 - (Optional) A Google AI Studio API Key from [aistudio.google.com](https://aistudio.google.com/) for cloud fallback inference.
 
 ### 2. Installation
+
 ```bash
 # Clone the repository
 git clone https://github.com/svinkle/alt-text-generator.git
@@ -106,6 +114,7 @@ npm install
 ```
 
 ### 3. Local Development
+
 ```bash
 # Start frontend dev server on http://localhost:3000
 npm run dev
@@ -135,13 +144,14 @@ npm run test:e2e
 ## 🔬 Enabling Chrome Built-in AI (Gemini Nano)
 
 To test Tier 1 on-device execution in Google Chrome:
+
 1. Open Chrome (v128+ or Chrome Canary).
 2. Navigate to `chrome://flags/#prompt-api-for-gemini-nano` and set to **Enabled**.
 3. Navigate to `chrome://flags/#optimization-guide-on-device-model` and set to **Enabled BypassPerfRequirement**.
 4. Restart Chrome and open `chrome://components`.
 5. Check for **Optimization Guide On Device Model** and ensure it has downloaded.
 
-When supported, the header badge will indicate:  
+When supported, the header badge will indicate:
 `🟢 Engine: On-Device (Gemini Nano)`
 
 ---
@@ -158,6 +168,7 @@ When supported, the header badge will indicate:
 ## 🤝 Contributing
 
 Contributions, bug reports, and feature requests are welcome!
+
 1. Fork the repository.
 2. Create your feature branch (`git checkout -b feature/amazing-feature`).
 3. Commit your changes (`git commit -m 'feat: add amazing feature'`).
