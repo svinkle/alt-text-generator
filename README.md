@@ -2,7 +2,11 @@
 
 > Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
 
+[![Release](https://img.shields.io/badge/release-v1.0.0-7C3AED?style=flat)](https://github.com/svinkle/alt-text-generator/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-10B981.svg)](LICENSE)
 [![Deploy to Firebase](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml)
+
+🌐 **Live Demo:** [https://alt-text-generator.scottvinkle.com/](https://alt-text-generator.scottvinkle.com/)
 
 ---
 
@@ -87,18 +91,16 @@
 
 ### 1. Prerequisites
 - [Node.js](https://nodejs.org/) v20+
-- [Firebase CLI](https://firebase.google.com/docs/cli) (`npm install -g firebase-tools`)
-- A Google AI Studio API Key (free tier available at [aistudio.google.com](https://aistudio.google.com/))
+- (Optional) A Google AI Studio API Key from [aistudio.google.com](https://aistudio.google.com/) for cloud fallback inference.
 
-### 2. Install Dependencies
+### 2. Installation
 ```bash
-# Install frontend dependencies
-npm install
+# Clone the repository
+git clone https://github.com/svinkle/alt-text-generator.git
+cd alt-text-generator
 
-# Install Cloud Functions dependencies
-cd functions
+# Install dependencies
 npm install
-cd ..
 ```
 
 ### 3. Local Development
@@ -107,14 +109,28 @@ cd ..
 npm run dev
 ```
 
-To run both Firebase Functions and Hosting emulators locally:
+> **Note:** The local Vite development server includes a built-in mock/proxy handler for `/api/generate-alt`. You can also configure a `GEMINI_API_KEY` in a local `.env` file or use the built-in demo images without an API key.
+
+---
+
+## 🧪 Testing
+
+The repository maintains an automated test suite with 100% line coverage and end-to-end browser tests.
+
 ```bash
-firebase emulators:start
+# Run structural verification and unit/component tests with coverage
+npm test
+
+# Run unit tests only
+npm run test:unit
+
+# Run Playwright end-to-end tests
+npm run test:e2e
 ```
 
 ---
 
-## 🧪 Enabling Chrome Built-in AI (Gemini Nano)
+## 🔬 Enabling Chrome Built-in AI (Gemini Nano)
 
 To test Tier 1 on-device execution in Google Chrome:
 1. Open Chrome (v128+ or Chrome Canary).
@@ -128,46 +144,27 @@ When supported, the header badge will indicate:
 
 ---
 
-## 🚢 Firebase Deployment
-
-### 1. Login & Select Project
-```bash
-firebase login
-firebase use alt-text-generator-app
-```
-
-### 2. Configure Gemini API Secret
-Set the `GEMINI_API_KEY` secret for Cloud Functions:
-```bash
-firebase functions:secrets:set GEMINI_API_KEY
-```
-When prompted, paste your Google AI Studio API key.
-
-### 3. Build & Deploy
-```bash
-# Build the production frontend bundle
-npm run build
-
-# Deploy Hosting and Functions
-firebase deploy
-```
-
----
-
-## 🤖 Continuous Deployment (GitHub Actions)
-
-A GitHub Actions workflow is preconfigured in `.github/workflows/firebase-deploy.yml`:
-1. In your GitHub repository settings, go to **Settings > Secrets and variables > Actions**.
-2. Add the following repository secrets:
-   - `FIREBASE_TOKEN`: Generated using `firebase login:ci`.
-   - `FIREBASE_PROJECT_ID`: Your Firebase project ID (e.g. `alt-text-generator-app`).
-   - `FIREBASE_SERVICE_ACCOUNT` (optional for PR preview channels): The JSON key for your Firebase Service Account.
-3. Every push to `main` will build the bundle and deploy the latest version to Firebase.
-
----
-
 ## ♿ WCAG Compliance Notes
 
-- **Success Criterion 1.1.1 (Non-text Content):** Provides concise text alternatives that serve the equivalent purpose without boilerplate or fluff.
-- **Success Criterion 2.4.7 (Focus Visible):** Exceeds minimum contrast and sizing by delivering a bold 5px dotted outline on keyboard focus.
-- **Success Criterion 4.1.2 (Name, Role, Value):** Custom drag-and-drop container correctly exposes file input roles, drag states, and accessible names.
+- **Success Criterion 1.1.1 (Non-text Content):** Generates concise text alternatives that serve the equivalent purpose without boilerplate phrases like "image of".
+- **Success Criterion 2.4.1 (Bypass Blocks):** Features a dedicated "Skip to main content" link to bypass repetitive header navigation via keyboard.
+- **Success Criterion 2.4.7 (Focus Visible):** Exceeds minimum contrast and sizing with a high-contrast 5px dotted outline (`#7C3AED`) on all interactive controls.
+- **Success Criterion 4.1.2 (Name, Role, Value):** Custom drag-and-drop container and tabs expose standard ARIA roles, live regions (`aria-live="polite"`), and keyboard controls (`Space` / `Enter`).
+
+---
+
+## 🤝 Contributing
+
+Contributions, bug reports, and feature requests are welcome!
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/amazing-feature`).
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`).
+4. Ensure all tests and coverage checks pass (`npm test && npm run test:e2e`).
+5. Push to the branch (`git push origin feature/amazing-feature`).
+6. Open a Pull Request.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
