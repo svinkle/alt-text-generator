@@ -77,7 +77,7 @@ describe('App Component', () => {
     await act(async () => {
       fireEvent.click(generateBtn);
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Remove selected image' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
   });
 
   it('loads team demo image on successful fetch and generates alt text via cloud-fallback engine', async () => {
@@ -197,7 +197,7 @@ describe('App Component', () => {
     expect(screen.getByText('Daniel Moroder')).toBeInTheDocument();
 
     // Remove
-    fireEvent.click(screen.getByRole('button', { name: 'Remove selected image' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(screen.queryByText('Daniel Moroder')).not.toBeInTheDocument();
     expect(global.URL.revokeObjectURL).toHaveBeenCalled();
   });

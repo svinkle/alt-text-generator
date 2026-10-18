@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import FileDropzone from '../../src/components/FileDropzone';
 
 describe('FileDropzone', () => {
@@ -222,8 +222,8 @@ describe('FileDropzone', () => {
     fireEvent.click(teamBtn);
     expect(onLoadSample).toHaveBeenCalledWith('team');
 
-    // Remove file click
-    const removeBtn = screen.getByRole('button', { name: 'Remove selected image' });
+    // Remove file click (labeled Close for demo)
+    const removeBtn = screen.getByRole('button', { name: 'Close' });
     fireEvent.click(removeBtn);
     expect(onFileRemove).toHaveBeenCalled();
 
@@ -231,6 +231,88 @@ describe('FileDropzone', () => {
     const generateBtn = screen.getByRole('button', { name: /Generate Alt Text/i });
     fireEvent.click(generateBtn);
     expect(onSubmit).toHaveBeenCalled();
+  });
+
+  it('restores focus to Mountain Sunrise demo launcher button when Close or Change Image is clicked', () => {
+    vi.useFakeTimers();
+    const onFileRemove = vi.fn();
+    const selectedFile = {
+      name: 'hiker.jpg',
+      source: 'demo',
+      size: 1024,
+      type: 'image/jpeg',
+      attribution: { photographerName: 'Daniel Moroder', profileUrl: 'https://burst.shopify.com/@daniel_moroder' }
+    };
+
+    const { rerender } = render(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={selectedFile}
+        previewUrl="blob:preview"
+        onFileRemove={onFileRemove}
+      />
+    );
+
+    // Switch to demo tab
+    fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
+
+    const natureBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    const closeBtn = screen.getByRole('button', { name: 'Close' });
+
+    fireEvent.click(closeBtn);
+    expect(onFileRemove).toHaveBeenCalled();
+
+    act(() => {
+      vi.runAllTimers();
+    });
+    expect(document.activeElement).toBe(natureBtn);
+
+    // Test Change Image button as well
+    const changeImgBtn = screen.getByRole('button', { name: 'Change Image' });
+    fireEvent.click(changeImgBtn);
+
+    act(() => {
+      vi.runAllTimers();
+    });
+    expect(document.activeElement).toBe(natureBtn);
+
+    vi.useRealTimers();
+  });
+
+  it('restores focus to Team Collaboration demo launcher button when Close is clicked', () => {
+    vi.useFakeTimers();
+    const onFileRemove = vi.fn();
+    const selectedFile = {
+      name: 'boardroom.jpg',
+      source: 'demo',
+      size: 2048,
+      type: 'image/jpeg',
+      attribution: { photographerName: 'Matthew Henry', profileUrl: 'https://burst.shopify.com/@matthew_henry' }
+    };
+
+    render(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={selectedFile}
+        previewUrl="blob:preview"
+        onFileRemove={onFileRemove}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
+
+    const teamBtn = screen.getByRole('button', { name: 'Load Team Collaboration demo image' });
+    const closeBtn = screen.getByRole('button', { name: 'Close' });
+
+    fireEvent.click(closeBtn);
+    expect(onFileRemove).toHaveBeenCalled();
+
+    act(() => {
+      vi.runAllTimers();
+    });
+    expect(document.activeElement).toBe(teamBtn);
+
+    vi.useRealTimers();
   });
 
   it('renders loading states when isLoading is true', () => {

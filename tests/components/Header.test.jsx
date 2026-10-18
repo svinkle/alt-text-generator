@@ -17,7 +17,7 @@ describe("Header", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Alt Text Generator" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("WCAG 2.2")).toBeInTheDocument();
+    expect(screen.queryByText("WCAG 2.2")).not.toBeInTheDocument();
     expect(screen.getByText("Cloud Engine")).toBeInTheDocument();
   });
 

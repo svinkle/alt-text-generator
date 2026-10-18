@@ -28,6 +28,8 @@ export default function FileDropzone({
   const [urlInputValue, setUrlInputValue] = useState('');
   const [urlInputError, setUrlInputError] = useState('');
   const fileInputRef = useRef(null);
+  const natureBtnRef = useRef(null);
+  const teamBtnRef = useRef(null);
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -138,6 +140,26 @@ export default function FileDropzone({
         selectedFile?.attribution?.photographerName?.includes('Matthew'))
   );
 
+  const handleRemove = () => {
+    const wasNature = isNatureActive;
+    const wasTeam = isTeamActive;
+    const isDemo = isDemoLoaded || activeTab === 'demo';
+
+    if (onFileRemove) {
+      onFileRemove();
+    }
+
+    if (isDemo) {
+      setTimeout(() => {
+        if (wasTeam && teamBtnRef.current) {
+          teamBtnRef.current.focus();
+        } else if (natureBtnRef.current) {
+          natureBtnRef.current.focus();
+        }
+      }, 0);
+    }
+  };
+
   const renderPreviewCard = () => {
     if (!selectedFile) return null;
     return (
@@ -210,11 +232,11 @@ export default function FileDropzone({
 
               <button
                 type="button"
-                onClick={onFileRemove}
+                onClick={handleRemove}
                 disabled={isLoading}
                 className="p-1.5 bg-white border-2 border-ink shadow-brutal-sm hover:bg-rose-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
-                aria-label="Remove selected image"
-                title="Remove image"
+                aria-label={isDemoLoaded || activeTab === 'demo' ? 'Close' : 'Remove selected image'}
+                title={isDemoLoaded || activeTab === 'demo' ? 'Close' : 'Remove image'}
               >
                 <X className="w-5 h-5 text-ink" aria-hidden="true" />
               </button>
@@ -236,7 +258,7 @@ export default function FileDropzone({
             <div className="pt-2 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={onFileRemove}
+                onClick={handleRemove}
                 disabled={isLoading}
                 className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white border-2 border-ink shadow-brutal-sm hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring"
               >
@@ -529,6 +551,7 @@ export default function FileDropzone({
                     </p>
                   </div>
                   <button
+                    ref={natureBtnRef}
                     type="button"
                     onClick={() => onLoadSample && onLoadSample('nature')}
                     disabled={isLoading}
@@ -571,6 +594,7 @@ export default function FileDropzone({
                     </p>
                   </div>
                   <button
+                    ref={teamBtnRef}
                     type="button"
                     onClick={() => onLoadSample && onLoadSample('team')}
                     disabled={isLoading}

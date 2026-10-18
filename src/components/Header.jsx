@@ -84,14 +84,9 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
               <path d="M4 23L11 16L18 23L23 18L28 23" stroke="#FBF8F1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-ink">
-                  Alt Text Generator
-                </h1>
-                <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold bg-amber-200 border-2 border-ink rounded shadow-brutal-sm uppercase tracking-wider">
-                  WCAG 2.2
-                </span>
-              </div>
+              <h1 className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-ink">
+                Alt Text Generator
+              </h1>
               <p className="text-xs sm:text-sm text-ink/75 font-medium mt-0.5">
                 Accessible, objective image descriptions powered by progressive AI
               </p>

@@ -5,10 +5,9 @@ test.describe('UI Components & Layout Verification', () => {
     await page.goto('/');
   });
 
-  test('Header renders with logo, title, and WCAG badge', async ({ page }) => {
+  test('Header renders with logo, title, and tagline', async ({ page }) => {
     const heading = page.getByRole('heading', { level: 1, name: 'Alt Text Generator' });
     await expect(heading).toBeVisible();
-    await expect(page.getByText('WCAG 2.2')).toBeVisible();
     await expect(page.getByText('Accessible, objective image descriptions powered by progressive AI')).toBeVisible();
   });
 
