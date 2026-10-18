@@ -1,10 +1,12 @@
 # Alt Text Generator
 
-> Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
+<img src="public/favicon.svg" alt="Alt Text Generator logo" width="64" height="64" />
 
 [![Release](https://img.shields.io/badge/release-v1.0.0-7C3AED?style=flat)](https://github.com/svinkle/alt-text-generator/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-10B981.svg)](LICENSE)
 [![Deploy to Firebase](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/svinkle/alt-text-generator/actions/workflows/firebase-deploy.yml)
+
+> Accessible, objective image descriptions powered by progressive AI — on-device via Chrome Built-in AI (Gemini Nano) with zero network latency, seamlessly backed by Google Gemini 3.x Flash on Firebase Cloud Functions.
 
 🌐 **Live Demo:** [https://alt-text-generator.scottvinkle.com/](https://alt-text-generator.scottvinkle.com/)
 
