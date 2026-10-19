@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import Header from "../../src/components/Header";
+import Header, { getInitialTheme } from "../../src/components/Header";
 
 describe("Header", () => {
   beforeEach(() => {
@@ -172,4 +172,166 @@ describe("Header", () => {
     // Should not throw even when main landmark is missing
     fireEvent.click(skipLink);
   });
+
+  describe("Dark Mode & Theme Switching", () => {
+    let listeners = [];
+    let matchMediaMatches = false;
+
+    beforeEach(() => {
+      listeners = [];
+      matchMediaMatches = false;
+      document.documentElement.classList.remove("dark");
+      localStorage.clear();
+
+      window.matchMedia = vi.fn().mockImplementation((query) => ({
+        matches: matchMediaMatches,
+        media: query,
+        onchange: null,
+        addListener: vi.fn((fn) => listeners.push(fn)),
+        removeListener: vi.fn((fn) => {
+          listeners = listeners.filter((l) => l !== fn);
+        }),
+        addEventListener: vi.fn((event, fn) => listeners.push(fn)),
+        removeEventListener: vi.fn((event, fn) => {
+          listeners = listeners.filter((l) => l !== fn);
+        }),
+        dispatchEvent: vi.fn(),
+      }));
+    });
+
+    it("defaults to light theme when no saved preference and OS prefers light", () => {
+      matchMediaMatches = false;
+      render(<Header engine="cloud-fallback" />);
+
+      const toggleBtn = screen.getByRole("button", { name: "Switch to dark mode" });
+      expect(toggleBtn).toBeInTheDocument();
+      expect(toggleBtn).toHaveAttribute("aria-pressed", "false");
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
+    });
+
+    it("defaults to dark theme when no saved preference and OS prefers dark", () => {
+      matchMediaMatches = true;
+      render(<Header engine="cloud-fallback" />);
+
+      const toggleBtn = screen.getByRole("button", { name: "Switch to light mode" });
+      expect(toggleBtn).toBeInTheDocument();
+      expect(toggleBtn).toHaveAttribute("aria-pressed", "true");
+      expect(document.documentElement.classList.contains("dark")).toBe(true);
+    });
+
+    it("uses saved preference from localStorage over OS preference", () => {
+      localStorage.setItem("theme", "dark");
+      matchMediaMatches = false; // OS is light, but localStorage is dark
+
+      render(<Header engine="cloud-fallback" />);
+      const toggleBtn = screen.getByRole("button", { name: "Switch to light mode" });
+      expect(toggleBtn).toBeInTheDocument();
+      expect(toggleBtn).toHaveAttribute("aria-pressed", "true");
+      expect(document.documentElement.classList.contains("dark")).toBe(true);
+    });
+
+    it("toggles theme on click, updates documentElement, localStorage, and meta theme-color", () => {
+      matchMediaMatches = false;
+
+      // Create a meta theme-color tag to verify update
+      const metaTag = document.createElement("meta");
+      metaTag.name = "theme-color";
+      metaTag.content = "#7C3AED";
+      document.head.appendChild(metaTag);
+
+      render(<Header engine="cloud-fallback" />);
+
+      const toggleBtn = screen.getByRole("button", { name: "Switch to dark mode" });
+      expect(toggleBtn).toHaveAttribute("aria-pressed", "false");
+      expect(metaTag.getAttribute("content")).toBe("#7C3AED");
+
+      // Switch to dark
+      fireEvent.click(toggleBtn);
+
+      expect(screen.getByRole("button", { name: "Switch to light mode" })).toBeInTheDocument();
+      expect(document.documentElement.classList.contains("dark")).toBe(true);
+      expect(localStorage.getItem("theme")).toBe("dark");
+      expect(metaTag.getAttribute("content")).toBe("#121110");
+
+      // Switch back to light
+      fireEvent.click(screen.getByRole("button", { name: "Switch to light mode" }));
+
+      expect(screen.getByRole("button", { name: "Switch to dark mode" })).toBeInTheDocument();
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
+      expect(localStorage.getItem("theme")).toBe("light");
+      expect(metaTag.getAttribute("content")).toBe("#7C3AED");
+
+      document.head.removeChild(metaTag);
+    });
+
+    it("responds dynamically to OS preference changes when no explicit preference is stored", () => {
+      matchMediaMatches = false;
+      render(<Header engine="cloud-fallback" />);
+
+      expect(screen.getByRole("button", { name: "Switch to dark mode" })).toBeInTheDocument();
+
+      // Simulate OS switching to dark
+      act(() => {
+        listeners.forEach((listener) => listener({ matches: true }));
+      });
+
+      expect(screen.getByRole("button", { name: "Switch to light mode" })).toBeInTheDocument();
+      expect(document.documentElement.classList.contains("dark")).toBe(true);
+
+      // Simulate OS switching to light
+      act(() => {
+        listeners.forEach((listener) => listener({ matches: false }));
+      });
+
+      expect(screen.getByRole("button", { name: "Switch to dark mode" })).toBeInTheDocument();
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
+    });
+
+    it("ignores OS preference changes when an explicit user preference is saved in localStorage", () => {
+      localStorage.setItem("theme", "light");
+      matchMediaMatches = false;
+      render(<Header engine="cloud-fallback" />);
+
+      expect(screen.getByRole("button", { name: "Switch to dark mode" })).toBeInTheDocument();
+
+      // Simulate OS switching to dark
+      act(() => {
+        listeners.forEach((listener) => listener({ matches: true }));
+      });
+
+      // Still in light mode because user explicitly saved 'light'
+      expect(screen.getByRole("button", { name: "Switch to dark mode" })).toBeInTheDocument();
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
+    });
+
+    it("falls back to mediaQuery.addListener and mediaQuery.removeListener when addEventListener is not supported", () => {
+      const addListenerSpy = vi.fn((fn) => listeners.push(fn));
+      const removeListenerSpy = vi.fn((fn) => {
+        listeners = listeners.filter((l) => l !== fn);
+      });
+
+      window.matchMedia = vi.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        addListener: addListenerSpy,
+        removeListener: removeListenerSpy,
+        // No addEventListener or removeEventListener
+      }));
+
+      const { unmount } = render(<Header engine="cloud-fallback" />);
+      expect(addListenerSpy).toHaveBeenCalled();
+
+      unmount();
+      expect(removeListenerSpy).toHaveBeenCalled();
+    });
+
+    it("getInitialTheme returns light when matchMedia is not supported", () => {
+      const originalMatchMedia = window.matchMedia;
+      delete window.matchMedia;
+      expect(getInitialTheme()).toBe("light");
+      window.matchMedia = originalMatchMedia;
+    });
+  });
 });
+
+

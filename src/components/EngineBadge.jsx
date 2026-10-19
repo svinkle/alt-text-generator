@@ -74,50 +74,50 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
       role="dialog"
       aria-modal="true"
       aria-labelledby="engine-modal-title"
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ink/70"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ink/70 dark:bg-black/80"
       onClick={handleCloseModal}
     >
       <div
         ref={modalRef}
-        className="w-full max-w-lg bg-cream border-[3px] border-ink p-6 sm:p-7 shadow-brutal-xl rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg bg-cream dark:bg-[#1E1B18] border-[3px] border-ink dark:border-cream/80 p-6 sm:p-7 shadow-brutal-xl dark:shadow-[8px_8px_0px_0px_#FBF8F1] rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b-2 border-ink mb-4">
-          <h2 id="engine-modal-title" className="text-xl font-display font-extrabold text-ink flex items-center gap-2">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-cream/80 mb-4">
+          <h2 id="engine-modal-title" className="text-xl font-display font-extrabold text-ink dark:text-cream flex items-center gap-2">
             <span>⚡ Two-Tier AI Architecture</span>
           </h2>
           <button
             type="button"
             onClick={handleCloseModal}
-            className="p-1.5 border-2 border-ink bg-white hover:bg-amber-100 focus-ring shadow-brutal-sm transition-all"
+            className="p-1.5 border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#25211E] text-ink dark:text-cream hover:bg-amber-100 dark:hover:bg-amber-950 focus-ring shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] transition-all"
             aria-label="Close dialog"
           >
-            <X className="w-5 h-5 text-ink" />
+            <X className="w-5 h-5 text-ink dark:text-cream" />
           </button>
         </div>
 
-        <div className="space-y-4 text-sm text-ink/90">
-          <div className="p-3.5 border-2 border-ink bg-white shadow-brutal-sm">
-            <div className="flex items-center gap-2 font-bold text-ink mb-1">
-              <span className="inline-block w-3 h-3 rounded-full bg-emerald-500 border border-ink"></span>
+        <div className="space-y-4 text-sm text-ink/90 dark:text-cream/90">
+          <div className="p-3.5 border-2 border-ink dark:border-cream/60 bg-white dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+            <div className="flex items-center gap-2 font-bold text-ink dark:text-cream mb-1">
+              <span className="inline-block w-3 h-3 rounded-full bg-emerald-500 border border-ink dark:border-cream/80"></span>
               <span>Tier 1: On-Device (Chrome Built-in AI)</span>
             </div>
-            <p className="text-xs text-ink/80 leading-relaxed">
-              Leverages the experimental Chrome Prompt API (<code className="bg-amber-100 px-1 py-0.5 border border-ink/40 font-mono text-[11px]">window.LanguageModel</code>) powered by local Gemini Nano. It executes locally on your hardware with <strong>zero server network cost</strong>, complete privacy, and instant processing.
+            <p className="text-xs text-ink/80 dark:text-cream/80 leading-relaxed">
+              Leverages the experimental Chrome Prompt API (<code className="bg-amber-100 dark:bg-amber-950 dark:text-amber-200 px-1 py-0.5 border border-ink/40 dark:border-cream/40 font-mono text-[11px]">window.LanguageModel</code>) powered by local Gemini Nano. It executes locally on your hardware with <strong>zero server network cost</strong>, complete privacy, and instant processing.
             </p>
           </div>
 
-          <div className="p-3.5 border-2 border-ink bg-white shadow-brutal-sm">
-            <div className="flex items-center gap-2 font-bold text-ink mb-1">
-              <span className="inline-block w-3 h-3 rounded-full bg-amber-500 border border-ink"></span>
+          <div className="p-3.5 border-2 border-ink dark:border-cream/60 bg-white dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+            <div className="flex items-center gap-2 font-bold text-ink dark:text-cream mb-1">
+              <span className="inline-block w-3 h-3 rounded-full bg-amber-500 border border-ink dark:border-cream/80"></span>
               <span>Tier 2: Cloud Edge (Serverless Gemini 3.x Flash)</span>
             </div>
-            <p className="text-xs text-ink/80 leading-relaxed">
+            <p className="text-xs text-ink/80 dark:text-cream/80 leading-relaxed">
               When local AI is unsupported (e.g. Safari, Firefox, iOS, non-flagged Chrome), inference seamlessly routes via Firebase Cloud Function to Google AI Studio Gemini 3.x Flash at the edge.
             </p>
           </div>
 
-          <div className="p-3 bg-violet-100 border-2 border-ink text-xs text-ink font-medium">
+          <div className="p-3 bg-violet-100 dark:bg-violet-950/60 border-2 border-ink dark:border-cream/60 text-xs text-ink dark:text-cream font-medium">
             <strong>Current Active State:</strong> {details || 'System automatically selects the optimal engine.'}
           </div>
         </div>
@@ -146,16 +146,16 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
           type="button"
           aria-haspopup="dialog"
           onClick={() => setShowInfoModal(true)}
-          className={`group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border-2 border-ink text-xs sm:text-sm font-bold shadow-brutal-sm hover:shadow-brutal transition-all duration-150 focus-ring cursor-pointer ${
+          className={`group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border-2 border-ink dark:border-cream/80 text-xs sm:text-sm font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] hover:shadow-brutal dark:hover:shadow-[4px_4px_0px_0px_#FBF8F1] transition-all duration-150 focus-ring cursor-pointer ${
             isOnDevice
-              ? 'bg-mint-100 text-ink hover:bg-mint/30'
-              : 'bg-amber-100 text-ink hover:bg-amber/30'
+              ? 'bg-mint-100 dark:bg-emerald-950/80 text-ink dark:text-emerald-200 hover:bg-mint/30 dark:hover:bg-emerald-900/80'
+              : 'bg-amber-100 dark:bg-amber-950/80 text-ink dark:text-amber-200 hover:bg-amber/30 dark:hover:bg-amber-900/80'
           }`}
           aria-label={`${displayLabel}. Click for engine details.`}
         >
         {/* Accessibility audit remediation: [END] */}
           {isOnDevice ? (
-            <span className="flex items-center gap-1.5 text-emerald-800">
+            <span className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
@@ -163,14 +163,14 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
               <Cpu className="w-3.5 h-3.5" aria-hidden="true" />
             </span>
           ) : (
-            <span className="flex items-center gap-1.5 text-amber-900">
-              <Zap className="w-3.5 h-3.5 fill-amber-500 text-amber-700 animate-pulse" aria-hidden="true" />
+            <span className="flex items-center gap-1.5 text-amber-900 dark:text-amber-400">
+              <Zap className="w-3.5 h-3.5 fill-amber-500 text-amber-700 dark:text-amber-300 animate-pulse" aria-hidden="true" />
             </span>
           )}
 
           <span>{displayLabel}</span>
 
-          <Info className="w-3.5 h-3.5 text-ink/70 group-hover:text-ink transition-colors" aria-hidden="true" />
+          <Info className="w-3.5 h-3.5 text-ink/70 dark:text-cream/70 group-hover:text-ink dark:group-hover:text-cream transition-colors" aria-hidden="true" />
         </button>
       </div>
 

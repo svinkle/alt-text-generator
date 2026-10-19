@@ -244,14 +244,17 @@ export default function FileDropzone({
   };
   // Accessibility audit remediation: [END]
 
+  // Accessibility audit remediation: [START]
+  // Dark mode high-contrast styling for preview card and submit controls (WCAG 1.4.3, 1.4.11)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
   const renderPreviewCard = () => {
     if (!selectedFile) return null;
     return (
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row items-center sm:items-start gap-6 p-4 sm:p-5 border-[3px] border-ink bg-cream shadow-brutal">
+        <div className="flex flex-col md:flex-row items-center sm:items-start gap-6 p-4 sm:p-5 border-[3px] border-ink dark:border-cream/80 bg-cream dark:bg-[#25211E] shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1]">
           {/* Thumbnail Preview & Attribution */}
           <div className="w-full md:w-48 flex-shrink-0 flex flex-col gap-2">
-            <div className="w-full h-44 sm:h-40 border-[3px] border-ink bg-white overflow-hidden shadow-brutal-sm relative group">
+            <div className="w-full h-44 sm:h-40 border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] overflow-hidden shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] relative group">
               <img
                 src={previewUrl}
                 alt={`Preview of selected image ${selectedFile.name}`}
@@ -261,13 +264,13 @@ export default function FileDropzone({
             </div>
 
             {selectedFile.attribution && (
-              <div className="text-[11px] text-ink/80 font-medium leading-tight p-2 bg-white border-2 border-ink shadow-brutal-sm">
+              <div className="text-[11px] text-ink/80 dark:text-cream/80 font-medium leading-tight p-2 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
                 <span>Photo by </span>
                 <a
                   href={selectedFile.attribution.photographerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                  className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
                 >
                   {selectedFile.attribution.photographerName}
                 </a>
@@ -276,7 +279,7 @@ export default function FileDropzone({
                   href={selectedFile.attribution.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+                  className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
                 >
                   {selectedFile.attribution.sourceName}
                 </a>
@@ -289,27 +292,27 @@ export default function FileDropzone({
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink shadow-brutal-sm">
+                  <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
                     Ready to Analyze
                   </span>
                   {selectedFile.isDemo || selectedFile.attribution ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink shadow-brutal-sm">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
                       <Sparkles className="w-3 h-3" aria-hidden="true" />
                       <span>Demo Sample</span>
                     </span>
                   ) : selectedFile.isUrl ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink shadow-brutal-sm">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
                       <Globe className="w-3 h-3" aria-hidden="true" />
                       <span>Web URL</span>
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-violet-100 text-ink border-2 border-ink shadow-brutal-sm">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-violet-100 dark:bg-violet-950 dark:text-violet-200 text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
                       <FileImage className="w-3 h-3" aria-hidden="true" />
                       <span>Local File</span>
                     </span>
                   )}
                 </div>
-                <h3 className="text-lg sm:text-xl font-display font-bold text-ink break-all">
+                <h3 className="text-lg sm:text-xl font-display font-bold text-ink dark:text-cream break-all">
                   {selectedFile.name}
                 </h3>
               </div>
@@ -322,24 +325,24 @@ export default function FileDropzone({
                 type="button"
                 onClick={handleRemove}
                 disabled={isLoading}
-                className="p-1.5 bg-white border-2 border-ink shadow-brutal-sm hover:bg-rose-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
+                className="p-1.5 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] hover:bg-rose-100 dark:hover:bg-rose-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
                 aria-label={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove selected image'}
               >
-                <X className="w-5 h-5 text-ink" aria-hidden="true" />
+                <X className="w-5 h-5 text-ink dark:text-cream" aria-hidden="true" />
               </button>
               {/* Accessibility audit remediation: [END] */}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono text-ink/80 pt-1">
-              <div className="bg-white border-2 border-ink p-2 shadow-brutal-sm">
-                <span className="font-sans text-[11px] block font-bold text-ink/60">SIZE</span>
-                <span className="font-bold">
+            <div className="grid grid-cols-2 gap-2 text-xs font-mono text-ink/80 dark:text-cream/80 pt-1">
+              <div className="bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+                <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">SIZE</span>
+                <span className="font-bold text-ink dark:text-cream">
                   {selectedFile.size ? formatFileSize(selectedFile.size) : 'Web Image'}
                 </span>
               </div>
-              <div className="bg-white border-2 border-ink p-2 shadow-brutal-sm">
-                <span className="font-sans text-[11px] block font-bold text-ink/60">TYPE</span>
-                <span className="font-bold">{selectedFile.type || 'image/jpeg'}</span>
+              <div className="bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+                <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">TYPE</span>
+                <span className="font-bold text-ink dark:text-cream">{selectedFile.type || 'image/jpeg'}</span>
               </div>
             </div>
 
@@ -348,7 +351,7 @@ export default function FileDropzone({
                 type="button"
                 onClick={handleRemove}
                 disabled={isLoading}
-                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white border-2 border-ink shadow-brutal-sm hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring"
+                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] hover:bg-amber-100 dark:hover:bg-amber-950 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring text-ink dark:text-cream"
               >
                 <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Change Image</span>
@@ -363,10 +366,10 @@ export default function FileDropzone({
             type="button"
             onClick={onSubmit}
             disabled={isLoading}
-            className={`w-full sm:w-auto px-8 py-3.5 text-base sm:text-lg font-display font-extrabold text-white border-[3px] border-ink transition-all duration-150 focus-ring flex items-center justify-center gap-3 ${
+            className={`w-full sm:w-auto px-8 py-3.5 text-base sm:text-lg font-display font-extrabold text-white border-[3px] border-ink dark:border-cream/80 transition-all duration-150 focus-ring flex items-center justify-center gap-3 ${
               isLoading
                 ? 'bg-violet-400 cursor-not-allowed opacity-80'
-                : 'bg-violet-600 hover:bg-violet-700 shadow-brutal hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm cursor-pointer'
+                : 'bg-violet-600 hover:bg-violet-700 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] dark:hover:shadow-[5px_5px_0px_0px_#FBF8F1] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm dark:active:shadow-none cursor-pointer'
             }`}
           >
             {isLoading ? (
@@ -383,7 +386,7 @@ export default function FileDropzone({
           </button>
 
           {isLoading && (
-            <span className="text-xs sm:text-sm font-medium text-ink/80 animate-pulse">
+            <span className="text-xs sm:text-sm font-medium text-ink/80 dark:text-cream/80 animate-pulse">
               Applying WCAG digital accessibility standards...
             </span>
           )}
@@ -391,6 +394,7 @@ export default function FileDropzone({
       </div>
     );
   };
+  // Accessibility audit remediation: [END]
 
   return (
     <section aria-labelledby="upload-section-title" className="w-full">
@@ -423,7 +427,7 @@ export default function FileDropzone({
           role="tablist"
           aria-label="Image source options"
           onKeyDown={handleTabKeyDown}
-          className="flex flex-wrap border-b-2 border-ink mb-6 gap-1.5 sm:gap-2"
+          className="flex flex-wrap border-b-2 border-ink dark:border-cream/80 mb-6 gap-1.5 sm:gap-2"
         >
           <button
             type="button"
@@ -437,10 +441,10 @@ export default function FileDropzone({
               setUrlInputError('');
               setUploadError('');
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-cream/80 -mb-[2px] transition-all focus-ring ${
               activeTab === 'upload'
-                ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
-                : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
+                ? 'bg-cream dark:bg-[#25211E] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#25211E] shadow-none'
+                : 'bg-white dark:bg-[#1E1B18] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#25211E]/50'
             }`}
           >
             <UploadCloud className="w-4 h-4" aria-hidden="true" />
@@ -462,10 +466,10 @@ export default function FileDropzone({
               setUrlInputError('');
               setUploadError('');
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-cream/80 -mb-[2px] transition-all focus-ring ${
               activeTab === 'url'
-                ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
-                : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
+                ? 'bg-cream dark:bg-[#25211E] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#25211E] shadow-none'
+                : 'bg-white dark:bg-[#1E1B18] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#25211E]/50'
             }`}
           >
             <LinkIcon className="w-4 h-4" aria-hidden="true" />
@@ -487,10 +491,10 @@ export default function FileDropzone({
               setUrlInputError('');
               setUploadError('');
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-cream/80 -mb-[2px] transition-all focus-ring ${
               activeTab === 'demo'
-                ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
-                : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
+                ? 'bg-cream dark:bg-[#25211E] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#25211E] shadow-none'
+                : 'bg-white dark:bg-[#1E1B18] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#25211E]/50'
             }`}
           >
             <Sparkles className="w-4 h-4" aria-hidden="true" />
@@ -526,31 +530,31 @@ export default function FileDropzone({
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  className={`cursor-pointer border-[3px] border-dashed border-ink p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
+                  className={`cursor-pointer border-[3px] border-dashed border-ink dark:border-cream/60 p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
                     isDragOver
-                      ? 'bg-amber-100 border-violet-600 scale-[0.99]'
-                      : 'bg-cream hover:bg-violet-50'
+                      ? 'bg-amber-100 dark:bg-amber-950/40 border-violet-600 dark:border-violet-400 scale-[0.99]'
+                      : 'bg-cream dark:bg-[#25211E] hover:bg-violet-50 dark:hover:bg-[#2e2925]'
                   }`}
                 >
-                  <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink shadow-brutal flex items-center justify-center mb-5">
+                  <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink dark:border-cream/80 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] flex items-center justify-center mb-5">
                     <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11" aria-hidden="true" />
                   </div>
 
                   {/* Accessibility audit remediation: [START]
                       Semantic h3 heading for Upload tabpanel title (WCAG 1.3.1 Info and Relationships)
                       2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
-                  <h3 className="block text-xl sm:text-2xl font-display font-bold text-ink mb-2">
+                  <h3 className="block text-xl sm:text-2xl font-display font-bold text-ink dark:text-cream mb-2">
                     Drag & Drop Image Here
                   </h3>
                   {/* Accessibility audit remediation: [END] */}
 
-                  <span className="block text-sm sm:text-base text-ink/80 mb-4 font-medium">
-                    or <span className="underline decoration-2 decoration-violet-600 font-bold text-violet-700">browse files</span> from your device
+                  <span className="block text-sm sm:text-base text-ink/80 dark:text-cream/80 mb-4 font-medium">
+                    or <span className="underline decoration-2 decoration-violet-600 dark:decoration-violet-400 font-bold text-violet-700 dark:text-violet-400">browse files</span> from your device
                   </span>
 
                   <div
                     id="file-upload-help"
-                    className="inline-flex items-center gap-2 px-3 py-1 bg-white border-2 border-ink text-xs font-bold text-ink/70 shadow-brutal-sm"
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/60 text-xs font-bold text-ink/70 dark:text-cream/70 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]"
                   >
                     <span>PNG, JPEG, or WEBP up to 10MB</span>
                   </div>
@@ -560,7 +564,7 @@ export default function FileDropzone({
                   <p
                     id="file-upload-error"
                     role="alert"
-                    className="text-xs font-bold text-rose-700 bg-rose-50 border-2 border-rose-600 p-2"
+                    className="text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 border-2 border-rose-600 dark:border-rose-400 p-2"
                   >
                     {uploadError}
                   </p>
@@ -577,7 +581,7 @@ export default function FileDropzone({
             role="tabpanel"
             id="panel-url"
             aria-labelledby="tab-url"
-            className="p-6 sm:p-8 border-[3px] border-dashed border-ink bg-cream"
+            className="p-6 sm:p-8 border-[3px] border-dashed border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E]"
           >
             {isUrlLoaded && selectedFile ? (
               renderPreviewCard()
@@ -587,12 +591,12 @@ export default function FileDropzone({
                  2026-10-19, Scott Vinkle <scott@scottvinkle.com> */
               <form noValidate onSubmit={handleUrlFormSubmit} className="space-y-4 max-w-2xl mx-auto">
                 <div className="text-center sm:text-left space-y-1">
-                  <h3 className="text-base sm:text-lg font-display font-bold text-ink">
+                  <h3 className="text-base sm:text-lg font-display font-bold text-ink dark:text-cream">
                     <label htmlFor="image-url-input" className="block cursor-pointer">
                       Enter Image URL
                     </label>
                   </h3>
-                  <p id="image-url-hint" className="text-xs sm:text-sm text-ink/75 font-medium">
+                  <p id="image-url-hint" className="text-xs sm:text-sm text-ink/75 dark:text-cream/75 font-medium">
                     Paste a direct link to any public image on the web (JPEG, PNG, or WebP).
                   </p>
                 </div>
@@ -611,7 +615,7 @@ export default function FileDropzone({
                     required
                     aria-invalid={Boolean(urlInputError)}
                     aria-describedby={urlInputError ? 'image-url-hint image-url-error' : 'image-url-hint'}
-                    className="flex-1 p-3 border-2 border-ink bg-white font-mono text-sm text-ink placeholder:text-ink/40 shadow-brutal-sm focus-ring"
+                    className="flex-1 p-3 border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] font-mono text-sm text-ink dark:text-cream placeholder:text-ink/40 dark:placeholder:text-cream/40 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] focus-ring"
                   />
 
                   <button
@@ -629,7 +633,7 @@ export default function FileDropzone({
                   <p
                     id="image-url-error"
                     role="alert"
-                    className="text-xs font-bold text-rose-700 bg-rose-50 border-2 border-rose-600 p-2"
+                    className="text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 border-2 border-rose-600 dark:border-rose-400 p-2"
                   >
                     {urlInputError}
                   </p>
@@ -646,14 +650,14 @@ export default function FileDropzone({
             role="tabpanel"
             id="panel-demo"
             aria-labelledby="tab-demo"
-            className="p-6 sm:p-8 border-[3px] border-dashed border-ink bg-cream space-y-6"
+            className="p-6 sm:p-8 border-[3px] border-dashed border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] space-y-6"
           >
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center">
-                <h3 className="text-xl sm:text-2xl font-display font-bold text-ink mb-1">
+                <h3 className="text-xl sm:text-2xl font-display font-bold text-ink dark:text-cream mb-1">
                   Try a Demo Image
                 </h3>
-                <p className="text-sm sm:text-base text-ink/80 font-medium">
+                <p className="text-sm sm:text-base text-ink/80 dark:text-cream/80 font-medium">
                   Select one of the sample images below to test instant WCAG 2.2-compliant alt text generation without uploading your own file.
                 </p>
               </div>
@@ -661,12 +665,12 @@ export default function FileDropzone({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Demo Card 1: Mountain Sunrise */}
                 <div
-                  className={`border-[3px] border-ink bg-white p-4 shadow-brutal flex flex-col justify-between transition-all ${
-                    isNatureActive ? 'ring-2 ring-violet-600 bg-amber-50/50' : ''
+                  className={`border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] p-4 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] flex flex-col justify-between transition-all ${
+                    isNatureActive ? 'ring-2 ring-violet-600 dark:ring-violet-400 bg-amber-50/50 dark:bg-amber-950/20' : ''
                   }`}
                 >
                   <div>
-                    <div className="h-32 sm:h-36 w-full border-2 border-ink mb-3 overflow-hidden bg-amber-50 relative">
+                    <div className="h-32 sm:h-36 w-full border-2 border-ink dark:border-cream/80 mb-3 overflow-hidden bg-amber-50 dark:bg-[#25211E] relative">
                       <img
                         src="https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=600&format=pjpg&exif=0&iptc=0"
                         alt="Mountain Sunrise preview"
@@ -679,10 +683,10 @@ export default function FileDropzone({
                         </span>
                       )}
                     </div>
-                    <h4 className="font-display font-bold text-base text-ink">
+                    <h4 className="font-display font-bold text-base text-ink dark:text-cream">
                       Mountain Sunrise
                     </h4>
-                    <p className="text-xs text-ink/70 font-medium mt-0.5 mb-3">
+                    <p className="text-xs text-ink/70 dark:text-cream/70 font-medium mt-0.5 mb-3">
                       Hiker on summit with mountain sunrise view
                     </p>
                   </div>
@@ -704,12 +708,12 @@ export default function FileDropzone({
 
                 {/* Demo Card 2: Team Collaboration */}
                 <div
-                  className={`border-[3px] border-ink bg-white p-4 shadow-brutal flex flex-col justify-between transition-all ${
-                    isTeamActive ? 'ring-2 ring-violet-600 bg-mint-50/50' : ''
+                  className={`border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] p-4 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] flex flex-col justify-between transition-all ${
+                    isTeamActive ? 'ring-2 ring-violet-600 dark:ring-violet-400 bg-mint-50/50 dark:bg-emerald-950/20' : ''
                   }`}
                 >
                   <div>
-                    <div className="h-32 sm:h-36 w-full border-2 border-ink mb-3 overflow-hidden bg-mint-50 relative">
+                    <div className="h-32 sm:h-36 w-full border-2 border-ink dark:border-cream/80 mb-3 overflow-hidden bg-mint-50 dark:bg-[#25211E] relative">
                       <img
                         src="https://burst.shopifycdn.com/photos/business-team-meeting-boardroom.jpg?width=600&format=pjpg&exif=0&iptc=0"
                         alt="Team Collaboration preview"
@@ -722,10 +726,10 @@ export default function FileDropzone({
                         </span>
                       )}
                     </div>
-                    <h4 className="font-display font-bold text-base text-ink">
+                    <h4 className="font-display font-bold text-base text-ink dark:text-cream">
                       Team Collaboration
                     </h4>
-                    <p className="text-xs text-ink/70 font-medium mt-0.5 mb-3">
+                    <p className="text-xs text-ink/70 dark:text-cream/70 font-medium mt-0.5 mb-3">
                       Colleagues discussing ideas in a conference room
                     </p>
                   </div>

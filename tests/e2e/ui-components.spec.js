@@ -58,4 +58,36 @@ test.describe('UI Components & Layout Verification', () => {
     await expect(page.getByText('2. No Redundant Phrases')).toBeVisible();
     await expect(page.getByText('3. Transcribes Text')).toBeVisible();
   });
+
+  test('Theme toggle button defaults to OS settings, toggles dark mode class on html, and persists preference', async ({ page }) => {
+    const html = page.locator('html');
+    const toggleBtn = page.getByRole('button', { name: /Switch to (light|dark) mode/i });
+    await expect(toggleBtn).toBeVisible();
+
+    const initialLabel = await toggleBtn.getAttribute('aria-label');
+    const isInitiallyDark = initialLabel === 'Switch to light mode';
+
+    if (isInitiallyDark) {
+      await expect(html).toHaveClass(/dark/);
+      await expect(toggleBtn).toHaveAttribute('aria-pressed', 'true');
+      await toggleBtn.click();
+      await expect(html).not.toHaveClass(/dark/);
+      await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to dark mode');
+      await expect(toggleBtn).toHaveAttribute('aria-pressed', 'false');
+      await toggleBtn.click();
+      await expect(html).toHaveClass(/dark/);
+      await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to light mode');
+    } else {
+      await expect(html).not.toHaveClass(/dark/);
+      await expect(toggleBtn).toHaveAttribute('aria-pressed', 'false');
+      await toggleBtn.click();
+      await expect(html).toHaveClass(/dark/);
+      await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to light mode');
+      await expect(toggleBtn).toHaveAttribute('aria-pressed', 'true');
+      await toggleBtn.click();
+      await expect(html).not.toHaveClass(/dark/);
+      await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to dark mode');
+    }
+  });
 });
+

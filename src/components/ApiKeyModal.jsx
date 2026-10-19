@@ -98,36 +98,36 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="api-key-modal-title"
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ink/70"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ink/70 dark:bg-black/80"
       onClick={onClose}
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md bg-cream border-[3px] border-ink p-6 shadow-brutal-xl rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-md bg-cream dark:bg-[#1E1B18] border-[3px] border-ink dark:border-cream/80 p-6 shadow-brutal-xl dark:shadow-[8px_8px_0px_0px_#FBF8F1] rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b-2 border-ink mb-4">
-          <h2 id="api-key-modal-title" className="text-xl font-display font-extrabold text-ink flex items-center gap-2">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-cream/80 mb-4">
+          <h2 id="api-key-modal-title" className="text-xl font-display font-extrabold text-ink dark:text-cream flex items-center gap-2">
             <Key className="w-5 h-5 text-amber-500" aria-hidden="true" />
             <span>Gemini API Key</span>
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 border-2 border-ink bg-white hover:bg-amber-100 focus-ring shadow-brutal-sm transition-all"
+            className="p-1.5 border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#25211E] text-ink dark:text-cream hover:bg-amber-100 dark:hover:bg-amber-950 focus-ring shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] transition-all"
             aria-label="Close dialog"
           >
-            <X className="w-5 h-5 text-ink" />
+            <X className="w-5 h-5 text-ink dark:text-cream" />
           </button>
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
-          <p className="text-xs sm:text-sm text-ink/85 font-medium leading-relaxed">
+          <p className="text-xs sm:text-sm text-ink/85 dark:text-cream/85 font-medium leading-relaxed">
             Provide a Google AI Studio API key for live Gemini 3.x Flash inference during local development or preview mode.
           </p>
 
           <div>
-            <label htmlFor="gemini-key-input" className="block text-xs font-bold uppercase tracking-wider text-ink mb-1">
+            <label htmlFor="gemini-key-input" className="block text-xs font-bold uppercase tracking-wider text-ink dark:text-cream mb-1">
               Google AI Studio Key
             </label>
             <input
@@ -136,17 +136,17 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="AIzaSy..."
-              className="w-full p-3 font-mono text-xs sm:text-sm bg-white border-2 border-ink shadow-brutal-sm focus-ring"
+              className="w-full p-3 font-mono text-xs sm:text-sm bg-white dark:bg-[#25211E] border-2 border-ink dark:border-cream/80 text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] focus-ring"
             />
           </div>
 
-          <div className="p-3 bg-white border-2 border-ink text-xs text-ink/80 flex items-center justify-between shadow-brutal-sm">
+          <div className="p-3 bg-white dark:bg-[#25211E] border-2 border-ink dark:border-cream/60 text-xs text-ink/80 dark:text-cream/80 flex items-center justify-between shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
             <span>Don't have a key yet?</span>
             <a
               href="https://aistudio.google.com/app/apikey"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold underline text-violet-700 hover:text-violet-900 inline-flex items-center gap-1 focus-ring"
+              className="font-bold underline text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 inline-flex items-center gap-1 focus-ring"
             >
               <span>Get Free Key</span>
               <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
@@ -158,7 +158,7 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
               <button
                 type="button"
                 onClick={handleClear}
-                className="px-3 py-2 text-xs font-bold text-rose-700 bg-rose-50 border-2 border-rose-600 shadow-brutal-sm hover:bg-rose-100 focus-ring flex items-center gap-1.5"
+                className="px-3 py-2 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 border-2 border-rose-600 dark:border-rose-400 shadow-brutal-sm hover:bg-rose-100 dark:hover:bg-rose-900 focus-ring flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Clear Key</span>
@@ -169,7 +169,7 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-bold border-2 border-ink bg-white hover:bg-cream shadow-brutal-sm focus-ring"
+                className="px-4 py-2 text-xs font-bold border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#25211E] text-ink dark:text-cream hover:bg-cream dark:hover:bg-ink shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] focus-ring"
               >
                 Cancel
               </button>

@@ -23,28 +23,46 @@
     margin: 0;
     min-height: 100vh;
   }
+
+  /* Accessibility audit remediation: [START] */
+  /* Dark mode theme styling with high contrast focus indicators (WCAG 1.4.3, 1.4.11, 2.4.7) */
+  /* 2026-10-19, Scott Vinkle <scott@scottvinkle.com> */
+  html.dark {
+    color-scheme: dark;
+  }
+
+  html.dark body {
+    background-color: #121110;
+    color: #FBF8F1;
+  }
+
+  html.dark :focus-visible {
+    outline: 5px dotted #A78BFA !important;
+    outline-offset: 4px !important;
+  }
+  /* Accessibility audit remediation: [END] */
 }
 
 @layer utilities {
   /* Explicit 5px dotted focus indicator class matching specification */
   .focus-ring {
-    @apply focus-visible:outline focus-visible:outline-[5px] focus-visible:outline-dotted focus-visible:outline-violet-600 focus-visible:outline-offset-4;
+    @apply focus-visible:outline focus-visible:outline-[5px] focus-visible:outline-dotted focus-visible:outline-violet-600 dark:focus-visible:outline-violet-400 focus-visible:outline-offset-4;
   }
 
   /* Tactile button micro-interaction states */
   .brutal-btn-base {
-    @apply transition-all duration-150 ease-out border-[3px] border-ink font-bold;
+    @apply transition-all duration-150 ease-out border-[3px] border-ink dark:border-cream/80 font-bold;
   }
 
   .brutal-btn {
-    @apply brutal-btn-base shadow-brutal hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm focus-ring;
+    @apply brutal-btn-base shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] dark:hover:shadow-[5px_5px_0px_0px_#FBF8F1] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm dark:active:shadow-none focus-ring;
   }
 
   .brutal-card {
-    @apply border-[3px] border-ink bg-white shadow-brutal;
+    @apply border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1];
   }
 
   .brutal-card-lg {
-    @apply border-[3px] border-ink bg-white shadow-brutal-lg;
+    @apply border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] shadow-brutal-lg dark:shadow-[6px_6px_0px_0px_#FBF8F1];
   }
 }

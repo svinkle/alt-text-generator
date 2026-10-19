@@ -293,7 +293,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col font-body selection:bg-violet-600 selection:text-white">
+    <div className="min-h-screen bg-cream dark:bg-[#121110] text-ink dark:text-cream flex flex-col font-body selection:bg-violet-600 selection:text-white">
       {/* Header with Engine Badge and GitHub Link */}
       <Header
         engine={engineUsed || engineInfo.engine}
@@ -318,22 +318,22 @@ export default function App() {
         {error && (
           <div
             role="alert"
-            className="p-4 bg-rose-100 border-[3px] border-ink shadow-brutal text-ink animate-shake relative"
+            className="p-4 bg-rose-100 dark:bg-rose-950/80 border-[3px] border-ink dark:border-rose-400 shadow-brutal dark:shadow-[4px_4px_0px_0px_#F87171] text-ink dark:text-rose-100 animate-shake relative"
           >
             <button
               ref={dismissBtnRef}
               type="button"
               onClick={handleDismissError}
-              className="absolute top-4 right-4 text-xs font-bold underline focus-ring"
+              className="absolute top-4 right-4 text-xs font-bold underline focus-ring text-ink dark:text-rose-200"
             >
               Dismiss
             </button>
-            <h2 className="text-sm font-bold font-display text-rose-900 pr-16">
+            <h2 className="text-sm font-bold font-display text-rose-900 dark:text-rose-200 pr-16">
               Inference Error
             </h2>
             <div className="flex items-start gap-2 mt-1 text-sm font-medium">
               <AlertCircle
-                className="w-5 h-5 text-rose-700 flex-shrink-0 mt-0.5"
+                className="w-5 h-5 text-rose-700 dark:text-rose-400 flex-shrink-0 mt-0.5"
                 aria-hidden="true"
               />
               <span>{error}</span>
@@ -366,33 +366,36 @@ export default function App() {
         )}
 
         {/* Accessibility Best Practices Card */}
-        <div className="border-[3px] border-ink bg-white p-6 shadow-brutal">
+        {/* Accessibility audit remediation: [START]
+            Dark mode high-contrast styling for WCAG guidelines card (WCAG 1.4.3, 1.4.11)
+            2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+        <div className="border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] p-6 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1]">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheck
-              className="w-5 h-5 text-violet-600 stroke-[2.5]"
+              className="w-5 h-5 text-violet-600 dark:text-violet-400 stroke-[2.5]"
               aria-hidden="true"
             />
-            <h3 className="text-lg font-display font-bold text-ink">
+            <h3 className="text-lg font-display font-bold text-ink dark:text-cream">
               WCAG Alt Text Standards Enforced
             </h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm text-ink/80">
-            <div className="p-3 border-2 border-ink bg-cream shadow-brutal-sm">
-              <strong className="block font-bold text-ink mb-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm text-ink/80 dark:text-cream/80">
+            <div className="p-3 border-2 border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+              <strong className="block font-bold text-ink dark:text-cream mb-1">
                 1. Objective & Concise
               </strong>
               Focuses on the core subject and context in 1 to 2 sentences
               without subjective speculation.
             </div>
-            <div className="p-3 border-2 border-ink bg-cream shadow-brutal-sm">
-              <strong className="block font-bold text-ink mb-1">
+            <div className="p-3 border-2 border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+              <strong className="block font-bold text-ink dark:text-cream mb-1">
                 2. No Redundant Phrases
               </strong>
               Never starts with "Image of" or "Picture of" — screen readers
               already announce the image role.
             </div>
-            <div className="p-3 border-2 border-ink bg-cream shadow-brutal-sm">
-              <strong className="block font-bold text-ink mb-1">
+            <div className="p-3 border-2 border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+              <strong className="block font-bold text-ink dark:text-cream mb-1">
                 3. Transcribes Text
               </strong>
               Extracts and transcribes any legible text or important data
@@ -400,10 +403,14 @@ export default function App() {
             </div>
           </div>
         </div>
+        {/* Accessibility audit remediation: [END] */}
       </main>
 
       {/* Footer */}
-      <footer className="border-t-[3px] border-ink bg-white mt-12 py-6 text-center text-xs font-medium text-ink/75">
+      {/* Accessibility audit remediation: [START]
+          Dark mode high-contrast styling for footer (WCAG 1.4.3, 1.4.11)
+          2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+      <footer className="border-t-[3px] border-ink dark:border-white/20 bg-white dark:bg-[#1E1B18] mt-12 py-6 text-center text-xs font-medium text-ink/75 dark:text-cream/75">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
             <p>
@@ -416,19 +423,19 @@ export default function App() {
                 href="https://scottvinkle.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline font-bold text-ink hover:text-violet-700 focus-ring"
+                className="underline font-bold text-ink dark:text-cream hover:text-violet-700 dark:hover:text-violet-300 focus-ring"
               >
                 svinkle
               </a>
             </p>
-            <span aria-hidden="true" className="text-ink/40">
+            <span aria-hidden="true" className="text-ink/40 dark:text-cream/40">
               •
             </span>
             <a
               href="https://github.com/svinkle/alt-text-generator"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-bold text-ink hover:text-violet-700 focus-ring"
+              className="inline-flex items-center gap-1 font-bold text-ink dark:text-cream hover:text-violet-700 dark:hover:text-violet-300 focus-ring"
               aria-label="View source code on GitHub"
             >
               <Github className="w-3.5 h-3.5" aria-hidden="true" />
@@ -439,12 +446,14 @@ export default function App() {
             href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline font-bold text-violet-700 hover:text-violet-900 focus-ring"
+            className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
           >
             W3C Image Decision Tree Guidelines ↗
           </a>
         </div>
       </footer>
+      {/* Accessibility audit remediation: [END] */}
     </div>
   );
 }
+
