@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Copy, Check, Code, FileText, Sparkles, Cpu, Edit3, X } from 'lucide-react';
 import { copyToClipboard } from '../utils/copyToClipboard';
 
@@ -23,6 +23,15 @@ export default function OutputSnippet({
   // Move focus to revealed textarea when activating Edit mode (WCAG 2.4.3)
   // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
   const textareaRef = useRef(null);
+  const headingRef = useRef(null);
+
+  // Accessibility audit remediation: [START]
+  // Shift focus to "Generated Alt Text & Snippets" heading on generation (WCAG 2.4.3 Focus Order)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+  // Accessibility audit remediation: [END]
 
   const handleToggleEdit = () => {
     const nextEditing = !isEditing;
@@ -54,16 +63,32 @@ export default function OutputSnippet({
   return (
     <section aria-labelledby="results-section-title" className="w-full space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-mint border border-ink shadow-brutal-sm rounded-full"></div>
-            <h2 id="results-section-title" className="text-xl sm:text-2xl font-display font-extrabold text-ink dark:text-cream">
-              Generated Alt Text & Snippets
-            </h2>
-          </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-mint border border-ink shadow-brutal-sm rounded-full"></div>
+          {/* Accessibility audit remediation: [START]
+              Shift focus to heading upon alt text generation (WCAG 2.4.3 Focus Order)
+              2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+          <h2
+            ref={headingRef}
+            tabIndex={-1}
+            id="results-section-title"
+            className="text-xl sm:text-2xl font-display font-extrabold text-ink dark:text-cream outline-none focus-visible:outline-[3px] focus-visible:outline-violet-600"
+          >
+            Generated Alt Text & Snippets
+          </h2>
+          {/* Accessibility audit remediation: [END] */}
+        </div>
+
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          {engineUsed === 'on-device' && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1C1C1C] border-2 border-ink dark:border-[#6E6E6E] text-ink dark:text-cream text-xs font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+              <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+              <span>Generated On-Device (0 Network Latency)</span>
+            </div>
+          )}
 
           {/* Accessibility audit remediation: [START]
-              Clear button next to "Generated Alt Text & Snippets" heading that removes the results section and shifts focus to active tab (WCAG 2.4.3, 4.1.2)
+              Clear button placed on the right side of the container (WCAG 2.4.3, 4.1.2)
               2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
           {onClear && (
             <button
@@ -77,13 +102,6 @@ export default function OutputSnippet({
           )}
           {/* Accessibility audit remediation: [END] */}
         </div>
-
-        {engineUsed === 'on-device' && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1C1C1C] border-2 border-ink dark:border-[#6E6E6E] text-ink dark:text-cream text-xs font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-            <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-            <span>Generated On-Device (0 Network Latency)</span>
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6">

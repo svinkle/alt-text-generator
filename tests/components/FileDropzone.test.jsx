@@ -296,7 +296,7 @@ describe('FileDropzone', () => {
     expect(onSubmit).toHaveBeenCalled();
   });
 
-  it('restores focus to Mountain Sunrise demo launcher button when Close or Change Image is clicked', () => {
+  it('restores focus to Mountain Sunrise demo launcher button when Close is clicked, and shifts focus to active tab when Change Image is clicked', () => {
     vi.useFakeTimers();
     const onFileRemove = vi.fn();
     const selectedFile = {
@@ -307,7 +307,7 @@ describe('FileDropzone', () => {
       attribution: { photographerName: 'Daniel Moroder', profileUrl: 'https://burst.shopify.com/@daniel_moroder' }
     };
 
-    const { rerender } = render(
+    render(
       <FileDropzone
         {...defaultProps}
         selectedFile={selectedFile}
@@ -317,7 +317,8 @@ describe('FileDropzone', () => {
     );
 
     // Switch to demo tab
-    fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
+    const demoTab = screen.getByRole('tab', { name: /Try Demo/i });
+    fireEvent.click(demoTab);
 
     const natureBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
     const closeBtn = screen.getByRole('button', { name: 'Close' });
@@ -330,15 +331,64 @@ describe('FileDropzone', () => {
     });
     expect(document.activeElement).toBe(natureBtn);
 
-    // Test Change Image button as well
+    // Test Change Image button shifts focus to the active tab
     const changeImgBtn = screen.getByRole('button', { name: 'Change Image' });
     fireEvent.click(changeImgBtn);
 
     act(() => {
       vi.runAllTimers();
     });
-    expect(document.activeElement).toBe(natureBtn);
+    expect(document.activeElement).toBe(demoTab);
 
+    vi.useRealTimers();
+  });
+
+  it('shifts focus to Remove selected image button when local image is uploaded, and shifts focus to active tab on removal', () => {
+    vi.useFakeTimers();
+    const onFileRemove = vi.fn();
+    const { rerender } = render(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={null}
+        previewUrl={null}
+        onFileRemove={onFileRemove}
+      />
+    );
+
+    const uploadTab = screen.getByRole('tab', { name: /Upload File/i });
+
+    // Local file uploaded
+    const localFile = {
+      name: 'test-upload.jpg',
+      size: 2048,
+      type: 'image/jpeg',
+    };
+
+    rerender(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={localFile}
+        previewUrl="blob:test-upload"
+        onFileRemove={onFileRemove}
+      />
+    );
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    const removeBtn = screen.getByRole('button', { name: 'Remove selected image' });
+    expect(document.activeElement).toBe(removeBtn);
+
+    // Clicking Remove selected image shifts focus to the active tab
+    fireEvent.click(removeBtn);
+    expect(onFileRemove).toHaveBeenCalled();
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    expect(document.activeElement).toBe(uploadTab);
     vi.useRealTimers();
   });
 

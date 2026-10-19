@@ -200,6 +200,7 @@ export default function FileDropzone({
   );
 
   const prevIsUrlLoadedRef = useRef(isUrlLoaded);
+  const prevIsUploadLoadedRef = useRef(isUploadLoaded);
 
   // Accessibility audit remediation: [START]
   // Shift focus to revealed Close control on successful "Load image" from URL (WCAG 2.4.3 Focus Order)
@@ -215,9 +216,22 @@ export default function FileDropzone({
   // Accessibility audit remediation: [END]
 
   // Accessibility audit remediation: [START]
-  // When clicking the Close control, shift focus back to the demo launcher or Load image button (WCAG 2.4.3 Focus Order)
+  // Shift focus to "Remove selected image" button when a local image is uploaded and "Ready to analyze" displays (WCAG 2.4.3 Focus Order)
   // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
-  const handleRemove = () => {
+  useEffect(() => {
+    if (isUploadLoaded && !prevIsUploadLoadedRef.current && activeTab === 'upload') {
+      setTimeout(() => {
+        closeBtnRef.current?.focus();
+      }, 0);
+    }
+    prevIsUploadLoadedRef.current = isUploadLoaded;
+  }, [isUploadLoaded, activeTab]);
+  // Accessibility audit remediation: [END]
+
+  // Accessibility audit remediation: [START]
+  // Whenever a "Remove selected image" button or "Change image" button is clicked, shift focus to the currently selected Tab (WCAG 2.4.3 Focus Order)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const handleRemove = (actionType = 'close') => {
     const wasNature = isNatureActive;
     const wasTeam = isTeamActive;
     const isDemo = isDemoLoaded || activeTab === 'demo';
@@ -228,7 +242,12 @@ export default function FileDropzone({
       onFileRemove();
     }
 
-    if (isDemo) {
+    if (actionType === 'change' || (!isDemo && !isUrl)) {
+      setTimeout(() => {
+        const activeTabEl = document.querySelector('[role="tab"][aria-selected="true"]');
+        activeTabEl?.focus();
+      }, 0);
+    } else if (isDemo) {
       setTimeout(() => {
         if (wasTeam && teamBtnRef.current) {
           teamBtnRef.current.focus();
@@ -323,7 +342,7 @@ export default function FileDropzone({
               <button
                 ref={closeBtnRef}
                 type="button"
-                onClick={handleRemove}
+                onClick={() => handleRemove('close')}
                 disabled={isLoading}
                 className="p-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-rose-100 dark:hover:bg-rose-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
                 aria-label={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove selected image'}
@@ -349,7 +368,7 @@ export default function FileDropzone({
             <div className="pt-2 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={handleRemove}
+                onClick={() => handleRemove('change')}
                 disabled={isLoading}
                 className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-amber-100 dark:hover:bg-[#383838] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring text-ink dark:text-cream"
               >

@@ -172,4 +172,19 @@ describe('OutputSnippet', () => {
     fireEvent.click(clearBtn);
     expect(handleClear).toHaveBeenCalledTimes(1);
   });
+
+  it('shifts focus to Generated Alt Text & Snippets heading when rendered', () => {
+    render(
+      <OutputSnippet
+        altText="Sample description"
+        filename="test.jpg"
+        onAltTextChange={vi.fn()}
+      />
+    );
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Generated Alt Text & Snippets' });
+    expect(heading).toHaveAttribute('tabindex', '-1');
+    expect(document.activeElement).toBe(heading);
+  });
 });
+

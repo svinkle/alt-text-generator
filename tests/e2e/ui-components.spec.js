@@ -46,6 +46,7 @@ test.describe('UI Components & Layout Verification', () => {
 
     const resultsHeading = page.getByRole('heading', { level: 2, name: /Generated Alt Text & Snippets/i });
     await expect(resultsHeading).toBeVisible({ timeout: 15000 });
+    await expect(resultsHeading).toBeFocused();
 
     const clearBtn = page.getByRole('button', { name: 'Clear' });
     await expect(clearBtn).toBeVisible();
@@ -53,6 +54,20 @@ test.describe('UI Components & Layout Verification', () => {
     await clearBtn.click();
 
     await expect(resultsHeading).not.toBeVisible();
+    await expect(demoTab).toBeFocused();
+  });
+
+  test('Clicking Change Image button shifts focus to the active tab', async ({ page }) => {
+    const demoTab = page.getByRole('tab', { name: 'Try Demo' });
+    await demoTab.click();
+
+    const loadBtn = page.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    await loadBtn.click();
+
+    const changeBtn = page.getByRole('button', { name: 'Change Image' });
+    await expect(changeBtn).toBeVisible();
+    await changeBtn.click();
+
     await expect(demoTab).toBeFocused();
   });
 
