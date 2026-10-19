@@ -74,6 +74,15 @@ export default function App() {
     const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
     activeTab?.focus();
   };
+
+  // Clear live region announcements after 5 seconds to prevent discovering out of context (WCAG 4.1.3)
+  useEffect(() => {
+    if (!statusMessage) return;
+    const timer = setTimeout(() => {
+      setStatusMessage("");
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [statusMessage]);
   // Accessibility audit remediation: [END]
 
   // Check on-device AI availability on mount
@@ -421,7 +430,6 @@ export default function App() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 font-bold text-ink hover:text-violet-700 focus-ring"
               aria-label="View source code on GitHub"
-              title="GitHub Repository"
             >
               <Github className="w-3.5 h-3.5" aria-hidden="true" />
               <span className="underline">GitHub</span>

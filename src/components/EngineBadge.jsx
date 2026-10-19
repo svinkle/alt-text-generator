@@ -138,9 +138,13 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
   return (
     <>
       <div className="inline-flex items-center gap-2">
+        {/* Accessibility audit remediation: [START]
+            Add aria-haspopup="dialog" to dialog launcher in header and remove title attribute (WCAG 4.1.2)
+            2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
         <button
           ref={triggerRef}
           type="button"
+          aria-haspopup="dialog"
           onClick={() => setShowInfoModal(true)}
           className={`group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border-2 border-ink text-xs sm:text-sm font-bold shadow-brutal-sm hover:shadow-brutal transition-all duration-150 focus-ring cursor-pointer ${
             isOnDevice
@@ -148,8 +152,8 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
               : 'bg-amber-100 text-ink hover:bg-amber/30'
           }`}
           aria-label={`${displayLabel}. Click for engine details.`}
-          title="Click to view inference engine architecture details"
         >
+        {/* Accessibility audit remediation: [END] */}
           {isOnDevice ? (
             <span className="flex items-center gap-1.5 text-emerald-800">
               <span className="relative flex h-2.5 w-2.5">

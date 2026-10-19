@@ -103,12 +103,12 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
             {/* Optional BYOK API Key button (kept for future use if needed):
             <button
               type="button"
+              aria-haspopup="dialog"
               onClick={() => setIsKeyModalOpen(true)}
               className={`p-2 border-2 border-ink shadow-brutal-sm hover:bg-cream active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring text-ink flex items-center gap-1.5 text-xs font-bold ${
                 hasApiKey ? 'bg-amber-100 text-amber-950' : 'bg-white'
               }`}
               aria-label="Configure Gemini API key"
-              title={hasApiKey ? 'Gemini API key configured' : 'Configure Gemini API key'}
             >
               <Key className="w-4 h-4 text-amber-600" aria-hidden="true" />
               <span className="hidden sm:inline">{hasApiKey ? 'API Key Set' : 'API Key'}</span>
@@ -121,7 +121,6 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
                 onClick={handleInstallClick}
                 className="px-2.5 py-1.5 sm:px-3 sm:py-2 bg-emerald-100 hover:bg-emerald-200 border-2 border-ink shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring text-ink flex items-center gap-1.5 text-xs font-bold"
                 aria-label="Install Alt Text Generator application"
-                title="Install PWA"
               >
                 <Download className="w-4 h-4 text-emerald-800" aria-hidden="true" />
                 <span>Install</span>

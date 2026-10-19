@@ -375,6 +375,28 @@ describe('App Component', () => {
     expect(global.URL.revokeObjectURL).toHaveBeenCalled();
   });
 
+  it('clears live region statusMessage after 5 seconds and renders footer link without title', async () => {
+    vi.useFakeTimers();
+    await act(async () => {
+      render(<App />);
+    });
+
+    const liveRegion = screen.getByRole('status');
+    expect(liveRegion).toHaveTextContent('Ready for image upload.');
+
+    // Fast-forward 5s to verify statusMessage clears
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(liveRegion).toHaveTextContent('');
+
+    // Verify footer github link does not have a title attribute
+    const githubLink = screen.getByRole('link', { name: /View source code on GitHub/i });
+    expect(githubLink).not.toHaveAttribute('title');
+
+    vi.useRealTimers();
+  });
+
   describe('URL helper utilities', () => {
     it('parses filenames correctly across various URL formats and fallbacks', () => {
       expect(parseImageFilename('https://example.com/images/hero-landscape.png')).toBe('hero-landscape.png');

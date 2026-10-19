@@ -14,6 +14,7 @@ test.describe('UI Components & Layout Verification', () => {
   test('EngineBadge displays status, moves focus into dialog on open, and restores focus on close', async ({ page }) => {
     const engineBtn = page.getByRole('button', { name: /Click for engine details/i });
     await expect(engineBtn).toBeVisible();
+    await expect(engineBtn).toHaveAttribute('aria-haspopup', 'dialog');
 
     // Click EngineBadge to open modal
     await engineBtn.click();

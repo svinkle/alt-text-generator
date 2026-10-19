@@ -94,6 +94,9 @@ test.describe("Accessibility & Keyboard Navigation Verification", () => {
 
     // Live region announces image load
     await expect(liveRegion).toContainText("mountain");
+
+    // Live region clears after 5 seconds to avoid discovering out of context
+    await expect(liveRegion).toHaveText("", { timeout: 7000 });
   });
 
   test("Interactive elements show focus indicator with 5px dotted outline when focused via keyboard", async ({
@@ -140,5 +143,12 @@ test.describe("Accessibility & Keyboard Navigation Verification", () => {
     await page.keyboard.press("Enter");
     const mainLandmark = page.locator("main#main");
     await expect(mainLandmark).toBeFocused();
+  });
+
+  test("No elements possess title attributes unless they are iframe elements", async ({
+    page,
+  }) => {
+    const elementsWithTitle = await page.locator('[title]:not(iframe)').count();
+    expect(elementsWithTitle).toBe(0);
   });
 });

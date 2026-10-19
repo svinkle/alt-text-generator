@@ -444,7 +444,7 @@ describe('FileDropzone', () => {
         previewUrl="blob:local"
       />
     );
-    expect(screen.getByTitle('File loaded')).toBeInTheDocument();
+    expect(screen.getByTestId('file-loaded-indicator')).toBeInTheDocument();
 
     rerender(
       <FileDropzone
@@ -453,7 +453,7 @@ describe('FileDropzone', () => {
         previewUrl="https://example.com/web.png"
       />
     );
-    expect(screen.getByTitle('URL image loaded')).toBeInTheDocument();
+    expect(screen.getByTestId('url-loaded-indicator')).toBeInTheDocument();
 
     rerender(
       <FileDropzone
@@ -462,7 +462,7 @@ describe('FileDropzone', () => {
         previewUrl="https://example.com/demo.png"
       />
     );
-    expect(screen.getByTitle('Demo loaded')).toBeInTheDocument();
+    expect(screen.getByTestId('demo-loaded-indicator')).toBeInTheDocument();
   });
 
   it('sets dropzone tabIndex to -1 when isLoading is true and no file is selected', () => {
@@ -557,5 +557,46 @@ describe('FileDropzone', () => {
 
     vi.useRealTimers();
   });
+
+  it('renders Drag & Drop Image Here and Enter Image URL as h3 headings without title attributes', () => {
+    const { rerender } = render(<FileDropzone {...defaultProps} />);
+
+    // Verify Upload panel has h3 heading
+    const uploadHeading = screen.getByRole('heading', { level: 3, name: 'Drag & Drop Image Here' });
+    expect(uploadHeading).toBeInTheDocument();
+
+    // Switch to URL panel and verify h3 heading
+    fireEvent.click(screen.getByRole('tab', { name: /Image URL/i }));
+    const urlHeading = screen.getByRole('heading', { level: 3, name: 'Enter Image URL' });
+    expect(urlHeading).toBeInTheDocument();
+
+    // Verify close button does not have title attribute
+    rerender(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={{ name: 'web.jpg', source: 'url', isUrl: true }}
+        previewUrl="https://example.com/web.jpg"
+      />
+    );
+    const closeBtn = screen.getByRole('button', { name: 'Close' });
+    expect(closeBtn).not.toHaveAttribute('title');
+  });
+
+  it('clears live region announcement after 5 seconds', () => {
+    vi.useFakeTimers();
+    render(<FileDropzone {...defaultProps} statusMessage="Image uploaded successfully." />);
+
+    const liveRegion = screen.getByRole('status');
+    expect(liveRegion).toHaveTextContent('Image uploaded successfully.');
+
+    // Advance 5 seconds
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+
+    expect(liveRegion).toHaveTextContent('');
+    vi.useRealTimers();
+  });
 });
+
 

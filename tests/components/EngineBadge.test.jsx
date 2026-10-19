@@ -23,6 +23,8 @@ describe('EngineBadge', () => {
     render(<EngineBadge />);
 
     const badgeBtn = screen.getByRole('button', { name: /Click for engine details/i });
+    expect(badgeBtn).toHaveAttribute('aria-haspopup', 'dialog');
+    expect(badgeBtn).not.toHaveAttribute('title');
     badgeBtn.focus();
     fireEvent.click(badgeBtn);
 

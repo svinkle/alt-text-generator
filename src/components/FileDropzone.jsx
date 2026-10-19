@@ -41,6 +41,18 @@ export default function FileDropzone({
   // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
   const loadUrlBtnRef = useRef(null);
   const closeBtnRef = useRef(null);
+
+  // Clear live region announcements after 5 seconds to prevent discovering out of context (WCAG 4.1.3)
+  const [liveAnnouncement, setLiveAnnouncement] = useState(statusMessage);
+
+  useEffect(() => {
+    setLiveAnnouncement(statusMessage);
+    if (!statusMessage) return;
+    const timer = setTimeout(() => {
+      setLiveAnnouncement('');
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [statusMessage]);
   // Accessibility audit remediation: [END]
 
   // Accessibility audit remediation: [START]
@@ -312,7 +324,6 @@ export default function FileDropzone({
                 disabled={isLoading}
                 className="p-1.5 bg-white border-2 border-ink shadow-brutal-sm hover:bg-rose-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
                 aria-label={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove selected image'}
-                title={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove image'}
               >
                 <X className="w-5 h-5 text-ink" aria-hidden="true" />
               </button>
@@ -435,7 +446,7 @@ export default function FileDropzone({
             <UploadCloud className="w-4 h-4" aria-hidden="true" />
             <span>Upload File</span>
             {isUploadLoaded && (
-              <span className="w-2 h-2 rounded-full bg-violet-600 inline-block ml-0.5" title="File loaded" aria-hidden="true" />
+              <span className="w-2 h-2 rounded-full bg-violet-600 inline-block ml-0.5" data-testid="file-loaded-indicator" aria-hidden="true" />
             )}
           </button>
 
@@ -460,7 +471,7 @@ export default function FileDropzone({
             <LinkIcon className="w-4 h-4" aria-hidden="true" />
             <span>Image URL</span>
             {isUrlLoaded && (
-              <span className="w-2 h-2 rounded-full bg-violet-600 inline-block ml-0.5" title="URL image loaded" aria-hidden="true" />
+              <span className="w-2 h-2 rounded-full bg-violet-600 inline-block ml-0.5" data-testid="url-loaded-indicator" aria-hidden="true" />
             )}
           </button>
 
@@ -485,7 +496,7 @@ export default function FileDropzone({
             <Sparkles className="w-4 h-4" aria-hidden="true" />
             <span>Try Demo</span>
             {isDemoLoaded && (
-              <span className="w-2 h-2 rounded-full bg-violet-600 inline-block ml-0.5" title="Demo loaded" aria-hidden="true" />
+              <span className="w-2 h-2 rounded-full bg-violet-600 inline-block ml-0.5" data-testid="demo-loaded-indicator" aria-hidden="true" />
             )}
           </button>
         </div>
@@ -525,9 +536,13 @@ export default function FileDropzone({
                     <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11" aria-hidden="true" />
                   </div>
 
-                  <span className="block text-xl sm:text-2xl font-display font-bold text-ink mb-2">
+                  {/* Accessibility audit remediation: [START]
+                      Semantic h3 heading for Upload tabpanel title (WCAG 1.3.1 Info and Relationships)
+                      2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+                  <h3 className="block text-xl sm:text-2xl font-display font-bold text-ink mb-2">
                     Drag & Drop Image Here
-                  </span>
+                  </h3>
+                  {/* Accessibility audit remediation: [END] */}
 
                   <span className="block text-sm sm:text-base text-ink/80 mb-4 font-medium">
                     or <span className="underline decoration-2 decoration-violet-600 font-bold text-violet-700">browse files</span> from your device
@@ -572,9 +587,11 @@ export default function FileDropzone({
                  2026-10-19, Scott Vinkle <scott@scottvinkle.com> */
               <form noValidate onSubmit={handleUrlFormSubmit} className="space-y-4 max-w-2xl mx-auto">
                 <div className="text-center sm:text-left space-y-1">
-                  <label htmlFor="image-url-input" className="block text-base sm:text-lg font-display font-bold text-ink">
-                    Enter Image URL
-                  </label>
+                  <h3 className="text-base sm:text-lg font-display font-bold text-ink">
+                    <label htmlFor="image-url-input" className="block cursor-pointer">
+                      Enter Image URL
+                    </label>
+                  </h3>
                   <p id="image-url-hint" className="text-xs sm:text-sm text-ink/75 font-medium">
                     Paste a direct link to any public image on the web (JPEG, PNG, or WebP).
                   </p>
@@ -746,7 +763,7 @@ export default function FileDropzone({
           aria-atomic="true"
           className="sr-only"
         >
-          {statusMessage}
+          {liveAnnouncement}
         </div>
       </div>
     </section>

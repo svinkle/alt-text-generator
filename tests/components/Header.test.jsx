@@ -38,6 +38,7 @@ describe("Header", () => {
       name: /Install Alt Text Generator/i,
     });
     expect(installBtn).toBeInTheDocument();
+    expect(installBtn).not.toHaveAttribute("title");
 
     await act(async () => {
       fireEvent.click(installBtn);
