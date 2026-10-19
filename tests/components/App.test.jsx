@@ -19,13 +19,13 @@ describe('App Component', () => {
     global.Image = originalImage;
   });
 
-  it('renders Header, FileDropzone, Guidelines card, and Footer', async () => {
+  it('renders Header, FileDropzone, and Footer', async () => {
     await act(async () => {
       render(<App />);
     });
 
     expect(screen.getByRole('heading', { level: 1, name: 'Alt Text Generator' })).toBeInTheDocument();
-    expect(screen.getByText('WCAG Alt Text Standards Enforced')).toBeInTheDocument();
+    expect(screen.queryByText('WCAG Alt Text Standards Enforced')).not.toBeInTheDocument();
     expect(screen.getByText(/Made with/i)).toBeInTheDocument();
   });
 
@@ -110,7 +110,7 @@ describe('App Component', () => {
     });
 
     expect(screen.getByText('"Business colleagues meeting in boardroom."')).toBeInTheDocument();
-    expect(screen.getByText('Engine: Cloud Edge (Gemini 3.x Flash)')).toBeInTheDocument();
+    expect(screen.getAllByRole('status')[0]).toHaveTextContent(/Cloud Edge/i);
   });
 
   it('handles demo image fetch failure by falling back to direct URL select', async () => {
@@ -390,11 +390,53 @@ describe('App Component', () => {
     });
     expect(liveRegion).toHaveTextContent('');
 
-    // Verify footer github link does not have a title attribute
-    const githubLink = screen.getByRole('link', { name: /View source code on GitHub/i });
+    // Verify header github link does not have a title attribute
+    const githubLink = screen.getByRole('link', { name: /GitHub repository/i });
     expect(githubLink).not.toHaveAttribute('title');
 
     vi.useRealTimers();
+  });
+
+  it('clears generated alt text and restores focus to active tab when clicking Clear [X] button', async () => {
+    const mockBlob = new Blob(['image data'], { type: 'image/jpeg' });
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      blob: vi.fn().mockResolvedValue(mockBlob),
+    });
+
+    vi.spyOn(aiEngine, 'generateAltText').mockResolvedValue({
+      text: 'A high altitude view of mountains.',
+      engine: 'on-device',
+    });
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    const demoTab = screen.getByRole('tab', { name: /Try Demo/i });
+    fireEvent.click(demoTab);
+
+    const loadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    await act(async () => {
+      fireEvent.click(loadBtn);
+    });
+
+    const generateBtn = screen.getByRole('button', { name: /Generate Alt Text/i });
+    await act(async () => {
+      fireEvent.click(generateBtn);
+    });
+
+    expect(screen.getByRole('heading', { level: 2, name: /Generated Alt Text & Snippets/i })).toBeInTheDocument();
+
+    const clearBtn = screen.getByRole('button', { name: 'Clear' });
+    expect(clearBtn).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(clearBtn);
+    });
+
+    expect(screen.queryByRole('heading', { level: 2, name: /Generated Alt Text & Snippets/i })).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(demoTab);
   });
 
   describe('URL helper utilities', () => {

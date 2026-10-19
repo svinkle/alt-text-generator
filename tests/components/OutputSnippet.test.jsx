@@ -155,4 +155,21 @@ describe('OutputSnippet', () => {
       screen.getByText('![A "quoted" <tag> & \\[brackets\\]](photo"onerror="alert\\(1\\).jpg)')
     ).toBeInTheDocument();
   });
+
+  it('renders Clear [X] button next to heading and triggers onClear when clicked', () => {
+    const handleClear = vi.fn();
+    render(
+      <OutputSnippet
+        altText="Sample description"
+        filename="test.jpg"
+        onAltTextChange={vi.fn()}
+        onClear={handleClear}
+      />
+    );
+
+    const clearBtn = screen.getByRole('button', { name: 'Clear' });
+    expect(clearBtn).toBeInTheDocument();
+    fireEvent.click(clearBtn);
+    expect(handleClear).toHaveBeenCalledTimes(1);
+  });
 });

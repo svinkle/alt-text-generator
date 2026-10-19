@@ -5,58 +5,55 @@ test.describe('UI Components & Layout Verification', () => {
     await page.goto('/');
   });
 
-  test('Header renders with logo, title, and tagline', async ({ page }) => {
+  test('Header renders with logo, title, and tagline, and GitHub icon link', async ({ page }) => {
     const heading = page.getByRole('heading', { level: 1, name: 'Alt Text Generator' });
     await expect(heading).toBeVisible();
     await expect(page.getByText('Accessible, objective image descriptions powered by progressive AI')).toBeVisible();
-  });
 
-  test('EngineBadge displays status, moves focus into dialog on open, and restores focus on close', async ({ page }) => {
-    const engineBtn = page.getByRole('button', { name: /Click for engine details/i });
-    await expect(engineBtn).toBeVisible();
-    await expect(engineBtn).toHaveAttribute('aria-haspopup', 'dialog');
-
-    // Click EngineBadge to open modal
-    await engineBtn.click();
-
-    const dialog = page.getByRole('dialog', { name: /Two-Tier AI Architecture/i });
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByText('⚡ Two-Tier AI Architecture')).toBeVisible();
-    await expect(dialog.getByText('Tier 1: On-Device (Chrome Built-in AI)')).toBeVisible();
-    await expect(dialog.getByText('Tier 2: Cloud Edge (Serverless Gemini 3.x Flash)')).toBeVisible();
-
-    // Close button inside modal receives initial focus
-    const closeBtn = dialog.getByRole('button', { name: 'Close dialog' });
-    await expect(closeBtn).toBeFocused();
-
-    // Close via close button and verify focus returns to trigger button
-    await closeBtn.click();
-    await expect(dialog).not.toBeVisible();
-    await expect(engineBtn).toBeFocused();
-
-    // Open again and close via Escape key, verifying focus returns to trigger button
-    await engineBtn.click();
-    await expect(dialog).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(dialog).not.toBeVisible();
-    await expect(engineBtn).toBeFocused();
-  });
-
-  test('Footer displays author attribution and GitHub link', async ({ page }) => {
-    const authorLink = page.getByRole('link', { name: 'svinkle' });
-    await expect(authorLink).toBeVisible();
-    await expect(authorLink).toHaveAttribute('href', 'https://scottvinkle.com');
-
-    const githubLink = page.getByRole('link', { name: 'GitHub' });
+    const githubLink = page.getByRole('link', { name: 'GitHub repository' });
     await expect(githubLink).toBeVisible();
     await expect(githubLink).toHaveAttribute('href', 'https://github.com/svinkle/alt-text-generator');
   });
 
-  test('Accessibility standards card displays all 3 WCAG guidelines', async ({ page }) => {
-    await expect(page.getByRole('heading', { level: 3, name: 'WCAG Alt Text Standards Enforced' })).toBeVisible();
-    await expect(page.getByText('1. Objective & Concise')).toBeVisible();
-    await expect(page.getByText('2. No Redundant Phrases')).toBeVisible();
-    await expect(page.getByText('3. Transcribes Text')).toBeVisible();
+  test('EngineBadge dialog launcher is commented out in header', async ({ page }) => {
+    const engineBtn = page.getByRole('button', { name: /Click for engine details/i });
+    await expect(engineBtn).not.toBeAttached();
+  });
+
+  test('Footer displays author attribution without GitHub link', async ({ page }) => {
+    const footer = page.locator('footer');
+    const authorLink = footer.getByRole('link', { name: 'svinkle' });
+    await expect(authorLink).toBeVisible();
+    await expect(authorLink).toHaveAttribute('href', 'https://scottvinkle.com');
+
+    const githubLink = footer.getByRole('link', { name: 'GitHub' });
+    await expect(githubLink).not.toBeAttached();
+  });
+
+  test('WCAG Alt Text Standards Enforced section is removed and Clear [X] button removes results', async ({ page }) => {
+    await expect(page.getByRole('heading', { level: 3, name: 'WCAG Alt Text Standards Enforced' })).not.toBeAttached();
+  });
+
+  test('Clear [X] button removes Generated Alt Text & Snippets and restores focus to active tab', async ({ page }) => {
+    const demoTab = page.getByRole('tab', { name: 'Try Demo' });
+    await demoTab.click();
+
+    const loadBtn = page.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    await loadBtn.click();
+
+    const generateBtn = page.getByRole('button', { name: 'Generate Alt Text' });
+    await generateBtn.click();
+
+    const resultsHeading = page.getByRole('heading', { level: 2, name: /Generated Alt Text & Snippets/i });
+    await expect(resultsHeading).toBeVisible({ timeout: 15000 });
+
+    const clearBtn = page.getByRole('button', { name: 'Clear' });
+    await expect(clearBtn).toBeVisible();
+
+    await clearBtn.click();
+
+    await expect(resultsHeading).not.toBeVisible();
+    await expect(demoTab).toBeFocused();
   });
 
   test('Theme toggle button defaults to OS settings, toggles dark mode class on html, and persists preference', async ({ page }) => {

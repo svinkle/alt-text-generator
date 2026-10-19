@@ -9,7 +9,7 @@ describe("Header", () => {
     localStorage.clear();
   });
 
-  it("renders application title, logo, and EngineBadge", () => {
+  it("renders application title, logo, and GitHub link, with EngineBadge commented out", () => {
     const { container } = render(
       <Header engine="cloud-fallback" label="Cloud Engine" details="Detail" />,
     );
@@ -18,7 +18,14 @@ describe("Header", () => {
       screen.getByRole("heading", { level: 1, name: "Alt Text Generator" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("WCAG 2.2")).not.toBeInTheDocument();
-    expect(screen.getByText("Cloud Engine")).toBeInTheDocument();
+    expect(screen.queryByText("Cloud Engine")).not.toBeInTheDocument();
+
+    const githubLink = screen.getByRole("link", { name: /GitHub repository/i });
+    expect(githubLink).toBeInTheDocument();
+    expect(githubLink).toHaveAttribute(
+      "href",
+      "https://github.com/svinkle/alt-text-generator",
+    );
 
     const logoSvg = container.querySelector("header svg");
     expect(logoSvg).toBeInTheDocument();

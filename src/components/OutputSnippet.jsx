@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Copy, Check, Code, FileText, Sparkles, Cpu, Edit3 } from 'lucide-react';
+import { Copy, Check, Code, FileText, Sparkles, Cpu, Edit3, X } from 'lucide-react';
 import { copyToClipboard } from '../utils/copyToClipboard';
 
 function escapeHtmlAttr(str) {
@@ -15,6 +15,7 @@ export default function OutputSnippet({
   onAltTextChange,
   filename,
   engineUsed,
+  onClear,
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -53,11 +54,28 @@ export default function OutputSnippet({
   return (
     <section aria-labelledby="results-section-title" className="w-full space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-mint border border-ink shadow-brutal-sm rounded-full"></div>
-          <h2 id="results-section-title" className="text-xl sm:text-2xl font-display font-extrabold text-ink dark:text-cream">
-            Generated Alt Text & Snippets
-          </h2>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-mint border border-ink shadow-brutal-sm rounded-full"></div>
+            <h2 id="results-section-title" className="text-xl sm:text-2xl font-display font-extrabold text-ink dark:text-cream">
+              Generated Alt Text & Snippets
+            </h2>
+          </div>
+
+          {/* Accessibility audit remediation: [START]
+              Clear button next to "Generated Alt Text & Snippets" heading that removes the results section and shifts focus to active tab (WCAG 2.4.3, 4.1.2)
+              2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+          {onClear && (
+            <button
+              type="button"
+              onClick={onClear}
+              className="p-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-rose-100 dark:hover:bg-rose-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring flex items-center justify-center cursor-pointer"
+              aria-label="Clear"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5 text-ink dark:text-cream" aria-hidden="true" />
+            </button>
+          )}
+          {/* Accessibility audit remediation: [END] */}
         </div>
 
         {engineUsed === 'on-device' && (

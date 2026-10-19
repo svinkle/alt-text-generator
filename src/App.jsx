@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import FileDropzone from "./components/FileDropzone";
 import OutputSnippet from "./components/OutputSnippet";
 import { generateAltText, checkAvailableEngine } from "./utils/aiEngine";
-import { AlertCircle, ShieldCheck, Github } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 export const PHOTO_ATTRIBUTIONS = {
   nature: {
@@ -74,6 +74,16 @@ export default function App() {
     const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
     activeTab?.focus();
   };
+
+  // Accessibility audit remediation: [START]
+  // Clear generated alt text section and shift focus back to currently active Tab (WCAG 2.4.3 Focus Order)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const handleClearGenerated = () => {
+    setAltText("");
+    const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
+    activeTab?.focus();
+  };
+  // Accessibility audit remediation: [END]
 
   // Clear live region announcements after 5 seconds to prevent discovering out of context (WCAG 4.1.3)
   useEffect(() => {
@@ -362,48 +372,9 @@ export default function App() {
             onAltTextChange={setAltText}
             filename={selectedFile ? selectedFile.name : "image.jpg"}
             engineUsed={engineUsed}
+            onClear={handleClearGenerated}
           />
         )}
-
-        {/* Accessibility Best Practices Card */}
-        {/* Accessibility audit remediation: [START]
-            Dark mode high-contrast styling for WCAG guidelines card (WCAG 1.4.3, 1.4.11)
-            2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
-        <div className="border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] p-6 shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E]">
-          <div className="flex items-center gap-2 mb-3">
-            <ShieldCheck
-              className="w-5 h-5 text-violet-600 dark:text-violet-400 stroke-[2.5]"
-              aria-hidden="true"
-            />
-            <h3 className="text-lg font-display font-bold text-ink dark:text-cream">
-              WCAG Alt Text Standards Enforced
-            </h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm text-ink/80 dark:text-cream/80">
-            <div className="p-3 border-2 border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-              <strong className="block font-bold text-ink dark:text-cream mb-1">
-                1. Objective & Concise
-              </strong>
-              Focuses on the core subject and context in 1 to 2 sentences
-              without subjective speculation.
-            </div>
-            <div className="p-3 border-2 border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-              <strong className="block font-bold text-ink dark:text-cream mb-1">
-                2. No Redundant Phrases
-              </strong>
-              Never starts with "Image of" or "Picture of" — screen readers
-              already announce the image role.
-            </div>
-            <div className="p-3 border-2 border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-              <strong className="block font-bold text-ink dark:text-cream mb-1">
-                3. Transcribes Text
-              </strong>
-              Extracts and transcribes any legible text or important data
-              visible within the graphic.
-            </div>
-          </div>
-        </div>
-        {/* Accessibility audit remediation: [END] */}
       </main>
 
       {/* Footer */}
@@ -428,19 +399,6 @@ export default function App() {
                 svinkle
               </a>
             </p>
-            <span aria-hidden="true" className="text-ink/40 dark:text-cream/40">
-              •
-            </span>
-            <a
-              href="https://github.com/svinkle/alt-text-generator"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-bold text-ink dark:text-cream hover:text-violet-700 dark:hover:text-violet-300 focus-ring"
-              aria-label="View source code on GitHub"
-            >
-              <Github className="w-3.5 h-3.5" aria-hidden="true" />
-              <span className="underline">GitHub</span>
-            </a>
           </div>
           <a
             href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
