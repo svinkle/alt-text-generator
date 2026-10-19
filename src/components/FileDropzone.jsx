@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { UploadCloud, Link as LinkIcon, Sparkles, X, RefreshCw, CheckCircle2, Globe, FileImage } from 'lucide-react';
 
 /**
@@ -36,6 +36,12 @@ export default function FileDropzone({
   const fileInputRef = useRef(null);
   const natureBtnRef = useRef(null);
   const teamBtnRef = useRef(null);
+  // Accessibility audit remediation: [START]
+  // Focus management refs for URL load button and preview Close button (WCAG 2.4.3 Focus Order)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const loadUrlBtnRef = useRef(null);
+  const closeBtnRef = useRef(null);
+  // Accessibility audit remediation: [END]
 
   // Accessibility audit remediation: [START]
   // Dynamic WAI-ARIA APG Tabs keyboard navigation (ArrowRight, ArrowLeft, Home, End) across all tab elements (WCAG 2.1.1)
@@ -181,10 +187,29 @@ export default function FileDropzone({
         selectedFile?.attribution?.photographerName?.includes('Matthew'))
   );
 
+  const prevIsUrlLoadedRef = useRef(isUrlLoaded);
+
+  // Accessibility audit remediation: [START]
+  // Shift focus to revealed Close control on successful "Load image" from URL (WCAG 2.4.3 Focus Order)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  useEffect(() => {
+    if (isUrlLoaded && !prevIsUrlLoadedRef.current && activeTab === 'url') {
+      closeBtnRef.current?.focus();
+    } else if (!isUrlLoaded && prevIsUrlLoadedRef.current && activeTab === 'url') {
+      loadUrlBtnRef.current?.focus();
+    }
+    prevIsUrlLoadedRef.current = isUrlLoaded;
+  }, [isUrlLoaded, activeTab]);
+  // Accessibility audit remediation: [END]
+
+  // Accessibility audit remediation: [START]
+  // When clicking the Close control, shift focus back to the demo launcher or Load image button (WCAG 2.4.3 Focus Order)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
   const handleRemove = () => {
     const wasNature = isNatureActive;
     const wasTeam = isTeamActive;
     const isDemo = isDemoLoaded || activeTab === 'demo';
+    const isUrl = isUrlLoaded || activeTab === 'url';
 
     setUploadError('');
     if (onFileRemove) {
@@ -199,8 +224,13 @@ export default function FileDropzone({
           natureBtnRef.current.focus();
         }
       }, 0);
+    } else if (isUrl) {
+      setTimeout(() => {
+        loadUrlBtnRef.current?.focus();
+      }, 0);
     }
   };
+  // Accessibility audit remediation: [END]
 
   const renderPreviewCard = () => {
     if (!selectedFile) return null;
@@ -272,16 +302,21 @@ export default function FileDropzone({
                 </h3>
               </div>
 
+              {/* Accessibility audit remediation: [START]
+                  Accessible Close control ref and label for demo and URL preview cards (WCAG 2.4.3, 4.1.2)
+                  2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
               <button
+                ref={closeBtnRef}
                 type="button"
                 onClick={handleRemove}
                 disabled={isLoading}
                 className="p-1.5 bg-white border-2 border-ink shadow-brutal-sm hover:bg-rose-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
-                aria-label={isDemoLoaded || activeTab === 'demo' ? 'Close' : 'Remove selected image'}
-                title={isDemoLoaded || activeTab === 'demo' ? 'Close' : 'Remove image'}
+                aria-label={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove selected image'}
+                title={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove image'}
               >
                 <X className="w-5 h-5 text-ink" aria-hidden="true" />
               </button>
+              {/* Accessibility audit remediation: [END] */}
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs font-mono text-ink/80 pt-1">
@@ -563,6 +598,7 @@ export default function FileDropzone({
                   />
 
                   <button
+                    ref={loadUrlBtnRef}
                     type="submit"
                     disabled={isLoading || !urlInputValue.trim()}
                     className="brutal-btn bg-amber-400 hover:bg-amber-500 text-ink px-6 py-3 text-sm font-bold flex items-center justify-center gap-2 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"

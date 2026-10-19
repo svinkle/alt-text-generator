@@ -87,8 +87,44 @@ test.describe('Alt Text Generation & Output Snippet Flow', () => {
     await urlInput.fill('https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=600');
     await submitBtn.click();
 
-    // Wait for image to load and preview card to appear
+    // 1. Wait for image to load and verify focus shifts to revealed Close control
     await expect(page.locator('#panel-url').getByText('Ready to Analyze')).toBeVisible({ timeout: 10000 });
+    const closeBtn = page.locator('#panel-url').getByRole('button', { name: 'Close' });
+    await expect(closeBtn).toBeVisible();
+    await expect(closeBtn).toBeFocused();
+
+    // 2. Click Close control and verify focus shifts back to Load image button
+    await closeBtn.click();
+    const loadImgBtn = page.locator('#panel-url').getByRole('button', { name: 'Load Image' });
+    await expect(loadImgBtn).toBeVisible();
+    await expect(loadImgBtn).toBeFocused();
+
+    // 3. Trigger load error and verify focus shifts to Dismiss button
+    await page.locator('#image-url-input').fill('https://example.com/non-existent-broken-image.jpg');
+    await loadImgBtn.click();
+
+    const alertBanner = page.getByRole('alert');
+    await expect(alertBanner).toBeVisible({ timeout: 10000 });
+
+    // 5. Verify Inference Error is an h2
+    const errorHeading = alertBanner.getByRole('heading', { level: 2, name: 'Inference Error' });
+    await expect(errorHeading).toBeVisible();
+
+    // 6. Verify DOM order: Dismiss button first, then h2 heading
+    const firstTag = await alertBanner.locator('> *').nth(0).evaluate(el => el.tagName.toLowerCase());
+    const secondTag = await alertBanner.locator('> *').nth(1).evaluate(el => el.tagName.toLowerCase());
+    expect(firstTag).toBe('button');
+    expect(secondTag).toBe('h2');
+
+    // 3. Verify focus shifted to Dismiss button
+    const dismissBtn = alertBanner.getByRole('button', { name: 'Dismiss' });
+    await expect(dismissBtn).toBeFocused();
+
+    // 4. Click Dismiss and verify focus shifts to currently selected Tab
+    await dismissBtn.click();
+    await expect(alertBanner).not.toBeVisible();
+    const selectedTab = page.getByRole('tab', { name: /Image URL/i });
+    await expect(selectedTab).toBeFocused();
   });
 
   test('Upload file tab displays drag & drop zone and file input', async ({ page }) => {

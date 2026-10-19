@@ -58,6 +58,23 @@ export default function App() {
   });
   const [statusMessage, setStatusMessage] = useState("Ready for image upload.");
   const abortControllerRef = useRef(null);
+  // Accessibility audit remediation: [START]
+  // Shift focus to Dismiss button on error and shift focus to selected tab on dismiss (WCAG 2.4.3 Focus Order)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const dismissBtnRef = useRef(null);
+
+  useEffect(() => {
+    if (error && dismissBtnRef.current) {
+      dismissBtnRef.current.focus();
+    }
+  }, [error]);
+
+  const handleDismissError = () => {
+    setError(null);
+    const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
+    activeTab?.focus();
+  };
+  // Accessibility audit remediation: [END]
 
   // Check on-device AI availability on mount
   useEffect(() => {
@@ -286,31 +303,35 @@ export default function App() {
         id="main"
         className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8"
       >
-        {/* Error notification */}
+        {/* Accessibility audit remediation: [START]
+            Error banner: Dismiss button first in DOM order, followed by h2 heading and content (WCAG 1.3.1, 1.3.2, 2.4.3)
+            2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
         {error && (
           <div
             role="alert"
-            className="p-4 bg-rose-100 border-[3px] border-ink shadow-brutal text-ink flex items-start gap-3 animate-shake"
+            className="p-4 bg-rose-100 border-[3px] border-ink shadow-brutal text-ink animate-shake relative"
           >
-            <AlertCircle
-              className="w-5 h-5 text-rose-700 flex-shrink-0 mt-0.5"
-              aria-hidden="true"
-            />
-            <div className="flex-1 text-sm font-medium">
-              <strong className="block font-bold font-display text-rose-900">
-                Inference Error
-              </strong>
-              <span>{error}</span>
-            </div>
             <button
+              ref={dismissBtnRef}
               type="button"
-              onClick={() => setError(null)}
-              className="text-xs font-bold underline focus-ring"
+              onClick={handleDismissError}
+              className="absolute top-4 right-4 text-xs font-bold underline focus-ring"
             >
               Dismiss
             </button>
+            <h2 className="text-sm font-bold font-display text-rose-900 pr-16">
+              Inference Error
+            </h2>
+            <div className="flex items-start gap-2 mt-1 text-sm font-medium">
+              <AlertCircle
+                className="w-5 h-5 text-rose-700 flex-shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
+              <span>{error}</span>
+            </div>
           </div>
         )}
+        {/* Accessibility audit remediation: [END] */}
 
         {/* Upload / URL / Demo Dropzone */}
         <FileDropzone

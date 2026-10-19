@@ -153,10 +153,16 @@ describe('App Component', () => {
     });
 
     // Error alert displayed
-    expect(screen.getByRole('alert')).toBeInTheDocument();
+    const alert = screen.getByRole('alert');
+    expect(alert).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Inference Error' })).toBeInTheDocument();
     expect(screen.getByText('Inference quota exceeded')).toBeInTheDocument();
 
-    // Dismiss alert
+    // Verify DOM order: Dismiss button first, then h2 heading, followed by rest of content
+    expect(alert.children[0]).toBe(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(alert.children[1]).toBe(screen.getByRole('heading', { level: 2, name: 'Inference Error' }));
+
+    // Dismiss alert and verify focus restores to currently selected tab
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
@@ -295,7 +301,27 @@ describe('App Component', () => {
       secondImg.onerror();
     });
 
+    const alert = screen.getByRole('alert');
+    expect(alert).toBeInTheDocument();
     expect(screen.getByText(/Unable to load image from the provided URL/i)).toBeInTheDocument();
+
+    // Verify h2 heading and DOM order
+    const heading = screen.getByRole('heading', { level: 2, name: 'Inference Error' });
+    expect(heading).toBeInTheDocument();
+    const dismissBtn = screen.getByRole('button', { name: 'Dismiss' });
+    expect(alert.children[0]).toBe(dismissBtn);
+    expect(alert.children[1]).toBe(heading);
+
+    // Verify focus shifted to Dismiss button after error
+    expect(document.activeElement).toBe(dismissBtn);
+
+    // Verify clicking Dismiss shifts focus back to currently selected Tab
+    await act(async () => {
+      fireEvent.click(dismissBtn);
+    });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    const urlTab = screen.getByRole('tab', { name: /Image URL/i });
+    expect(document.activeElement).toBe(urlTab);
   });
 
   it('handles standard local file upload in upload tab', async () => {

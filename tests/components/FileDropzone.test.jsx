@@ -497,4 +497,65 @@ describe('FileDropzone', () => {
     fireEvent.drop(dropZone, { dataTransfer: { files: [] } });
     expect(onFileSelect).not.toHaveBeenCalled();
   });
+
+  it('shifts focus to Close control on URL image load and restores focus to Load image button when Close is clicked', () => {
+    vi.useFakeTimers();
+    const onFileRemove = vi.fn();
+    const { rerender } = render(<FileDropzone {...defaultProps} onFileRemove={onFileRemove} />);
+
+    // Switch to URL tab and enter a URL
+    fireEvent.click(screen.getByRole('tab', { name: /Image URL/i }));
+    fireEvent.change(screen.getByLabelText(/Enter Image URL/i), {
+      target: { value: 'https://example.com/photo.jpg' },
+    });
+
+    const urlFile = {
+      name: 'photo.jpg',
+      source: 'url',
+      isUrl: true,
+      type: 'image/jpeg',
+      size: 1024,
+    };
+
+    // Simulate image loaded from URL
+    rerender(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={urlFile}
+        previewUrl="https://example.com/photo.jpg"
+        onFileRemove={onFileRemove}
+      />
+    );
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    const closeBtn = screen.getByRole('button', { name: 'Close' });
+    expect(document.activeElement).toBe(closeBtn);
+
+    // Click Close button
+    fireEvent.click(closeBtn);
+    expect(onFileRemove).toHaveBeenCalled();
+
+    // After removing, parent clears selectedFile
+    rerender(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={null}
+        previewUrl={null}
+        onFileRemove={onFileRemove}
+      />
+    );
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    const loadBtn = screen.getByRole('button', { name: 'Load Image' });
+    expect(document.activeElement).toBe(loadBtn);
+
+    vi.useRealTimers();
+  });
 });
+
