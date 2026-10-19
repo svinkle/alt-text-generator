@@ -139,17 +139,21 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
       {/* Accessibility audit remediation: [END] */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
+            {/* Accessibility audit remediation: [START]
+                Remove shadow from main logo to keep clean bordered outline (WCAG 1.4.11)
+                2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
             <svg
-              className="w-10 h-10 sm:w-12 sm:h-12 shadow-brutal-sm rounded flex-shrink-0"
+              className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0"
               viewBox="0 0 32 32"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
-              <rect x="2" y="2" width="28" height="28" rx="4" fill="#7C3AED" stroke="#1E1B18" strokeWidth="3" />
-              <circle cx="11" cy="11" r="3" fill="#10B981" stroke="#1E1B18" strokeWidth="2" />
+              <rect x="2" y="2" width="28" height="28" rx="4" fill="#7C3AED" stroke="#1E1B18" strokeWidth="3" className="dark:stroke-[#6E6E6E]" />
+              <circle cx="11" cy="11" r="3" fill="#10B981" stroke="#1E1B18" strokeWidth="2" className="dark:stroke-[#6E6E6E]" />
               <path d="M4 23L11 16L18 23L23 18L28 23" stroke="#FBF8F1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
+            {/* Accessibility audit remediation: [END] */}
             <div>
               <h1 className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-ink dark:text-cream">
                 Alt Text Generator

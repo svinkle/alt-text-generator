@@ -10,7 +10,7 @@ describe("Header", () => {
   });
 
   it("renders application title, logo, and EngineBadge", () => {
-    render(
+    const { container } = render(
       <Header engine="cloud-fallback" label="Cloud Engine" details="Detail" />,
     );
 
@@ -19,6 +19,13 @@ describe("Header", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("WCAG 2.2")).not.toBeInTheDocument();
     expect(screen.getByText("Cloud Engine")).toBeInTheDocument();
+
+    const logoSvg = container.querySelector("header svg");
+    expect(logoSvg).toBeInTheDocument();
+    expect(logoSvg.getAttribute("class")).not.toContain("shadow");
+    const rect = logoSvg.querySelector("rect");
+    expect(rect).toHaveAttribute("stroke", "#1E1B18");
+    expect(rect).toHaveAttribute("stroke-width", "3");
   });
 
   it("handles beforeinstallprompt and install button click", async () => {
