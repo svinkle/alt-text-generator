@@ -214,6 +214,29 @@ describe('FileDropzone', () => {
     expect(screen.getByText('Local File')).toBeInTheDocument();
   });
 
+  it('renders preview card with Close button first in DOM order, followed by heading, followed by image preview', () => {
+    const selectedFile = {
+      name: 'local-test.jpg',
+      size: 1024,
+      type: 'image/jpeg',
+    };
+
+    render(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={selectedFile}
+        previewUrl="blob:local-preview"
+      />
+    );
+
+    const closeBtn = screen.getByRole('button', { name: 'Remove selected image' });
+    const heading = screen.getByRole('heading', { level: 3, name: 'local-test.jpg' });
+    const img = screen.getByRole('img', { name: 'Preview of selected image local-test.jpg' });
+
+    expect(closeBtn.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(heading.compareDocumentPosition(img) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it('renders preview card in URL tab when URL image is selected', () => {
     const selectedFile = {
       name: 'web-test.jpg',

@@ -270,111 +270,112 @@ export default function FileDropzone({
     if (!selectedFile) return null;
     return (
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row items-center sm:items-start gap-6 p-4 sm:p-5 border-[3px] border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E]">
-          {/* Thumbnail Preview & Attribution */}
-          <div className="w-full md:w-48 flex-shrink-0 flex flex-col gap-2">
-            <div className="w-full h-44 sm:h-40 border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] overflow-hidden shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] relative group">
-              <img
-                src={previewUrl}
-                alt={`Preview of selected image ${selectedFile.name}`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-ink/10 pointer-events-none" />
-            </div>
+        <div className="relative p-4 sm:p-5 border-[3px] border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E]">
+          {/* Accessibility audit remediation: [START]
+              Close control positioned at the top of the DOM container before heading and preview (WCAG 1.3.2 Meaningful Sequence, 2.4.3 Focus Order)
+              2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+          <button
+            ref={closeBtnRef}
+            type="button"
+            onClick={() => handleRemove('close')}
+            disabled={isLoading}
+            className="absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-rose-100 dark:hover:bg-rose-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring z-10"
+            aria-label={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove selected image'}
+          >
+            <X className="w-5 h-5 text-ink dark:text-cream" aria-hidden="true" />
+          </button>
+          {/* Accessibility audit remediation: [END] */}
 
-            {selectedFile.attribution && (
-              <div className="text-[11px] text-ink/80 dark:text-cream/80 font-medium leading-tight p-2 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-                <span>Photo by </span>
-                <a
-                  href={selectedFile.attribution.photographerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
-                >
-                  {selectedFile.attribution.photographerName}
-                </a>
-                <span> from </span>
-                <a
-                  href={selectedFile.attribution.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
-                >
-                  {selectedFile.attribution.sourceName}
-                </a>
-              </div>
-            )}
+          {/* Heading & Status Badges */}
+          <div className="pr-12 mb-4">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+                Ready to Analyze
+              </span>
+              {selectedFile.isDemo || selectedFile.attribution ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+                  <Sparkles className="w-3 h-3" aria-hidden="true" />
+                  <span>Demo Sample</span>
+                </span>
+              ) : selectedFile.isUrl ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+                  <Globe className="w-3 h-3" aria-hidden="true" />
+                  <span>Web URL</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-violet-100 dark:bg-violet-950 dark:text-violet-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+                  <FileImage className="w-3 h-3" aria-hidden="true" />
+                  <span>Local File</span>
+                </span>
+              )}
+            </div>
+            <h3 className="text-lg sm:text-xl font-display font-bold text-ink dark:text-cream break-all">
+              {selectedFile.name}
+            </h3>
           </div>
 
-          {/* Metadata & Actions */}
-          <div className="flex-1 w-full space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-                    Ready to Analyze
-                  </span>
-                  {selectedFile.isDemo || selectedFile.attribution ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-                      <Sparkles className="w-3 h-3" aria-hidden="true" />
-                      <span>Demo Sample</span>
-                    </span>
-                  ) : selectedFile.isUrl ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-                      <Globe className="w-3 h-3" aria-hidden="true" />
-                      <span>Web URL</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-violet-100 dark:bg-violet-950 dark:text-violet-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-                      <FileImage className="w-3 h-3" aria-hidden="true" />
-                      <span>Local File</span>
-                    </span>
-                  )}
+          <div className="flex flex-col md:flex-row items-center sm:items-start gap-6">
+            {/* Thumbnail Preview & Attribution */}
+            <div className="w-full md:w-48 flex-shrink-0 flex flex-col gap-2">
+              <div className="w-full h-44 sm:h-40 border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] overflow-hidden shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] relative group">
+                <img
+                  src={previewUrl}
+                  alt={`Preview of selected image ${selectedFile.name}`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-ink/10 pointer-events-none" />
+              </div>
+
+              {selectedFile.attribution && (
+                <div className="text-[11px] text-ink/80 dark:text-cream/80 font-medium leading-tight p-2 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+                  <span>Photo by </span>
+                  <a
+                    href={selectedFile.attribution.photographerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
+                  >
+                    {selectedFile.attribution.photographerName}
+                  </a>
+                  <span> from </span>
+                  <a
+                    href={selectedFile.attribution.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
+                  >
+                    {selectedFile.attribution.sourceName}
+                  </a>
                 </div>
-                <h3 className="text-lg sm:text-xl font-display font-bold text-ink dark:text-cream break-all">
-                  {selectedFile.name}
-                </h3>
-              </div>
-
-              {/* Accessibility audit remediation: [START]
-                  Accessible Close control ref and label for demo and URL preview cards (WCAG 2.4.3, 4.1.2)
-                  2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
-              <button
-                ref={closeBtnRef}
-                type="button"
-                onClick={() => handleRemove('close')}
-                disabled={isLoading}
-                className="p-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-rose-100 dark:hover:bg-rose-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
-                aria-label={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove selected image'}
-              >
-                <X className="w-5 h-5 text-ink dark:text-cream" aria-hidden="true" />
-              </button>
-              {/* Accessibility audit remediation: [END] */}
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono text-ink/80 dark:text-cream/80 pt-1">
-              <div className="bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-                <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">SIZE</span>
-                <span className="font-bold text-ink dark:text-cream">
-                  {selectedFile.size ? formatFileSize(selectedFile.size) : 'Web Image'}
-                </span>
+            {/* Metadata & Actions */}
+            <div className="flex-1 w-full space-y-3">
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono text-ink/80 dark:text-cream/80 pt-1">
+                <div className="bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+                  <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">SIZE</span>
+                  <span className="font-bold text-ink dark:text-cream">
+                    {selectedFile.size ? formatFileSize(selectedFile.size) : 'Web Image'}
+                  </span>
+                </div>
+                <div className="bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
+                  <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">TYPE</span>
+                  <span className="font-bold text-ink dark:text-cream">{selectedFile.type || 'image/jpeg'}</span>
+                </div>
               </div>
-              <div className="bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
-                <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">TYPE</span>
-                <span className="font-bold text-ink dark:text-cream">{selectedFile.type || 'image/jpeg'}</span>
-              </div>
-            </div>
 
-            <div className="pt-2 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => handleRemove('change')}
-                disabled={isLoading}
-                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-amber-100 dark:hover:bg-[#383838] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring text-ink dark:text-cream"
-              >
-                <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Change Image</span>
-              </button>
+              <div className="pt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleRemove('change')}
+                  disabled={isLoading}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-amber-100 dark:hover:bg-[#383838] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring text-ink dark:text-cream"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Change Image</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
