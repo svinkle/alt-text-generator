@@ -2,6 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    
+    <!-- Dark Mode Theme Initialization: Executed synchronously at top of head before any stylesheets, fonts, or body content to eliminate FOUC / light flash -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = saved === 'dark' || (!saved && prefersDark);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      /* Critical inline styles to prevent any flash of unstyled or light content during load */
+      html {
+        background-color: #FBF8F1;
+        color: #1E1B18;
+      }
+      html.dark {
+        background-color: #101010;
+        color: #FBF8F1;
+        color-scheme: dark;
+      }
+      body {
+        background-color: #FBF8F1;
+        color: #1E1B18;
+      }
+      html.dark body {
+        background-color: #101010;
+        color: #FBF8F1;
+      }
+    </style>
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#7C3AED" />
@@ -21,21 +58,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
-
-    <!-- Dark Mode Theme Initialization: Default to OS settings or saved preference -->
-    <script>
-      (function() {
-        try {
-          var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && prefersDark)) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        } catch (e) {}
-      })();
-    </script>
   </head>
   <body class="bg-cream text-ink dark:bg-[#101010] dark:text-[#FBF8F1] font-body antialiased min-h-screen selection:bg-violet-600 selection:text-white">
     <div id="root"></div>

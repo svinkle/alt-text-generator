@@ -7,6 +7,7 @@ describe("Header", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     localStorage.clear();
+    document.documentElement.classList.remove("dark");
   });
 
   it("renders application title, logo, and GitHub link, with EngineBadge commented out", () => {
