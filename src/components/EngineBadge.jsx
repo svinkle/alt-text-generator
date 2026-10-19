@@ -10,26 +10,46 @@ import { Cpu, Zap, Info, X } from 'lucide-react';
 export default function EngineBadge({ engine = 'cloud-fallback', label, details }) {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const modalRef = useRef(null);
+  // Accessibility audit remediation: [START]
+  // Move focus into modal on open, trap focus within dialog, and return focus to trigger button on close (WCAG 2.4.3)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const triggerRef = useRef(null);
   const isOnDevice = engine === 'on-device';
 
   const displayLabel = label || (isOnDevice ? 'Engine: On-Device (Gemini Nano)' : 'Engine: Cloud Edge (Gemini 3.x Flash)');
 
+  const handleCloseModal = () => {
+    setShowInfoModal(false);
+    setTimeout(() => {
+      triggerRef.current?.focus();
+    }, 0);
+  };
+
   // Close modal on Escape key press and trap Tab focus within dialog
   useEffect(() => {
+    if (!showInfoModal) return;
+
+    const focusableSelector =
+      'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const initialFocusable = modalRef.current?.querySelectorAll(focusableSelector);
+    if (initialFocusable?.length > 0) {
+      initialFocusable[0].focus();
+    }
+
     const handleKeyDown = (e) => {
-      if (!showInfoModal) return;
       if (e.key === 'Escape') {
-        setShowInfoModal(false);
+        handleCloseModal();
         return;
       }
       if (e.key === 'Tab' && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll(
-          'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
-        );
+        const focusable = modalRef.current.querySelectorAll(focusableSelector);
         if (focusable.length > 0) {
           const first = focusable[0];
           const last = focusable[focusable.length - 1];
-          if (e.shiftKey && document.activeElement === first) {
+          if (!modalRef.current.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+          } else if (e.shiftKey && document.activeElement === first) {
             e.preventDefault();
             last.focus();
           } else if (!e.shiftKey && document.activeElement === last) {
@@ -39,15 +59,15 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
         }
       }
     };
-    if (showInfoModal) {
-      window.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
   }, [showInfoModal]);
+  // Accessibility audit remediation: [END]
 
   const modalContent = showInfoModal ? (
     <div
@@ -55,7 +75,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
       aria-modal="true"
       aria-labelledby="engine-modal-title"
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ink/70"
-      onClick={() => setShowInfoModal(false)}
+      onClick={handleCloseModal}
     >
       <div
         ref={modalRef}
@@ -68,7 +88,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
           </h2>
           <button
             type="button"
-            onClick={() => setShowInfoModal(false)}
+            onClick={handleCloseModal}
             className="p-1.5 border-2 border-ink bg-white hover:bg-amber-100 focus-ring shadow-brutal-sm transition-all"
             aria-label="Close dialog"
           >
@@ -105,7 +125,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
         <div className="mt-6 flex justify-end">
           <button
             type="button"
-            onClick={() => setShowInfoModal(false)}
+            onClick={handleCloseModal}
             className="brutal-btn bg-violet-600 text-white px-5 py-2 text-sm"
           >
             Got it
@@ -119,6 +139,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
     <>
       <div className="inline-flex items-center gap-2">
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setShowInfoModal(true)}
           className={`group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border-2 border-ink text-xs sm:text-sm font-bold shadow-brutal-sm hover:shadow-brutal transition-all duration-150 focus-ring cursor-pointer ${

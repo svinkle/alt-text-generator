@@ -26,16 +26,63 @@ test.describe("Accessibility & Keyboard Navigation Verification", () => {
     await urlTab.click();
     await expect(urlTab).toHaveAttribute("aria-selected", "true");
     await expect(uploadTab).toHaveAttribute("aria-selected", "false");
+    await expect(urlTab).toHaveAttribute("tabindex", "0");
+    await expect(uploadTab).toHaveAttribute("tabindex", "-1");
 
     const urlPanel = page.locator("#panel-url");
     await expect(urlPanel).toHaveAttribute("role", "tabpanel");
     await expect(urlPanel).toHaveAttribute("aria-labelledby", "tab-url");
+
+    // Verify ArrowRight, ArrowLeft, Home, and End keyboard navigation on tabs
+    await urlTab.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(demoTab).toHaveAttribute("aria-selected", "true");
+    await expect(demoTab).toBeFocused();
+
+    await page.keyboard.press("ArrowLeft");
+    await expect(urlTab).toHaveAttribute("aria-selected", "true");
+    await expect(urlTab).toBeFocused();
+
+    await page.keyboard.press("Home");
+    await expect(uploadTab).toHaveAttribute("aria-selected", "true");
+    await expect(uploadTab).toBeFocused();
+
+    await page.keyboard.press("End");
+    await expect(demoTab).toHaveAttribute("aria-selected", "true");
+    await expect(demoTab).toBeFocused();
+  });
+
+  test("Visually hidden file input is excluded from sequential Tab order and accessibility tree", async ({
+    page,
+  }) => {
+    const fileInput = page.locator("#image-file-input");
+    await expect(fileInput).toHaveAttribute("tabindex", "-1");
+    await expect(fileInput).toHaveAttribute("aria-hidden", "true");
+  });
+
+  test("Tablist reflows without horizontal page overflow at 320px viewport width (400% zoom)", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    const hasHorizontalOverflow = await page.evaluate(() => {
+      return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+    });
+    expect(hasHorizontalOverflow).toBe(false);
+  });
+
+  test("Root html element defines scroll-padding-top so sticky header does not obscure focused elements", async ({
+    page,
+  }) => {
+    const scrollPaddingTop = await page.evaluate(() => {
+      return window.getComputedStyle(document.documentElement).scrollPaddingTop;
+    });
+    expect(parseFloat(scrollPaddingTop)).toBeGreaterThanOrEqual(120);
   });
 
   test("Accessible live region announces status updates to screen readers", async ({
     page,
   }) => {
-    const liveRegion = page.locator('div[role="status"][aria-live="polite"]');
+    const liveRegion = page.locator('div[role="status"][aria-live="polite"]').first();
     await expect(liveRegion).toBeAttached();
     await expect(liveRegion).toHaveAttribute("aria-atomic", "true");
 

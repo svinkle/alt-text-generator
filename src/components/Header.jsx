@@ -69,7 +69,11 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
       >
         Skip to main content
       </a>
-      <header className="w-full border-b-[3px] border-ink bg-white sticky top-0 z-30 shadow-brutal-sm">
+      {/* Accessibility audit remediation: [START]
+          Only apply sticky positioning on sm+ viewports so compact/zoomed viewports do not obscure focused controls (WCAG 2.4.11)
+          2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+      <header className="w-full border-b-[3px] border-ink bg-white sm:sticky sm:top-0 z-30 shadow-brutal-sm">
+      {/* Accessibility audit remediation: [END] */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <svg

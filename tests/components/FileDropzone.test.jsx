@@ -20,64 +20,107 @@ describe('FileDropzone', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders tab options and initial upload dropzone', () => {
+  it('renders tab options with roving tabindex, hidden file input removed from tab order, and initial upload dropzone', () => {
     render(<FileDropzone {...defaultProps} />);
 
-    expect(screen.getByRole('tab', { name: /Upload File/i })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Image URL/i })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Try Demo/i })).toBeInTheDocument();
+    const uploadTab = screen.getByRole('tab', { name: /Upload File/i });
+    const urlTab = screen.getByRole('tab', { name: /Image URL/i });
+    const demoTab = screen.getByRole('tab', { name: /Try Demo/i });
+
+    expect(uploadTab).toHaveAttribute('tabIndex', '0');
+    expect(urlTab).toHaveAttribute('tabIndex', '-1');
+    expect(demoTab).toHaveAttribute('tabIndex', '-1');
+
+    const hiddenFileInput = document.getElementById('image-file-input');
+    expect(hiddenFileInput).toHaveAttribute('tabIndex', '-1');
+    expect(hiddenFileInput).toHaveAttribute('aria-hidden', 'true');
+
     expect(screen.getByText('Drag & Drop Image Here')).toBeInTheDocument();
   });
 
-  it('switches between tabs cleanly, including returning to Upload File tab', () => {
+  it('switches between tabs cleanly via click and supports ArrowRight, ArrowLeft, Home, and End keyboard navigation', () => {
     render(<FileDropzone {...defaultProps} />);
 
-    // Switch to URL tab
-    fireEvent.click(screen.getByRole('tab', { name: /Image URL/i }));
+    const tablist = screen.getByRole('tablist', { name: 'Image source options' });
+    const uploadTab = screen.getByRole('tab', { name: /Upload File/i });
+    const urlTab = screen.getByRole('tab', { name: /Image URL/i });
+    const demoTab = screen.getByRole('tab', { name: /Try Demo/i });
+
+    // ArrowRight from Upload -> URL
+    uploadTab.focus();
+    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    expect(urlTab).toHaveAttribute('aria-selected', 'true');
+    expect(urlTab).toHaveAttribute('tabIndex', '0');
+    expect(uploadTab).toHaveAttribute('tabIndex', '-1');
+    expect(document.activeElement).toBe(urlTab);
+
+    // ArrowRight from URL -> Demo
+    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    expect(demoTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(demoTab);
+
+    // ArrowRight from Demo wraps around -> Upload
+    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    expect(uploadTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(uploadTab);
+
+    // ArrowLeft from Upload wraps around -> Demo
+    fireEvent.keyDown(tablist, { key: 'ArrowLeft' });
+    expect(demoTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(demoTab);
+
+    // Home moves to first tab (Upload)
+    fireEvent.keyDown(tablist, { key: 'Home' });
+    expect(uploadTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(uploadTab);
+
+    // End moves to last tab (Demo)
+    fireEvent.keyDown(tablist, { key: 'End' });
+    expect(demoTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(demoTab);
+
+    // Unhandled key does not change tab
+    fireEvent.keyDown(tablist, { key: 'Tab' });
+    expect(demoTab).toHaveAttribute('aria-selected', 'true');
+
+    // Switch via click to URL tab, Demo tab, and back to Upload tab
+    fireEvent.click(urlTab);
     expect(screen.getByLabelText(/Enter Image URL/i)).toBeInTheDocument();
 
-    // Switch to Demo tab
-    fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
+    fireEvent.click(demoTab);
     expect(screen.getByText('Try a Demo Image')).toBeInTheDocument();
     expect(screen.getByText('Mountain Sunrise')).toBeInTheDocument();
     expect(screen.getByText('Team Collaboration')).toBeInTheDocument();
 
-    // Switch back to Upload tab
-    fireEvent.click(screen.getByRole('tab', { name: /Upload File/i }));
+    fireEvent.click(uploadTab);
     expect(screen.getByText('Drag & Drop Image Here')).toBeInTheDocument();
   });
 
-  it('handles drag and drop interactions and file input triggers', () => {
+  it('handles drag and drop interactions, inline accessible file validation errors, and file input triggers', () => {
     const onFileSelect = vi.fn();
     render(<FileDropzone {...defaultProps} onFileSelect={onFileSelect} />);
 
-    const dropZone = screen.getByRole('button', { name: /Upload image drop zone/i });
+    const dropZone = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
+    expect(dropZone).toHaveAttribute('aria-describedby', 'file-upload-help');
 
     // Drag enter, over, leave
     fireEvent.dragEnter(dropZone);
     fireEvent.dragOver(dropZone);
     fireEvent.dragLeave(dropZone);
 
-    // Drop valid image
-    const file = new File(['content'], 'test.png', { type: 'image/png' });
-    fireEvent.drop(dropZone, {
-      dataTransfer: {
-        files: [file],
-      },
-    });
-    expect(onFileSelect).toHaveBeenCalledWith(file);
-
-    // Drop unsupported file alerts
-    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    // Drop unsupported file displays persistent inline role="alert" error instead of window.alert
     const txtFile = new File(['text'], 'test.txt', { type: 'text/plain' });
     fireEvent.drop(dropZone, {
       dataTransfer: {
         files: [txtFile],
       },
     });
-    expect(alertMock).toHaveBeenCalledWith('Please drop a supported image file (PNG, JPEG, or WebP).');
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Unsupported file format. Please upload a PNG, JPEG, or WebP image.'
+    );
+    expect(dropZone).toHaveAttribute('aria-describedby', 'file-upload-help file-upload-error');
 
-    // Drop oversized file (> 10MB) alerts
+    // Drop oversized file (> 10MB) displays persistent inline role="alert" error
     const largeFile = new File(['x'], 'huge.png', { type: 'image/png' });
     Object.defineProperty(largeFile, 'size', { value: 11 * 1024 * 1024 });
     fireEvent.drop(dropZone, {
@@ -85,7 +128,19 @@ describe('FileDropzone', () => {
         files: [largeFile],
       },
     });
-    expect(alertMock).toHaveBeenCalledWith('File size exceeds the 10MB maximum limit.');
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'File size exceeds the 10MB maximum limit. Please choose a smaller image.'
+    );
+
+    // Drop valid image clears inline error and calls onFileSelect
+    const file = new File(['content'], 'test.png', { type: 'image/png' });
+    fireEvent.drop(dropZone, {
+      dataTransfer: {
+        files: [file],
+      },
+    });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(onFileSelect).toHaveBeenCalledWith(file);
 
     // KeyDown Enter & Space triggers file input click
     fireEvent.keyDown(dropZone, { key: 'Enter' });
@@ -100,7 +155,7 @@ describe('FileDropzone', () => {
     expect(onFileSelect).toHaveBeenCalledTimes(2);
   });
 
-  it('validates URL input on form submit including protocol restriction', () => {
+  it('validates URL input on form submit and associates error and hint with input via aria-describedby and aria-invalid', () => {
     const onUrlSubmit = vi.fn();
     render(<FileDropzone {...defaultProps} onUrlSubmit={onUrlSubmit} />);
 
@@ -109,25 +164,33 @@ describe('FileDropzone', () => {
     const form = screen.getByLabelText(/Enter Image URL/i).closest('form');
     const input = screen.getByLabelText(/Enter Image URL/i);
 
+    expect(input).toHaveAttribute('aria-invalid', 'false');
+    expect(input).toHaveAttribute('aria-describedby', 'image-url-hint');
+
     // Submit empty
     fireEvent.submit(form);
-    expect(screen.getByText('Please enter an image URL.')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Please enter an image URL.');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-describedby', 'image-url-hint image-url-error');
 
     // Submit invalid URL
     fireEvent.change(input, { target: { value: 'not-a-valid-url' } });
     fireEvent.submit(form);
-    expect(screen.getByText('Please enter a valid URL (including https://).')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Please enter a valid URL (including https://).');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
 
     // Submit disallowed protocol (javascript:)
     fireEvent.change(input, { target: { value: 'javascript:alert(1)' } });
     fireEvent.submit(form);
-    expect(screen.getByText('Please enter a valid URL (including https://).')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Please enter a valid URL (including https://).');
 
     // Submit valid URL
     fireEvent.change(input, { target: { value: 'https://example.com/test.jpg' } });
     fireEvent.submit(form);
     expect(onUrlSubmit).toHaveBeenCalledWith('https://example.com/test.jpg');
     expect(screen.queryByText(/Please enter a valid URL/i)).not.toBeInTheDocument();
+    expect(input).toHaveAttribute('aria-invalid', 'false');
+    expect(input).toHaveAttribute('aria-describedby', 'image-url-hint');
   });
 
   it('renders preview card in Upload tab when upload file is selected', () => {
@@ -404,13 +467,13 @@ describe('FileDropzone', () => {
 
   it('sets dropzone tabIndex to -1 when isLoading is true and no file is selected', () => {
     render(<FileDropzone {...defaultProps} isLoading={true} />);
-    const dropZone = screen.getByRole('button', { name: /Upload image drop zone/i });
+    const dropZone = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
     expect(dropZone).toHaveAttribute('tabIndex', '-1');
   });
 
   it('ignores dragLeave when moving to a child element inside drop zone', () => {
     render(<FileDropzone {...defaultProps} />);
-    const dropZone = screen.getByRole('button', { name: /Upload image drop zone/i });
+    const dropZone = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
     fireEvent.dragEnter(dropZone);
     const child = dropZone.firstElementChild;
     const leaveEvent = new MouseEvent('dragleave', { bubbles: true, cancelable: true });
@@ -430,7 +493,7 @@ describe('FileDropzone', () => {
   it('handles drop without files gracefully', () => {
     const onFileSelect = vi.fn();
     render(<FileDropzone {...defaultProps} onFileSelect={onFileSelect} />);
-    const dropZone = screen.getByRole('button', { name: /Upload image drop zone/i });
+    const dropZone = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
     fireEvent.drop(dropZone, { dataTransfer: { files: [] } });
     expect(onFileSelect).not.toHaveBeenCalled();
   });

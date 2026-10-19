@@ -11,7 +11,7 @@ test.describe('UI Components & Layout Verification', () => {
     await expect(page.getByText('Accessible, objective image descriptions powered by progressive AI')).toBeVisible();
   });
 
-  test('EngineBadge displays status and opens interactive dialog modal', async ({ page }) => {
+  test('EngineBadge displays status, moves focus into dialog on open, and restores focus on close', async ({ page }) => {
     const engineBtn = page.getByRole('button', { name: /Click for engine details/i });
     await expect(engineBtn).toBeVisible();
 
@@ -24,16 +24,21 @@ test.describe('UI Components & Layout Verification', () => {
     await expect(dialog.getByText('Tier 1: On-Device (Chrome Built-in AI)')).toBeVisible();
     await expect(dialog.getByText('Tier 2: Cloud Edge (Serverless Gemini 3.x Flash)')).toBeVisible();
 
-    // Close via close button
+    // Close button inside modal receives initial focus
     const closeBtn = dialog.getByRole('button', { name: 'Close dialog' });
+    await expect(closeBtn).toBeFocused();
+
+    // Close via close button and verify focus returns to trigger button
     await closeBtn.click();
     await expect(dialog).not.toBeVisible();
+    await expect(engineBtn).toBeFocused();
 
-    // Open again and close via Escape key
+    // Open again and close via Escape key, verifying focus returns to trigger button
     await engineBtn.click();
     await expect(dialog).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog).not.toBeVisible();
+    await expect(engineBtn).toBeFocused();
   });
 
   test('Footer displays author attribution and GitHub link', async ({ page }) => {

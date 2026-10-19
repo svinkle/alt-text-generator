@@ -125,13 +125,25 @@ describe('ApiKeyModal', () => {
     expect(localStorage.getItem('gemini_api_key')).toBe('NewKey');
   });
 
-  it('traps Tab and Shift+Tab focus within the modal and cleans up timer on early unmount', () => {
+  it('moves focus into the modal on open, traps Tab and Shift+Tab focus (including from outside), and cleans up timer on early unmount', () => {
     vi.useFakeTimers();
     const onClose = vi.fn();
     const { unmount } = render(<ApiKeyModal isOpen={true} onClose={onClose} />);
 
     const closeBtn = screen.getByRole('button', { name: 'Close dialog' });
     const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
+
+    // Focus should automatically move to first focusable element on open
+    expect(document.activeElement).toBe(closeBtn);
+
+    // If focus escapes to an outside element, pressing Tab pulls focus back to first focusable element
+    const outsideBtn = document.createElement('button');
+    document.body.appendChild(outsideBtn);
+    outsideBtn.focus();
+    expect(document.activeElement).toBe(outsideBtn);
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: false });
+    expect(document.activeElement).toBe(closeBtn);
+    document.body.removeChild(outsideBtn);
 
     // Focus first focusable element and press Shift+Tab -> wraps to last enabled focusable element (Cancel button when input is empty)
     closeBtn.focus();

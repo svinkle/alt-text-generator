@@ -42,19 +42,20 @@ describe('OutputSnippet', () => {
     expect(screen.queryByText(/Generated via Cloud Edge Fallback/i)).not.toBeInTheDocument();
   });
 
-  it('copies raw alt text to clipboard and shows Copied! state', async () => {
+  it('copies raw alt text to clipboard, shows Copied! state, and announces status via polite live region', async () => {
     vi.useFakeTimers();
     vi.spyOn(clipboardModule, 'copyToClipboard').mockResolvedValue(true);
 
     render(<OutputSnippet altText="Copy me" onAltTextChange={vi.fn()} filename="test.jpg" />);
 
-    const copyRawBtn = screen.getByRole('button', { name: 'Copy raw alt text to clipboard' });
+    const copyRawBtn = screen.getByRole('button', { name: /Copy Text.*raw alt text to clipboard/i });
     await act(async () => {
       fireEvent.click(copyRawBtn);
     });
 
     expect(clipboardModule.copyToClipboard).toHaveBeenCalledWith('Copy me');
-    expect(screen.getByText('Copied!')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Copied!.*raw alt text to clipboard/i })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Copied raw alt text to clipboard.');
 
     act(() => {
       vi.advanceTimersByTime(2100);
@@ -69,7 +70,7 @@ describe('OutputSnippet', () => {
 
     render(<OutputSnippet altText="Copy me" onAltTextChange={vi.fn()} filename="test.jpg" />);
 
-    const copyRawBtn = screen.getByRole('button', { name: 'Copy raw alt text to clipboard' });
+    const copyRawBtn = screen.getByRole('button', { name: /Copy Text.*raw alt text to clipboard/i });
     await act(async () => {
       fireEvent.click(copyRawBtn);
     });
@@ -77,33 +78,41 @@ describe('OutputSnippet', () => {
     expect(screen.queryByText('Copied!')).not.toBeInTheDocument();
   });
 
-  it('copies HTML snippet to clipboard', async () => {
+  it('copies HTML snippet to clipboard and announces status via polite live region', async () => {
     vi.spyOn(clipboardModule, 'copyToClipboard').mockResolvedValue(true);
 
     render(<OutputSnippet altText="Alt" onAltTextChange={vi.fn()} filename="img.png" />);
 
-    const copyHtmlBtn = screen.getByRole('button', { name: 'Copy HTML image tag snippet to clipboard' });
+    const copyHtmlBtn = screen.getByRole('button', { name: /Copy HTML.*image tag snippet to clipboard/i });
     await act(async () => {
       fireEvent.click(copyHtmlBtn);
     });
 
     expect(clipboardModule.copyToClipboard).toHaveBeenCalledWith('<img src="img.png" alt="Alt" />');
+    expect(screen.getByRole('button', { name: /Copied!.*HTML image tag snippet to clipboard/i })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Copied HTML snippet to clipboard.');
   });
 
-  it('copies Markdown snippet to clipboard', async () => {
+  it('copies Markdown snippet to clipboard, uses high-contrast bg-mint text-ink classes, and announces status via polite live region', async () => {
     vi.spyOn(clipboardModule, 'copyToClipboard').mockResolvedValue(true);
 
     render(<OutputSnippet altText="Alt" onAltTextChange={vi.fn()} filename="img.png" />);
 
-    const copyMdBtn = screen.getByRole('button', { name: 'Copy Markdown image syntax to clipboard' });
+    const copyMdBtn = screen.getByRole('button', { name: /Copy Markdown.*image syntax to clipboard/i });
+    expect(copyMdBtn.className).toContain('bg-mint');
+    expect(copyMdBtn.className).toContain('text-ink');
+
     await act(async () => {
       fireEvent.click(copyMdBtn);
     });
 
     expect(clipboardModule.copyToClipboard).toHaveBeenCalledWith('![Alt](img.png)');
+    expect(screen.getByRole('button', { name: /Copied!.*Markdown image syntax to clipboard/i })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Copied Markdown syntax to clipboard.');
   });
 
-  it('toggles edit mode and allows changing alt text', () => {
+  it('toggles edit mode, moves focus to textarea, links helper text via aria-describedby, and allows changing alt text', () => {
+    vi.useFakeTimers();
     const onAltTextChange = vi.fn();
     render(<OutputSnippet altText="Original text" onAltTextChange={onAltTextChange} filename="test.png" />);
 
@@ -113,6 +122,10 @@ describe('OutputSnippet', () => {
     const textarea = screen.getByRole('textbox', { name: 'Edit alt text' });
     expect(textarea).toBeInTheDocument();
     expect(textarea.value).toBe('Original text');
+    expect(textarea).toHaveAttribute('aria-describedby', 'edit-alt-text-help');
+
+    vi.runAllTimers();
+    expect(document.activeElement).toBe(textarea);
 
     fireEvent.change(textarea, { target: { value: 'New text' } });
     expect(onAltTextChange).toHaveBeenCalledWith('New text');
@@ -121,6 +134,7 @@ describe('OutputSnippet', () => {
     const doneBtn = screen.getByRole('button', { name: 'Done editing alt text' });
     fireEvent.click(doneBtn);
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    vi.useRealTimers();
   });
 
   it('escapes HTML attribute characters and Markdown delimiters in generated snippets', () => {

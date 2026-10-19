@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  /* Accessibility audit remediation: [START] */
+  /* Add top scroll padding so sticky header does not obscure focused elements (WCAG 2.4.11) */
+  /* 2026-10-19, Scott Vinkle <scott@scottvinkle.com> */
+  html {
+    scroll-padding-top: 10rem;
+  }
+  /* Accessibility audit remediation: [END] */
+
   /* Default focus-visible style for all interactive elements to ensure high contrast & WCAG compliance */
   :focus-visible {
     outline: 5px dotted #7C3AED !important;

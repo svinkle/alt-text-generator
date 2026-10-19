@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Copy, Check, Code, FileText, Sparkles, Cpu, Edit3 } from 'lucide-react';
 import { copyToClipboard } from '../utils/copyToClipboard';
 
@@ -18,6 +18,21 @@ export default function OutputSnippet({
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  // Accessibility audit remediation: [START]
+  // Move focus to revealed textarea when activating Edit mode (WCAG 2.4.3)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const textareaRef = useRef(null);
+
+  const handleToggleEdit = () => {
+    const nextEditing = !isEditing;
+    setIsEditing(nextEditing);
+    if (nextEditing) {
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    }
+  };
+  // Accessibility audit remediation: [END]
 
   const cleanFilename = filename || 'image.jpg';
   const htmlSnippet = `<img src="${escapeHtmlAttr(cleanFilename)}" alt="${escapeHtmlAttr(altText)}" />`;
@@ -67,9 +82,12 @@ export default function OutputSnippet({
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Accessibility audit remediation: [START]
+                  Move focus to textarea on Edit toggle and ensure copy button accessible name begins with visible text (WCAG 2.4.3, 2.5.3, 4.1.3)
+                  2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
               <button
                 type="button"
-                onClick={() => setIsEditing(!isEditing)}
+                onClick={handleToggleEdit}
                 className="px-2.5 py-1 text-xs font-bold border-2 border-ink bg-white hover:bg-cream shadow-brutal-sm active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring flex items-center gap-1"
                 aria-label={isEditing ? 'Done editing alt text' : 'Edit alt text'}
               >
@@ -85,37 +103,45 @@ export default function OutputSnippet({
                     ? 'bg-mint text-ink'
                     : 'bg-violet-600 text-white hover:bg-violet-700'
                 }`}
-                aria-label="Copy raw alt text to clipboard"
               >
                 {copiedKey === 'raw' ? (
                   <>
                     <Check className="w-4 h-4 stroke-[3]" aria-hidden="true" />
                     <span>Copied!</span>
+                    <span className="sr-only"> raw alt text to clipboard</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-4 h-4" aria-hidden="true" />
                     <span>Copy Text</span>
+                    <span className="sr-only"> (raw alt text to clipboard)</span>
                   </>
                 )}
               </button>
+              {/* Accessibility audit remediation: [END] */}
             </div>
           </div>
 
           {isEditing ? (
+            /* Accessibility audit remediation: [START]
+               Focus textarea on open and link helper note via aria-describedby (WCAG 2.4.3, 1.3.1)
+               2026-10-19, Scott Vinkle <scott@scottvinkle.com> */
             <div>
               <label htmlFor="edit-alt-text" className="sr-only">Edit alt text</label>
               <textarea
+                ref={textareaRef}
                 id="edit-alt-text"
                 rows={3}
                 value={altText}
                 onChange={(e) => onAltTextChange(e.target.value)}
+                aria-describedby="edit-alt-text-help"
                 className="w-full p-3 font-body text-base text-ink bg-cream border-2 border-ink focus-ring resize-y"
               />
-              <p className="text-xs text-ink/70 mt-1 font-medium">
+              <p id="edit-alt-text-help" className="text-xs text-ink/70 mt-1 font-medium">
                 Changes to the alt text will immediately reflect in the HTML and Markdown snippets below.
               </p>
             </div>
+            /* Accessibility audit remediation: [END] */
           ) : (
             <div className="p-4 bg-cream border-2 border-ink font-body text-base sm:text-lg text-ink leading-relaxed">
               "{altText}"
@@ -135,6 +161,9 @@ export default function OutputSnippet({
               </h3>
             </div>
 
+            {/* Accessibility audit remediation: [START]
+                Ensure copy button accessible name matches visible text in both default and Copied! states (WCAG 2.5.3, 4.1.3)
+                2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
             <button
               type="button"
               onClick={() => handleCopy('html', htmlSnippet)}
@@ -143,20 +172,22 @@ export default function OutputSnippet({
                   ? 'bg-mint text-ink'
                   : 'bg-amber-400 text-ink hover:bg-amber-500'
               }`}
-              aria-label="Copy HTML image tag snippet to clipboard"
             >
               {copiedKey === 'html' ? (
                 <>
                   <Check className="w-4 h-4 stroke-[3]" aria-hidden="true" />
                   <span>Copied!</span>
+                  <span className="sr-only"> HTML image tag snippet to clipboard</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" aria-hidden="true" />
                   <span>Copy HTML</span>
+                  <span className="sr-only"> image tag snippet to clipboard</span>
                 </>
               )}
             </button>
+            {/* Accessibility audit remediation: [END] */}
           </div>
 
           <div className="p-3 sm:p-4 bg-[#1E1B18] text-[#FBF8F1] border-2 border-ink font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
@@ -176,28 +207,33 @@ export default function OutputSnippet({
               </h3>
             </div>
 
+            {/* Accessibility audit remediation: [START]
+                Use high-contrast text-ink on bg-mint (6.76:1) instead of white on emerald-500 (WCAG 1.4.3) and align accessible name with visible text (WCAG 2.5.3, 4.1.3)
+                2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
             <button
               type="button"
               onClick={() => handleCopy('markdown', markdownSnippet)}
               className={`brutal-btn px-3.5 py-1.5 text-xs sm:text-sm flex items-center gap-1.5 ${
                 copiedKey === 'markdown'
                   ? 'bg-mint text-ink'
-                  : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                  : 'bg-mint text-ink hover:bg-emerald-400'
               }`}
-              aria-label="Copy Markdown image syntax to clipboard"
             >
               {copiedKey === 'markdown' ? (
                 <>
                   <Check className="w-4 h-4 stroke-[3]" aria-hidden="true" />
                   <span>Copied!</span>
+                  <span className="sr-only"> Markdown image syntax to clipboard</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" aria-hidden="true" />
                   <span>Copy Markdown</span>
+                  <span className="sr-only"> image syntax to clipboard</span>
                 </>
               )}
             </button>
+            {/* Accessibility audit remediation: [END] */}
           </div>
 
           <div className="p-3 sm:p-4 bg-[#1E1B18] text-[#FBF8F1] border-2 border-ink font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
@@ -205,6 +241,16 @@ export default function OutputSnippet({
           </div>
         </div>
       </div>
+
+      {/* Accessibility audit remediation: [START]
+          Polite live region to announce clipboard copy confirmation to screen readers (WCAG 4.1.3)
+          2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {copiedKey === 'raw' && 'Copied raw alt text to clipboard.'}
+        {copiedKey === 'html' && 'Copied HTML snippet to clipboard.'}
+        {copiedKey === 'markdown' && 'Copied Markdown syntax to clipboard.'}
+      </div>
+      {/* Accessibility audit remediation: [END] */}
     </section>
   );
 }

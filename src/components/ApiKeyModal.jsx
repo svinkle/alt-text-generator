@@ -24,21 +24,33 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
     };
   }, [isOpen]);
 
+  // Accessibility audit remediation: [START]
+  // Move focus into modal on open and strictly trap Tab focus within dialog (WCAG 2.4.3)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
   useEffect(() => {
+    if (!isOpen) return;
+
+    const focusableSelector =
+      'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const initialFocusable = modalRef.current?.querySelectorAll(focusableSelector);
+    if (initialFocusable?.length > 0) {
+      initialFocusable[0].focus();
+    }
+
     const handleKeyDown = (e) => {
-      if (!isOpen) return;
       if (e.key === 'Escape') {
         onClose();
         return;
       }
       if (e.key === 'Tab' && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll(
-          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
+        const focusable = modalRef.current.querySelectorAll(focusableSelector);
         if (focusable.length > 0) {
           const first = focusable[0];
           const last = focusable[focusable.length - 1];
-          if (e.shiftKey && document.activeElement === first) {
+          if (!modalRef.current.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+          } else if (e.shiftKey && document.activeElement === first) {
             e.preventDefault();
             last.focus();
           } else if (!e.shiftKey && document.activeElement === last) {
@@ -48,15 +60,15 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
         }
       }
     };
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
   }, [isOpen, onClose]);
+  // Accessibility audit remediation: [END]
 
   if (!isOpen) return null;
 

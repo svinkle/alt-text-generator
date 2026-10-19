@@ -167,7 +167,7 @@ describe('App Component', () => {
       render(<App />);
     });
     const file = new File(['1'], 'img.png', { type: 'image/png' });
-    const dropZone = screen.getByRole('button', { name: /Upload image drop zone/i });
+    const dropZone = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
     await act(async () => {
       fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
     });
@@ -304,7 +304,7 @@ describe('App Component', () => {
     });
 
     const file = new File(['content'], 'upload-sample.png', { type: 'image/png' });
-    const dropZone = screen.getByRole('button', { name: /Upload image drop zone/i });
+    const dropZone = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
 
     await act(async () => {
       fireEvent.drop(dropZone, {
@@ -325,7 +325,7 @@ describe('App Component', () => {
 
     const file1 = new File(['1'], 'first.png', { type: 'image/png' });
     const file2 = new File(['2'], 'second.png', { type: 'image/png' });
-    const dropZone = screen.getByRole('button', { name: /Upload image drop zone/i });
+    const dropZone = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
 
     // First upload
     await act(async () => {

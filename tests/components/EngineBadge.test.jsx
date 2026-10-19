@@ -18,10 +18,12 @@ describe('EngineBadge', () => {
     expect(screen.getByText('Custom Cloud Engine')).toBeInTheDocument();
   });
 
-  it('opens modal on click, displays tiers, and closes via close button', () => {
+  it('opens modal on click, moves focus inside, displays tiers, and restores focus to trigger via close button', () => {
+    vi.useFakeTimers();
     render(<EngineBadge />);
 
     const badgeBtn = screen.getByRole('button', { name: /Click for engine details/i });
+    badgeBtn.focus();
     fireEvent.click(badgeBtn);
 
     const dialog = screen.getByRole('dialog', { name: /Two-Tier AI Architecture/i });
@@ -30,34 +32,55 @@ describe('EngineBadge', () => {
     expect(screen.getByText('Tier 2: Cloud Edge (Serverless Gemini 3.x Flash)')).toBeInTheDocument();
 
     const closeBtn = screen.getByRole('button', { name: 'Close dialog' });
+    // Focus should automatically move to first focusable element inside modal
+    expect(document.activeElement).toBe(closeBtn);
+
     fireEvent.click(closeBtn);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    vi.runAllTimers();
+    expect(document.activeElement).toBe(badgeBtn);
+    vi.useRealTimers();
   });
 
-  it('closes modal on Got it button click', () => {
+  it('closes modal on Got it button click and restores focus to trigger', () => {
+    vi.useFakeTimers();
     render(<EngineBadge />);
-    fireEvent.click(screen.getByRole('button', { name: /Click for engine details/i }));
+    const badgeBtn = screen.getByRole('button', { name: /Click for engine details/i });
+    fireEvent.click(badgeBtn);
 
     const gotItBtn = screen.getByRole('button', { name: 'Got it' });
     fireEvent.click(gotItBtn);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    vi.runAllTimers();
+    expect(document.activeElement).toBe(badgeBtn);
+    vi.useRealTimers();
   });
 
-  it('closes modal on Escape key and cleans up event listener', () => {
+  it('closes modal on Escape key, restores focus to trigger, and cleans up event listener', () => {
+    vi.useFakeTimers();
     const { unmount } = render(<EngineBadge />);
-    fireEvent.click(screen.getByRole('button', { name: /Click for engine details/i }));
+    const badgeBtn = screen.getByRole('button', { name: /Click for engine details/i });
+    fireEvent.click(badgeBtn);
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
+    vi.runAllTimers();
+    expect(document.activeElement).toBe(badgeBtn);
+
     // Verify unmount cleans up
     unmount();
+    vi.useRealTimers();
   });
 
   it('closes modal on backdrop click and prevents close when clicking modal body', () => {
+    vi.useFakeTimers();
     render(<EngineBadge />);
-    fireEvent.click(screen.getByRole('button', { name: /Click for engine details/i }));
+    const badgeBtn = screen.getByRole('button', { name: /Click for engine details/i });
+    fireEvent.click(badgeBtn);
 
     const dialog = screen.getByRole('dialog');
     const modalContent = screen.getByText('⚡ Two-Tier AI Architecture');
@@ -66,18 +89,28 @@ describe('EngineBadge', () => {
     fireEvent.click(modalContent);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-    // Click on backdrop closes
+    // Click on backdrop closes and restores focus
     fireEvent.click(dialog);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    vi.runAllTimers();
+    expect(document.activeElement).toBe(badgeBtn);
+    vi.useRealTimers();
   });
 
-  it('traps Tab and Shift+Tab focus within the modal without closing it', () => {
+  it('traps Tab and Shift+Tab focus within the modal, including pulling focus in if outside', () => {
     render(<EngineBadge />);
-    fireEvent.click(screen.getByRole('button', { name: /Click for engine details/i }));
+    const badgeBtn = screen.getByRole('button', { name: /Click for engine details/i });
+    fireEvent.click(badgeBtn);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     const closeBtn = screen.getByRole('button', { name: 'Close dialog' });
     const gotItBtn = screen.getByRole('button', { name: 'Got it' });
+
+    // If focus is somehow outside the modal (e.g. on badgeBtn), pressing Tab pulls it into first focusable element
+    badgeBtn.focus();
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: false });
+    expect(document.activeElement).toBe(closeBtn);
 
     // Shift+Tab on first focusable element wraps to last
     closeBtn.focus();

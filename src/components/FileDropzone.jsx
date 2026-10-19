@@ -27,9 +27,45 @@ export default function FileDropzone({
   const [isDragOver, setIsDragOver] = useState(false);
   const [urlInputValue, setUrlInputValue] = useState('');
   const [urlInputError, setUrlInputError] = useState('');
+  // Accessibility audit remediation: [START]
+  // Replace blocking window.alert() with inline accessible error state and add dynamic APG Tabs keyboard navigation (WCAG 2.1.1, 3.3.1)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const [uploadError, setUploadError] = useState('');
+  const tablistRef = useRef(null);
+  // Accessibility audit remediation: [END]
   const fileInputRef = useRef(null);
   const natureBtnRef = useRef(null);
   const teamBtnRef = useRef(null);
+
+  // Accessibility audit remediation: [START]
+  // Dynamic WAI-ARIA APG Tabs keyboard navigation (ArrowRight, ArrowLeft, Home, End) across all tab elements (WCAG 2.1.1)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
+  const handleTabKeyDown = (e) => {
+    const tabs = Array.from(tablistRef.current.querySelectorAll('[role="tab"]'));
+    const currentIndex = tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true');
+    let nextIndex = null;
+
+    if (e.key === 'ArrowRight') {
+      nextIndex = (currentIndex + 1) % tabs.length;
+    } else if (e.key === 'ArrowLeft') {
+      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    } else if (e.key === 'Home') {
+      nextIndex = 0;
+    } else if (e.key === 'End') {
+      nextIndex = tabs.length - 1;
+    }
+
+    if (nextIndex !== null) {
+      e.preventDefault();
+      const nextTabEl = tabs[nextIndex];
+      const nextTabId = nextTabEl.id.replace('tab-', '');
+      setActiveTab(nextTabId);
+      setUrlInputError('');
+      setUploadError('');
+      nextTabEl.focus();
+    }
+  };
+  // Accessibility audit remediation: [END]
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -52,17 +88,22 @@ export default function FileDropzone({
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
+  // Accessibility audit remediation: [START]
+  // Replace blocking window.alert() with persistent inline role="alert" error messaging (WCAG 3.3.1)
+  // 2026-10-19, Scott Vinkle <scott@scottvinkle.com>
   const validateAndSelectFile = (file) => {
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-      alert('Please drop a supported image file (PNG, JPEG, or WebP).');
+      setUploadError('Unsupported file format. Please upload a PNG, JPEG, or WebP image.');
       return;
     }
     if (file.size > MAX_FILE_SIZE) {
-      alert('File size exceeds the 10MB maximum limit.');
+      setUploadError('File size exceeds the 10MB maximum limit. Please choose a smaller image.');
       return;
     }
+    setUploadError('');
     onFileSelect(file);
   };
+  // Accessibility audit remediation: [END]
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -145,6 +186,7 @@ export default function FileDropzone({
     const wasTeam = isTeamActive;
     const isDemo = isDemoLoaded || activeTab === 'demo';
 
+    setUploadError('');
     if (onFileRemove) {
       onFileRemove();
     }
@@ -310,8 +352,10 @@ export default function FileDropzone({
         Select or Upload Image for Alt Text Generation
       </h2>
 
-      <div className="brutal-card-lg p-6 sm:p-8 bg-white relative">
-        {/* Hidden Accessible File Input */}
+      <div className="brutal-card-lg p-4 sm:p-8 bg-white relative">
+        {/* Accessibility audit remediation: [START]
+            Remove visually hidden file input from sequential Tab order and accessibility tree (WCAG 4.1.2, 2.4.3)
+            2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
         <input
           ref={fileInputRef}
           type="file"
@@ -320,26 +364,34 @@ export default function FileDropzone({
           onChange={handleInputChange}
           className="sr-only"
           disabled={isLoading}
-          aria-describedby="file-upload-help"
+          tabIndex={-1}
+          aria-hidden="true"
         />
+        {/* Accessibility audit remediation: [END] */}
 
-        {/* Source Selection Tabs */}
+        {/* Accessibility audit remediation: [START]
+            Implement WAI-ARIA APG Tabs roving tabindex & Arrow key navigation and responsive 320px reflow (WCAG 2.1.1, 1.4.10)
+            2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
         <div
+          ref={tablistRef}
           role="tablist"
           aria-label="Image source options"
-          className="flex border-b-2 border-ink mb-6 gap-2"
+          onKeyDown={handleTabKeyDown}
+          className="flex flex-wrap border-b-2 border-ink mb-6 gap-1.5 sm:gap-2"
         >
           <button
             type="button"
             role="tab"
             id="tab-upload"
+            tabIndex={activeTab === 'upload' ? 0 : -1}
             aria-selected={activeTab === 'upload'}
             aria-controls="panel-upload"
             onClick={() => {
               setActiveTab('upload');
               setUrlInputError('');
+              setUploadError('');
             }}
-            className={`flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
               activeTab === 'upload'
                 ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
                 : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
@@ -356,13 +408,15 @@ export default function FileDropzone({
             type="button"
             role="tab"
             id="tab-url"
+            tabIndex={activeTab === 'url' ? 0 : -1}
             aria-selected={activeTab === 'url'}
             aria-controls="panel-url"
             onClick={() => {
               setActiveTab('url');
               setUrlInputError('');
+              setUploadError('');
             }}
-            className={`flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
               activeTab === 'url'
                 ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
                 : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
@@ -379,13 +433,15 @@ export default function FileDropzone({
             type="button"
             role="tab"
             id="tab-demo"
+            tabIndex={activeTab === 'demo' ? 0 : -1}
             aria-selected={activeTab === 'demo'}
             aria-controls="panel-demo"
             onClick={() => {
               setActiveTab('demo');
               setUrlInputError('');
+              setUploadError('');
             }}
-            className={`flex items-center gap-2 px-4 py-2.5 font-display font-bold text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink -mb-[2px] transition-all focus-ring ${
               activeTab === 'demo'
                 ? 'bg-cream text-ink border-b-2 border-b-cream shadow-none'
                 : 'bg-white text-ink/70 hover:text-ink hover:bg-cream/50'
@@ -398,6 +454,7 @@ export default function FileDropzone({
             )}
           </button>
         </div>
+        {/* Accessibility audit remediation: [END] */}
 
         {/* TAB PANEL 1: Upload File */}
         {activeTab === 'upload' && (
@@ -409,41 +466,57 @@ export default function FileDropzone({
             {isUploadLoaded && selectedFile ? (
               renderPreviewCard()
             ) : (
-              <div
-                role="button"
-                tabIndex={isLoading ? -1 : 0}
-                onClick={triggerFileInput}
-                onKeyDown={handleKeyDown}
-                onDragEnter={handleDragEnter}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`cursor-pointer border-[3px] border-dashed border-ink p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
-                  isDragOver
-                    ? 'bg-amber-100 border-violet-600 scale-[0.99]'
-                    : 'bg-cream hover:bg-violet-50'
-                }`}
-                aria-label="Upload image drop zone. Press Enter or Space to open file dialog."
-              >
-                <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink shadow-brutal flex items-center justify-center mb-5">
-                  <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11" aria-hidden="true" />
-                </div>
-
-                <h3 className="text-xl sm:text-2xl font-display font-bold text-ink mb-2">
-                  Drag & Drop Image Here
-                </h3>
-
-                <p className="text-sm sm:text-base text-ink/80 mb-4 font-medium">
-                  or <span className="underline decoration-2 decoration-violet-600 font-bold text-violet-700">browse files</span> from your device
-                </p>
-
+              /* Accessibility audit remediation: [START]
+                 Use visible text for accessible name (WCAG 2.5.3) and display inline role="alert" file validation errors (WCAG 3.3.1)
+                 2026-10-19, Scott Vinkle <scott@scottvinkle.com> */
+              <div className="space-y-4">
                 <div
-                  id="file-upload-help"
-                  className="inline-flex items-center gap-2 px-3 py-1 bg-white border-2 border-ink text-xs font-bold text-ink/70 shadow-brutal-sm"
+                  role="button"
+                  tabIndex={isLoading ? -1 : 0}
+                  aria-describedby={uploadError ? 'file-upload-help file-upload-error' : 'file-upload-help'}
+                  onClick={triggerFileInput}
+                  onKeyDown={handleKeyDown}
+                  onDragEnter={handleDragEnter}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`cursor-pointer border-[3px] border-dashed border-ink p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
+                    isDragOver
+                      ? 'bg-amber-100 border-violet-600 scale-[0.99]'
+                      : 'bg-cream hover:bg-violet-50'
+                  }`}
                 >
-                  <span>PNG, JPEG, or WEBP up to 10MB</span>
+                  <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink shadow-brutal flex items-center justify-center mb-5">
+                    <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11" aria-hidden="true" />
+                  </div>
+
+                  <span className="block text-xl sm:text-2xl font-display font-bold text-ink mb-2">
+                    Drag & Drop Image Here
+                  </span>
+
+                  <span className="block text-sm sm:text-base text-ink/80 mb-4 font-medium">
+                    or <span className="underline decoration-2 decoration-violet-600 font-bold text-violet-700">browse files</span> from your device
+                  </span>
+
+                  <div
+                    id="file-upload-help"
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-white border-2 border-ink text-xs font-bold text-ink/70 shadow-brutal-sm"
+                  >
+                    <span>PNG, JPEG, or WEBP up to 10MB</span>
+                  </div>
                 </div>
+
+                {uploadError && (
+                  <p
+                    id="file-upload-error"
+                    role="alert"
+                    className="text-xs font-bold text-rose-700 bg-rose-50 border-2 border-rose-600 p-2"
+                  >
+                    {uploadError}
+                  </p>
+                )}
               </div>
+              /* Accessibility audit remediation: [END] */
             )}
           </div>
         )}
@@ -459,12 +532,15 @@ export default function FileDropzone({
             {isUrlLoaded && selectedFile ? (
               renderPreviewCard()
             ) : (
+              /* Accessibility audit remediation: [START]
+                 Programmatically associate URL input with helper instructions and error message via aria-describedby, aria-invalid, and role="alert" (WCAG 3.3.1)
+                 2026-10-19, Scott Vinkle <scott@scottvinkle.com> */
               <form noValidate onSubmit={handleUrlFormSubmit} className="space-y-4 max-w-2xl mx-auto">
                 <div className="text-center sm:text-left space-y-1">
                   <label htmlFor="image-url-input" className="block text-base sm:text-lg font-display font-bold text-ink">
                     Enter Image URL
                   </label>
-                  <p className="text-xs sm:text-sm text-ink/75 font-medium">
+                  <p id="image-url-hint" className="text-xs sm:text-sm text-ink/75 font-medium">
                     Paste a direct link to any public image on the web (JPEG, PNG, or WebP).
                   </p>
                 </div>
@@ -481,6 +557,8 @@ export default function FileDropzone({
                     placeholder="https://example.com/photos/image.jpg"
                     disabled={isLoading}
                     required
+                    aria-invalid={Boolean(urlInputError)}
+                    aria-describedby={urlInputError ? 'image-url-hint image-url-error' : 'image-url-hint'}
                     className="flex-1 p-3 border-2 border-ink bg-white font-mono text-sm text-ink placeholder:text-ink/40 shadow-brutal-sm focus-ring"
                   />
 
@@ -495,11 +573,16 @@ export default function FileDropzone({
                 </div>
 
                 {urlInputError && (
-                  <p className="text-xs font-bold text-rose-700 bg-rose-50 border-2 border-rose-600 p-2">
+                  <p
+                    id="image-url-error"
+                    role="alert"
+                    className="text-xs font-bold text-rose-700 bg-rose-50 border-2 border-rose-600 p-2"
+                  >
                     {urlInputError}
                   </p>
                 )}
               </form>
+              /* Accessibility audit remediation: [END] */
             )}
           </div>
         )}

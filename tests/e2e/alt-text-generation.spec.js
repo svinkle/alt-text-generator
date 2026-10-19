@@ -25,12 +25,14 @@ test.describe('Alt Text Generation & Output Snippet Flow', () => {
     const rawCard = page.getByText(/hiker carrying a backpack/i).first();
     await expect(rawCard).toBeVisible();
 
-    // Click Edit button to open textarea
+    // Click Edit button to open textarea and verify focus moves to textarea
     const editBtn = page.getByRole('button', { name: 'Edit alt text' });
     await editBtn.click();
 
     const textarea = page.locator('#edit-alt-text');
     await expect(textarea).toBeVisible();
+    await expect(textarea).toBeFocused();
+    await expect(textarea).toHaveAttribute('aria-describedby', 'edit-alt-text-help');
 
     // Test editing textarea
     await textarea.fill('Custom edited alt text for mountain summit.');
@@ -48,7 +50,7 @@ test.describe('Alt Text Generation & Output Snippet Flow', () => {
       };
     });
 
-    const copyBtn = page.getByRole('button', { name: 'Copy raw alt text to clipboard' });
+    const copyBtn = page.getByRole('button', { name: /Copy Text.*raw alt text to clipboard/i });
     await copyBtn.click();
     await expect(page.getByText('Copied!').first()).toBeVisible();
 
@@ -56,25 +58,30 @@ test.describe('Alt Text Generation & Output Snippet Flow', () => {
     expect(copied).toBe('Custom edited alt text for mountain summit.');
 
     // Test HTML Snippet copy
-    const copyHtmlBtn = page.getByRole('button', { name: 'Copy HTML image tag snippet to clipboard' });
+    const copyHtmlBtn = page.getByRole('button', { name: /Copy HTML.*image tag snippet to clipboard/i });
     await expect(copyHtmlBtn).toBeVisible();
     await copyHtmlBtn.click();
   });
 
-  test('Image URL form validates input correctly', async ({ page }) => {
+  test('Image URL form validates input correctly and associates error message programmatically', async ({ page }) => {
     // Navigate to Image URL tab
     await page.getByRole('tab', { name: /Image URL/i }).click();
 
     const urlInput = page.locator('#image-url-input');
     await expect(urlInput).toBeVisible();
+    await expect(urlInput).toHaveAttribute('aria-describedby', 'image-url-hint');
 
     // Submit invalid URL
     await urlInput.fill('not-a-valid-url');
     const submitBtn = page.getByRole('button', { name: 'Load Image' });
     await submitBtn.click();
 
-    // Error message displayed
-    await expect(page.getByText('Please enter a valid URL (including https://).')).toBeVisible();
+    // Error message displayed with role="alert" and associated via aria-describedby
+    const errorAlert = page.locator('#image-url-error[role="alert"]');
+    await expect(errorAlert).toBeVisible();
+    await expect(errorAlert).toHaveText('Please enter a valid URL (including https://).');
+    await expect(urlInput).toHaveAttribute('aria-invalid', 'true');
+    await expect(urlInput).toHaveAttribute('aria-describedby', 'image-url-hint image-url-error');
 
     // Enter valid demo image URL
     await urlInput.fill('https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=600');
