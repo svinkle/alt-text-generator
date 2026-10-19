@@ -251,7 +251,7 @@ describe("Header", () => {
       expect(screen.getByRole("button", { name: "Switch to light mode" })).toBeInTheDocument();
       expect(document.documentElement.classList.contains("dark")).toBe(true);
       expect(localStorage.getItem("theme")).toBe("dark");
-      expect(metaTag.getAttribute("content")).toBe("#121110");
+      expect(metaTag.getAttribute("content")).toBe("#101010");
 
       // Switch back to light
       fireEvent.click(screen.getByRole("button", { name: "Switch to light mode" }));

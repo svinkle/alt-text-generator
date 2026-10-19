@@ -103,10 +103,10 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md bg-cream dark:bg-[#1E1B18] border-[3px] border-ink dark:border-cream/80 p-6 shadow-brutal-xl dark:shadow-[8px_8px_0px_0px_#FBF8F1] rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-md bg-cream dark:bg-[#161616] border-[3px] border-ink dark:border-[#6E6E6E] p-6 shadow-brutal-xl dark:shadow-[8px_8px_0px_0px_#6E6E6E] rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-cream/80 mb-4">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
           <h2 id="api-key-modal-title" className="text-xl font-display font-extrabold text-ink dark:text-cream flex items-center gap-2">
             <Key className="w-5 h-5 text-amber-500" aria-hidden="true" />
             <span>Gemini API Key</span>
@@ -114,7 +114,7 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#25211E] text-ink dark:text-cream hover:bg-amber-100 dark:hover:bg-amber-950 focus-ring shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] transition-all"
+            className="p-1.5 border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#2D2D2D] text-ink dark:text-cream hover:bg-amber-100 dark:hover:bg-[#1C1C1C] focus-ring shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] transition-all"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5 text-ink dark:text-cream" />
@@ -136,11 +136,11 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="AIzaSy..."
-              className="w-full p-3 font-mono text-xs sm:text-sm bg-white dark:bg-[#25211E] border-2 border-ink dark:border-cream/80 text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] focus-ring"
+              className="w-full p-3 font-mono text-xs sm:text-sm bg-white dark:bg-[#1C1C1C] border-2 border-ink dark:border-[#6E6E6E] text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] focus-ring"
             />
           </div>
 
-          <div className="p-3 bg-white dark:bg-[#25211E] border-2 border-ink dark:border-cream/60 text-xs text-ink/80 dark:text-cream/80 flex items-center justify-between shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+          <div className="p-3 bg-white dark:bg-[#1C1C1C] border-2 border-ink dark:border-[#6E6E6E] text-xs text-ink/80 dark:text-cream/80 flex items-center justify-between shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
             <span>Don't have a key yet?</span>
             <a
               href="https://aistudio.google.com/app/apikey"
@@ -169,7 +169,7 @@ export default function ApiKeyModal({ isOpen, onClose, onKeySaved }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-bold border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#25211E] text-ink dark:text-cream hover:bg-cream dark:hover:bg-ink shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] focus-ring"
+                className="px-4 py-2 text-xs font-bold border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#2D2D2D] text-ink dark:text-cream hover:bg-cream dark:hover:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] focus-ring"
               >
                 Cancel
               </button>

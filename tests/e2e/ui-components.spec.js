@@ -70,6 +70,7 @@ test.describe('UI Components & Layout Verification', () => {
     if (isInitiallyDark) {
       await expect(html).toHaveClass(/dark/);
       await expect(toggleBtn).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#101010');
       await toggleBtn.click();
       await expect(html).not.toHaveClass(/dark/);
       await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to dark mode');
@@ -77,6 +78,7 @@ test.describe('UI Components & Layout Verification', () => {
       await toggleBtn.click();
       await expect(html).toHaveClass(/dark/);
       await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to light mode');
+      await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#101010');
     } else {
       await expect(html).not.toHaveClass(/dark/);
       await expect(toggleBtn).toHaveAttribute('aria-pressed', 'false');
@@ -84,6 +86,9 @@ test.describe('UI Components & Layout Verification', () => {
       await expect(html).toHaveClass(/dark/);
       await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to light mode');
       await expect(toggleBtn).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#101010');
+      const bodyBg = await page.locator('body').evaluate((el) => window.getComputedStyle(el).backgroundColor);
+      expect(bodyBg).toBe('rgb(16, 16, 16)');
       await toggleBtn.click();
       await expect(html).not.toHaveClass(/dark/);
       await expect(toggleBtn).toHaveAttribute('aria-label', 'Switch to dark mode');

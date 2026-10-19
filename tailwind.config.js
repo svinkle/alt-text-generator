@@ -26,6 +26,13 @@ export default {
           500: "#F59E0B",
           100: "#FEF3C7",
         },
+        dark: {
+          border: "#6E6E6E",
+          light: "#2D2D2D",
+          "medium-1": "#1C1C1C",
+          "medium-2": "#161616",
+          dark: "#101010",
+        },
       },
       fontFamily: {
         display: ['"Space Grotesk"', "system-ui", "sans-serif"],

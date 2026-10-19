@@ -251,10 +251,10 @@ export default function FileDropzone({
     if (!selectedFile) return null;
     return (
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row items-center sm:items-start gap-6 p-4 sm:p-5 border-[3px] border-ink dark:border-cream/80 bg-cream dark:bg-[#25211E] shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1]">
+        <div className="flex flex-col md:flex-row items-center sm:items-start gap-6 p-4 sm:p-5 border-[3px] border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E]">
           {/* Thumbnail Preview & Attribution */}
           <div className="w-full md:w-48 flex-shrink-0 flex flex-col gap-2">
-            <div className="w-full h-44 sm:h-40 border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] overflow-hidden shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] relative group">
+            <div className="w-full h-44 sm:h-40 border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] overflow-hidden shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] relative group">
               <img
                 src={previewUrl}
                 alt={`Preview of selected image ${selectedFile.name}`}
@@ -264,7 +264,7 @@ export default function FileDropzone({
             </div>
 
             {selectedFile.attribution && (
-              <div className="text-[11px] text-ink/80 dark:text-cream/80 font-medium leading-tight p-2 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+              <div className="text-[11px] text-ink/80 dark:text-cream/80 font-medium leading-tight p-2 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                 <span>Photo by </span>
                 <a
                   href={selectedFile.attribution.photographerUrl}
@@ -292,21 +292,21 @@ export default function FileDropzone({
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+                  <span className="inline-block px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider bg-mint text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                     Ready to Analyze
                   </span>
                   {selectedFile.isDemo || selectedFile.attribution ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                       <Sparkles className="w-3 h-3" aria-hidden="true" />
                       <span>Demo Sample</span>
                     </span>
                   ) : selectedFile.isUrl ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-amber-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                       <Globe className="w-3 h-3" aria-hidden="true" />
                       <span>Web URL</span>
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-violet-100 dark:bg-violet-950 dark:text-violet-200 text-ink border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-violet-100 dark:bg-violet-950 dark:text-violet-200 text-ink border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                       <FileImage className="w-3 h-3" aria-hidden="true" />
                       <span>Local File</span>
                     </span>
@@ -325,7 +325,7 @@ export default function FileDropzone({
                 type="button"
                 onClick={handleRemove}
                 disabled={isLoading}
-                className="p-1.5 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] hover:bg-rose-100 dark:hover:bg-rose-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
+                className="p-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-rose-100 dark:hover:bg-rose-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring"
                 aria-label={isDemoLoaded || isUrlLoaded || activeTab === 'demo' || activeTab === 'url' ? 'Close' : 'Remove selected image'}
               >
                 <X className="w-5 h-5 text-ink dark:text-cream" aria-hidden="true" />
@@ -334,13 +334,13 @@ export default function FileDropzone({
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs font-mono text-ink/80 dark:text-cream/80 pt-1">
-              <div className="bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+              <div className="bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                 <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">SIZE</span>
                 <span className="font-bold text-ink dark:text-cream">
                   {selectedFile.size ? formatFileSize(selectedFile.size) : 'Web Image'}
                 </span>
               </div>
-              <div className="bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+              <div className="bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] p-2 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                 <span className="font-sans text-[11px] block font-bold text-ink/60 dark:text-cream/60">TYPE</span>
                 <span className="font-bold text-ink dark:text-cream">{selectedFile.type || 'image/jpeg'}</span>
               </div>
@@ -351,7 +351,7 @@ export default function FileDropzone({
                 type="button"
                 onClick={handleRemove}
                 disabled={isLoading}
-                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] hover:bg-amber-100 dark:hover:bg-amber-950 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring text-ink dark:text-cream"
+                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-amber-100 dark:hover:bg-[#383838] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring text-ink dark:text-cream"
               >
                 <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Change Image</span>
@@ -366,10 +366,10 @@ export default function FileDropzone({
             type="button"
             onClick={onSubmit}
             disabled={isLoading}
-            className={`w-full sm:w-auto px-8 py-3.5 text-base sm:text-lg font-display font-extrabold text-white border-[3px] border-ink dark:border-cream/80 transition-all duration-150 focus-ring flex items-center justify-center gap-3 ${
+            className={`w-full sm:w-auto px-8 py-3.5 text-base sm:text-lg font-display font-extrabold text-white border-[3px] border-ink dark:border-[#6E6E6E] transition-all duration-150 focus-ring flex items-center justify-center gap-3 ${
               isLoading
                 ? 'bg-violet-400 cursor-not-allowed opacity-80'
-                : 'bg-violet-600 hover:bg-violet-700 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] dark:hover:shadow-[5px_5px_0px_0px_#FBF8F1] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm dark:active:shadow-none cursor-pointer'
+                : 'bg-violet-600 hover:bg-violet-700 shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] dark:hover:shadow-[5px_5px_0px_0px_#6E6E6E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm dark:active:shadow-none cursor-pointer'
             }`}
           >
             {isLoading ? (
@@ -427,7 +427,7 @@ export default function FileDropzone({
           role="tablist"
           aria-label="Image source options"
           onKeyDown={handleTabKeyDown}
-          className="flex flex-wrap border-b-2 border-ink dark:border-cream/80 mb-6 gap-1.5 sm:gap-2"
+          className="flex flex-wrap border-b-2 border-ink dark:border-[#6E6E6E] mb-6 gap-1.5 sm:gap-2"
         >
           <button
             type="button"
@@ -441,10 +441,10 @@ export default function FileDropzone({
               setUrlInputError('');
               setUploadError('');
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-cream/80 -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-[#6E6E6E] -mb-[2px] transition-all focus-ring ${
               activeTab === 'upload'
-                ? 'bg-cream dark:bg-[#25211E] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#25211E] shadow-none'
-                : 'bg-white dark:bg-[#1E1B18] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#25211E]/50'
+                ? 'bg-cream dark:bg-[#1C1C1C] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#1C1C1C] shadow-none'
+                : 'bg-white dark:bg-[#161616] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#2D2D2D]'
             }`}
           >
             <UploadCloud className="w-4 h-4" aria-hidden="true" />
@@ -466,10 +466,10 @@ export default function FileDropzone({
               setUrlInputError('');
               setUploadError('');
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-cream/80 -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-[#6E6E6E] -mb-[2px] transition-all focus-ring ${
               activeTab === 'url'
-                ? 'bg-cream dark:bg-[#25211E] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#25211E] shadow-none'
-                : 'bg-white dark:bg-[#1E1B18] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#25211E]/50'
+                ? 'bg-cream dark:bg-[#1C1C1C] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#1C1C1C] shadow-none'
+                : 'bg-white dark:bg-[#161616] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#2D2D2D]'
             }`}
           >
             <LinkIcon className="w-4 h-4" aria-hidden="true" />
@@ -491,10 +491,10 @@ export default function FileDropzone({
               setUrlInputError('');
               setUploadError('');
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-cream/80 -mb-[2px] transition-all focus-ring ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 font-display font-bold text-xs sm:text-sm border-t-2 border-l-2 border-r-2 border-ink dark:border-[#6E6E6E] -mb-[2px] transition-all focus-ring ${
               activeTab === 'demo'
-                ? 'bg-cream dark:bg-[#25211E] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#25211E] shadow-none'
-                : 'bg-white dark:bg-[#1E1B18] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#25211E]/50'
+                ? 'bg-cream dark:bg-[#1C1C1C] text-ink dark:text-cream border-b-2 border-b-cream dark:border-b-[#1C1C1C] shadow-none'
+                : 'bg-white dark:bg-[#161616] text-ink/70 dark:text-cream/70 hover:text-ink dark:hover:text-cream hover:bg-cream/50 dark:hover:bg-[#2D2D2D]'
             }`}
           >
             <Sparkles className="w-4 h-4" aria-hidden="true" />
@@ -530,13 +530,13 @@ export default function FileDropzone({
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  className={`cursor-pointer border-[3px] border-dashed border-ink dark:border-cream/60 p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
+                  className={`cursor-pointer border-[3px] border-dashed border-ink dark:border-[#6E6E6E] p-8 sm:p-12 text-center transition-all duration-150 focus-ring ${
                     isDragOver
                       ? 'bg-amber-100 dark:bg-amber-950/40 border-violet-600 dark:border-violet-400 scale-[0.99]'
-                      : 'bg-cream dark:bg-[#25211E] hover:bg-violet-50 dark:hover:bg-[#2e2925]'
+                      : 'bg-cream dark:bg-[#1C1C1C] hover:bg-violet-50 dark:hover:bg-[#2D2D2D]'
                   }`}
                 >
-                  <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink dark:border-cream/80 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] flex items-center justify-center mb-5">
+                  <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-violet-600 text-white border-[3px] border-ink dark:border-[#6E6E6E] shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E] flex items-center justify-center mb-5">
                     <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11" aria-hidden="true" />
                   </div>
 
@@ -554,7 +554,7 @@ export default function FileDropzone({
 
                   <div
                     id="file-upload-help"
-                    className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/60 text-xs font-bold text-ink/70 dark:text-cream/70 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]"
+                    className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-[#2D2D2D] border-2 border-ink dark:border-[#6E6E6E] text-xs font-bold text-ink/70 dark:text-cream/70 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]"
                   >
                     <span>PNG, JPEG, or WEBP up to 10MB</span>
                   </div>
@@ -581,7 +581,7 @@ export default function FileDropzone({
             role="tabpanel"
             id="panel-url"
             aria-labelledby="tab-url"
-            className="p-6 sm:p-8 border-[3px] border-dashed border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E]"
+            className="p-6 sm:p-8 border-[3px] border-dashed border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C]"
           >
             {isUrlLoaded && selectedFile ? (
               renderPreviewCard()
@@ -615,7 +615,7 @@ export default function FileDropzone({
                     required
                     aria-invalid={Boolean(urlInputError)}
                     aria-describedby={urlInputError ? 'image-url-hint image-url-error' : 'image-url-hint'}
-                    className="flex-1 p-3 border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] font-mono text-sm text-ink dark:text-cream placeholder:text-ink/40 dark:placeholder:text-cream/40 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] focus-ring"
+                    className="flex-1 p-3 border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#2D2D2D] font-mono text-sm text-ink dark:text-cream placeholder:text-ink/40 dark:placeholder:text-cream/40 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] focus-ring"
                   />
 
                   <button
@@ -650,7 +650,7 @@ export default function FileDropzone({
             role="tabpanel"
             id="panel-demo"
             aria-labelledby="tab-demo"
-            className="p-6 sm:p-8 border-[3px] border-dashed border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] space-y-6"
+            className="p-6 sm:p-8 border-[3px] border-dashed border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] space-y-6"
           >
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center">
@@ -665,12 +665,12 @@ export default function FileDropzone({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Demo Card 1: Mountain Sunrise */}
                 <div
-                  className={`border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] p-4 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] flex flex-col justify-between transition-all ${
+                  className={`border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] p-4 shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E] flex flex-col justify-between transition-all ${
                     isNatureActive ? 'ring-2 ring-violet-600 dark:ring-violet-400 bg-amber-50/50 dark:bg-amber-950/20' : ''
                   }`}
                 >
                   <div>
-                    <div className="h-32 sm:h-36 w-full border-2 border-ink dark:border-cream/80 mb-3 overflow-hidden bg-amber-50 dark:bg-[#25211E] relative">
+                    <div className="h-32 sm:h-36 w-full border-2 border-ink dark:border-[#6E6E6E] mb-3 overflow-hidden bg-amber-50 dark:bg-[#2D2D2D] relative">
                       <img
                         src="https://burst.shopifycdn.com/photos/hiker-looks-out-over-view-from-mountain-summit.jpg?width=600&format=pjpg&exif=0&iptc=0"
                         alt="Mountain Sunrise preview"
@@ -678,7 +678,7 @@ export default function FileDropzone({
                         loading="lazy"
                       />
                       {isNatureActive && (
-                        <span className="absolute top-2 right-2 bg-amber-300 text-ink border-2 border-ink text-[10px] font-extrabold uppercase px-1.5 py-0.5 shadow-brutal-sm">
+                        <span className="absolute top-2 right-2 bg-amber-300 text-ink border-2 border-ink dark:border-[#6E6E6E] text-[10px] font-extrabold uppercase px-1.5 py-0.5 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                           Loaded
                         </span>
                       )}
@@ -695,7 +695,7 @@ export default function FileDropzone({
                     type="button"
                     onClick={() => onLoadSample && onLoadSample('nature')}
                     disabled={isLoading}
-                    className={`w-full brutal-btn py-2 text-xs font-bold shadow-brutal-sm disabled:opacity-50 ${
+                    className={`w-full brutal-btn py-2 text-xs font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] disabled:opacity-50 ${
                       isNatureActive
                         ? 'bg-amber-400 hover:bg-amber-500 text-ink'
                         : 'bg-amber-300 hover:bg-amber-400 text-ink'
@@ -708,12 +708,12 @@ export default function FileDropzone({
 
                 {/* Demo Card 2: Team Collaboration */}
                 <div
-                  className={`border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] p-4 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] flex flex-col justify-between transition-all ${
+                  className={`border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] p-4 shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E] flex flex-col justify-between transition-all ${
                     isTeamActive ? 'ring-2 ring-violet-600 dark:ring-violet-400 bg-mint-50/50 dark:bg-emerald-950/20' : ''
                   }`}
                 >
                   <div>
-                    <div className="h-32 sm:h-36 w-full border-2 border-ink dark:border-cream/80 mb-3 overflow-hidden bg-mint-50 dark:bg-[#25211E] relative">
+                    <div className="h-32 sm:h-36 w-full border-2 border-ink dark:border-[#6E6E6E] mb-3 overflow-hidden bg-mint-50 dark:bg-[#2D2D2D] relative">
                       <img
                         src="https://burst.shopifycdn.com/photos/business-team-meeting-boardroom.jpg?width=600&format=pjpg&exif=0&iptc=0"
                         alt="Team Collaboration preview"
@@ -721,7 +721,7 @@ export default function FileDropzone({
                         loading="lazy"
                       />
                       {isTeamActive && (
-                        <span className="absolute top-2 right-2 bg-mint text-ink border-2 border-ink text-[10px] font-extrabold uppercase px-1.5 py-0.5 shadow-brutal-sm">
+                        <span className="absolute top-2 right-2 bg-mint text-ink border-2 border-ink dark:border-[#6E6E6E] text-[10px] font-extrabold uppercase px-1.5 py-0.5 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
                           Loaded
                         </span>
                       )}
@@ -738,7 +738,7 @@ export default function FileDropzone({
                     type="button"
                     onClick={() => onLoadSample && onLoadSample('team')}
                     disabled={isLoading}
-                    className={`w-full brutal-btn py-2 text-xs font-bold shadow-brutal-sm disabled:opacity-50 ${
+                    className={`w-full brutal-btn py-2 text-xs font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] disabled:opacity-50 ${
                       isTeamActive
                         ? 'bg-mint hover:bg-mint/90 text-ink'
                         : 'bg-mint hover:bg-mint/80 text-ink'

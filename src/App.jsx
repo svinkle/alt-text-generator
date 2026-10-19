@@ -293,7 +293,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-[#121110] text-ink dark:text-cream flex flex-col font-body selection:bg-violet-600 selection:text-white">
+    <div className="min-h-screen bg-cream dark:bg-[#101010] text-ink dark:text-cream flex flex-col font-body selection:bg-violet-600 selection:text-white">
       {/* Header with Engine Badge and GitHub Link */}
       <Header
         engine={engineUsed || engineInfo.engine}
@@ -369,7 +369,7 @@ export default function App() {
         {/* Accessibility audit remediation: [START]
             Dark mode high-contrast styling for WCAG guidelines card (WCAG 1.4.3, 1.4.11)
             2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
-        <div className="border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] p-6 shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1]">
+        <div className="border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] p-6 shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E]">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheck
               className="w-5 h-5 text-violet-600 dark:text-violet-400 stroke-[2.5]"
@@ -380,21 +380,21 @@ export default function App() {
             </h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm text-ink/80 dark:text-cream/80">
-            <div className="p-3 border-2 border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+            <div className="p-3 border-2 border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
               <strong className="block font-bold text-ink dark:text-cream mb-1">
                 1. Objective & Concise
               </strong>
               Focuses on the core subject and context in 1 to 2 sentences
               without subjective speculation.
             </div>
-            <div className="p-3 border-2 border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+            <div className="p-3 border-2 border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
               <strong className="block font-bold text-ink dark:text-cream mb-1">
                 2. No Redundant Phrases
               </strong>
               Never starts with "Image of" or "Picture of" — screen readers
               already announce the image role.
             </div>
-            <div className="p-3 border-2 border-ink dark:border-cream/60 bg-cream dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+            <div className="p-3 border-2 border-ink dark:border-[#6E6E6E] bg-cream dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
               <strong className="block font-bold text-ink dark:text-cream mb-1">
                 3. Transcribes Text
               </strong>
@@ -410,7 +410,7 @@ export default function App() {
       {/* Accessibility audit remediation: [START]
           Dark mode high-contrast styling for footer (WCAG 1.4.3, 1.4.11)
           2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
-      <footer className="border-t-[3px] border-ink dark:border-white/20 bg-white dark:bg-[#1E1B18] mt-12 py-6 text-center text-xs font-medium text-ink/75 dark:text-cream/75">
+      <footer className="border-t-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] mt-12 py-6 text-center text-xs font-medium text-ink/75 dark:text-cream/75">
         <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
             <p>

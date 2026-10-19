@@ -37,7 +37,7 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     if (themeColorMeta) {
-      themeColorMeta.setAttribute('content', theme === 'dark' ? '#121110' : '#7C3AED');
+      themeColorMeta.setAttribute('content', theme === 'dark' ? '#101010' : '#7C3AED');
     }
   }, [theme]);
 
@@ -128,14 +128,14 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
       <a
         href="#main"
         onClick={handleSkipToMain}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white dark:focus:bg-[#1E1B18] focus:text-ink dark:focus:text-cream focus:font-bold focus:border-[3px] focus:border-ink dark:focus:border-cream focus:shadow-brutal-sm"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white dark:focus:bg-[#161616] focus:text-ink dark:focus:text-cream focus:font-bold focus:border-[3px] focus:border-ink dark:focus:border-[#6E6E6E] focus:shadow-brutal-sm"
       >
         Skip to main content
       </a>
       {/* Accessibility audit remediation: [START]
           Only apply sticky positioning on sm+ viewports so compact/zoomed viewports do not obscure focused controls (WCAG 2.4.11)
           2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
-      <header className="w-full border-b-[3px] border-ink dark:border-white/20 bg-white dark:bg-[#1E1B18] sm:sticky sm:top-0 z-30 shadow-brutal-sm dark:shadow-[0_2px_0_0_#000000]">
+      <header className="w-full border-b-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] sm:sticky sm:top-0 z-30 shadow-brutal-sm dark:shadow-[0_2px_0_0_#6E6E6E]">
       {/* Accessibility audit remediation: [END] */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               aria-pressed={theme === 'dark'}
-              className="p-2 border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] hover:bg-cream dark:hover:bg-ink active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring flex items-center justify-center rounded cursor-pointer"
+              className="p-2 border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#2D2D2D] text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-cream dark:hover:bg-[#383838] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring flex items-center justify-center rounded cursor-pointer"
             >
               {theme === 'dark' ? (
                 <Sun className="w-4 h-4 text-amber-300" aria-hidden="true" />
@@ -200,7 +200,7 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
               <button
                 type="button"
                 onClick={handleInstallClick}
-                className="px-2.5 py-1.5 sm:px-3 sm:py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950 dark:hover:bg-emerald-900 border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring text-ink dark:text-emerald-200 flex items-center gap-1.5 text-xs font-bold"
+                className="px-2.5 py-1.5 sm:px-3 sm:py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950 dark:hover:bg-emerald-900 border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring text-ink dark:text-emerald-200 flex items-center gap-1.5 text-xs font-bold"
                 aria-label="Install Alt Text Generator application"
               >
                 <Download className="w-4 h-4 text-emerald-800 dark:text-emerald-300" aria-hidden="true" />

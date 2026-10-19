@@ -61,7 +61,7 @@ export default function OutputSnippet({
         </div>
 
         {engineUsed === 'on-device' && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1E1B18] border-2 border-ink dark:border-cream/80 text-ink dark:text-cream text-xs font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1C1C1C] border-2 border-ink dark:border-[#6E6E6E] text-ink dark:text-cream text-xs font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
             <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
             <span>Generated On-Device (0 Network Latency)</span>
           </div>
@@ -71,9 +71,9 @@ export default function OutputSnippet({
       <div className="grid grid-cols-1 gap-6">
         {/* 1. Raw Alt Text Card */}
         <div className="brutal-card p-5 sm:p-6 bg-white relative">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-cream/80 mb-4">
+          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 bg-violet-100 dark:bg-violet-950 border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] text-violet-700 dark:text-violet-300">
+              <span className="p-1.5 bg-violet-100 dark:bg-violet-950 border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] text-violet-700 dark:text-violet-300">
                 <FileText className="w-4 h-4" aria-hidden="true" />
               </span>
               <h3 className="font-display font-bold text-base sm:text-lg text-ink dark:text-cream">
@@ -88,7 +88,7 @@ export default function OutputSnippet({
               <button
                 type="button"
                 onClick={handleToggleEdit}
-                className="px-2.5 py-1 text-xs font-bold border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] hover:bg-cream dark:hover:bg-[#25211E] text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring flex items-center gap-1"
+                className="px-2.5 py-1 text-xs font-bold border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#2D2D2D] hover:bg-cream dark:hover:bg-[#1C1C1C] text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus-ring flex items-center gap-1"
                 aria-label={isEditing ? 'Done editing alt text' : 'Edit alt text'}
               >
                 <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -135,7 +135,7 @@ export default function OutputSnippet({
                 value={altText}
                 onChange={(e) => onAltTextChange(e.target.value)}
                 aria-describedby="edit-alt-text-help"
-                className="w-full p-3 font-body text-base text-ink dark:text-cream bg-cream dark:bg-[#25211E] border-2 border-ink dark:border-cream/80 focus-ring resize-y"
+                className="w-full p-3 font-body text-base text-ink dark:text-cream bg-cream dark:bg-[#1C1C1C] border-2 border-ink dark:border-[#6E6E6E] focus-ring resize-y"
               />
               <p id="edit-alt-text-help" className="text-xs text-ink/70 dark:text-cream/70 mt-1 font-medium">
                 Changes to the alt text will immediately reflect in the HTML and Markdown snippets below.
@@ -143,7 +143,7 @@ export default function OutputSnippet({
             </div>
             /* Accessibility audit remediation: [END] */
           ) : (
-            <div className="p-4 bg-cream dark:bg-[#25211E] border-2 border-ink dark:border-cream/80 font-body text-base sm:text-lg text-ink dark:text-cream leading-relaxed">
+            <div className="p-4 bg-cream dark:bg-[#1C1C1C] border-2 border-ink dark:border-[#6E6E6E] font-body text-base sm:text-lg text-ink dark:text-cream leading-relaxed">
               "{altText}"
             </div>
           )}
@@ -151,9 +151,9 @@ export default function OutputSnippet({
 
         {/* 2. HTML Snippet Card */}
         <div className="brutal-card p-5 sm:p-6 bg-white relative">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-cream/80 mb-4">
+          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 bg-amber-100 dark:bg-amber-950 border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] text-amber-800 dark:text-amber-300">
+              <span className="p-1.5 bg-amber-100 dark:bg-amber-950 border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] text-amber-800 dark:text-amber-300">
                 <Code className="w-4 h-4" aria-hidden="true" />
               </span>
               <h3 className="font-display font-bold text-base sm:text-lg text-ink dark:text-cream">
@@ -190,16 +190,16 @@ export default function OutputSnippet({
             {/* Accessibility audit remediation: [END] */}
           </div>
 
-          <div className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#0B0A09] text-[#FBF8F1] border-2 border-ink dark:border-cream/80 font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
+          <div className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#101010] text-[#FBF8F1] border-2 border-ink dark:border-[#6E6E6E] font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
             <code>{htmlSnippet}</code>
           </div>
         </div>
 
         {/* 3. Markdown Snippet Card */}
         <div className="brutal-card p-5 sm:p-6 bg-white relative">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-cream/80 mb-4">
+          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 bg-mint-100 dark:bg-emerald-950 border-2 border-ink dark:border-cream/80 shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] text-emerald-800 dark:text-emerald-300">
+              <span className="p-1.5 bg-mint-100 dark:bg-emerald-950 border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] text-emerald-800 dark:text-emerald-300">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
               </span>
               <h3 className="font-display font-bold text-base sm:text-lg text-ink dark:text-cream">
@@ -236,7 +236,7 @@ export default function OutputSnippet({
             {/* Accessibility audit remediation: [END] */}
           </div>
 
-          <div className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#0B0A09] text-[#FBF8F1] border-2 border-ink dark:border-cream/80 font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
+          <div className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#101010] text-[#FBF8F1] border-2 border-ink dark:border-[#6E6E6E] font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
             <code>{markdownSnippet}</code>
           </div>
         </div>

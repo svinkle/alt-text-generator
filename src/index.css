@@ -32,7 +32,7 @@
   }
 
   html.dark body {
-    background-color: #121110;
+    background-color: #101010;
     color: #FBF8F1;
   }
 
@@ -51,18 +51,18 @@
 
   /* Tactile button micro-interaction states */
   .brutal-btn-base {
-    @apply transition-all duration-150 ease-out border-[3px] border-ink dark:border-cream/80 font-bold;
+    @apply transition-all duration-150 ease-out border-[3px] border-ink dark:border-[#6E6E6E] font-bold;
   }
 
   .brutal-btn {
-    @apply brutal-btn-base shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] dark:hover:shadow-[5px_5px_0px_0px_#FBF8F1] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm dark:active:shadow-none focus-ring;
+    @apply brutal-btn-base shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[5px_5px_0px_0px_#1E1B18] dark:hover:shadow-[5px_5px_0px_0px_#6E6E6E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-brutal-sm dark:active:shadow-none focus-ring;
   }
 
   .brutal-card {
-    @apply border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] shadow-brutal dark:shadow-[4px_4px_0px_0px_#FBF8F1];
+    @apply border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] shadow-brutal dark:shadow-[4px_4px_0px_0px_#6E6E6E];
   }
 
   .brutal-card-lg {
-    @apply border-[3px] border-ink dark:border-cream/80 bg-white dark:bg-[#1E1B18] shadow-brutal-lg dark:shadow-[6px_6px_0px_0px_#FBF8F1];
+    @apply border-[3px] border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#161616] shadow-brutal-lg dark:shadow-[6px_6px_0px_0px_#6E6E6E];
   }
 }

@@ -79,17 +79,17 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
     >
       <div
         ref={modalRef}
-        className="w-full max-w-lg bg-cream dark:bg-[#1E1B18] border-[3px] border-ink dark:border-cream/80 p-6 sm:p-7 shadow-brutal-xl dark:shadow-[8px_8px_0px_0px_#FBF8F1] rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg bg-cream dark:bg-[#161616] border-[3px] border-ink dark:border-[#6E6E6E] p-6 sm:p-7 shadow-brutal-xl dark:shadow-[8px_8px_0px_0px_#6E6E6E] rounded-none relative my-auto max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-cream/80 mb-4">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
           <h2 id="engine-modal-title" className="text-xl font-display font-extrabold text-ink dark:text-cream flex items-center gap-2">
             <span>⚡ Two-Tier AI Architecture</span>
           </h2>
           <button
             type="button"
             onClick={handleCloseModal}
-            className="p-1.5 border-2 border-ink dark:border-cream/80 bg-white dark:bg-[#25211E] text-ink dark:text-cream hover:bg-amber-100 dark:hover:bg-amber-950 focus-ring shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] transition-all"
+            className="p-1.5 border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#2D2D2D] text-ink dark:text-cream hover:bg-amber-100 dark:hover:bg-[#1C1C1C] focus-ring shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] transition-all"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5 text-ink dark:text-cream" />
@@ -97,19 +97,19 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
         </div>
 
         <div className="space-y-4 text-sm text-ink/90 dark:text-cream/90">
-          <div className="p-3.5 border-2 border-ink dark:border-cream/60 bg-white dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+          <div className="p-3.5 border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
             <div className="flex items-center gap-2 font-bold text-ink dark:text-cream mb-1">
-              <span className="inline-block w-3 h-3 rounded-full bg-emerald-500 border border-ink dark:border-cream/80"></span>
+              <span className="inline-block w-3 h-3 rounded-full bg-emerald-500 border border-ink dark:border-[#6E6E6E]"></span>
               <span>Tier 1: On-Device (Chrome Built-in AI)</span>
             </div>
             <p className="text-xs text-ink/80 dark:text-cream/80 leading-relaxed">
-              Leverages the experimental Chrome Prompt API (<code className="bg-amber-100 dark:bg-amber-950 dark:text-amber-200 px-1 py-0.5 border border-ink/40 dark:border-cream/40 font-mono text-[11px]">window.LanguageModel</code>) powered by local Gemini Nano. It executes locally on your hardware with <strong>zero server network cost</strong>, complete privacy, and instant processing.
+              Leverages the experimental Chrome Prompt API (<code className="bg-amber-100 dark:bg-[#2D2D2D] dark:text-amber-200 px-1 py-0.5 border border-ink/40 dark:border-[#6E6E6E] font-mono text-[11px]">window.LanguageModel</code>) powered by local Gemini Nano. It executes locally on your hardware with <strong>zero server network cost</strong>, complete privacy, and instant processing.
             </p>
           </div>
 
-          <div className="p-3.5 border-2 border-ink dark:border-cream/60 bg-white dark:bg-[#25211E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1]">
+          <div className="p-3.5 border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#1C1C1C] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E]">
             <div className="flex items-center gap-2 font-bold text-ink dark:text-cream mb-1">
-              <span className="inline-block w-3 h-3 rounded-full bg-amber-500 border border-ink dark:border-cream/80"></span>
+              <span className="inline-block w-3 h-3 rounded-full bg-amber-500 border border-ink dark:border-[#6E6E6E]"></span>
               <span>Tier 2: Cloud Edge (Serverless Gemini 3.x Flash)</span>
             </div>
             <p className="text-xs text-ink/80 dark:text-cream/80 leading-relaxed">
@@ -117,7 +117,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
             </p>
           </div>
 
-          <div className="p-3 bg-violet-100 dark:bg-violet-950/60 border-2 border-ink dark:border-cream/60 text-xs text-ink dark:text-cream font-medium">
+          <div className="p-3 bg-violet-100 dark:bg-violet-950/60 border-2 border-ink dark:border-[#6E6E6E] text-xs text-ink dark:text-cream font-medium">
             <strong>Current Active State:</strong> {details || 'System automatically selects the optimal engine.'}
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function EngineBadge({ engine = 'cloud-fallback', label, details 
           type="button"
           aria-haspopup="dialog"
           onClick={() => setShowInfoModal(true)}
-          className={`group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border-2 border-ink dark:border-cream/80 text-xs sm:text-sm font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#FBF8F1] hover:shadow-brutal dark:hover:shadow-[4px_4px_0px_0px_#FBF8F1] transition-all duration-150 focus-ring cursor-pointer ${
+          className={`group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border-2 border-ink dark:border-[#6E6E6E] text-xs sm:text-sm font-bold shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:shadow-brutal dark:hover:shadow-[4px_4px_0px_0px_#6E6E6E] transition-all duration-150 focus-ring cursor-pointer ${
             isOnDevice
               ? 'bg-mint-100 dark:bg-emerald-950/80 text-ink dark:text-emerald-200 hover:bg-mint/30 dark:hover:bg-emerald-900/80'
               : 'bg-amber-100 dark:bg-amber-950/80 text-ink dark:text-amber-200 hover:bg-amber/30 dark:hover:bg-amber-900/80'
