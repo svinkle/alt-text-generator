@@ -89,7 +89,7 @@ test.describe("Accessibility & Keyboard Navigation Verification", () => {
     // Switch to Try Demo and load image
     await page.getByRole("tab", { name: /Try Demo/i }).click();
     await page
-      .getByRole("button", { name: "Load Mountain Sunrise demo image" })
+      .getByRole("button", { name: "Load Mountain Sunrise" })
       .click();
 
     // Live region announces image load
@@ -150,5 +150,104 @@ test.describe("Accessibility & Keyboard Navigation Verification", () => {
   }) => {
     const elementsWithTitle = await page.locator('[title]:not(iframe)').count();
     expect(elementsWithTitle).toBe(0);
+  });
+
+  test("Upload dropzone role='button' does not contain a nested h3 heading (WCAG 1.3.1)", async ({
+    page,
+  }) => {
+    const dropzoneBtn = page.locator('#panel-upload div[role="button"]');
+    await expect(dropzoneBtn).toBeVisible();
+    await expect(dropzoneBtn.locator("h3")).toHaveCount(0);
+    await expect(dropzoneBtn.locator("p")).toHaveText("Drag & Drop Image Here");
+  });
+
+  test("Demo sample buttons derive accessible name from visible text in both Load and Reload states and move focus to Close button on load (WCAG 2.5.3, 2.4.3)", async ({
+    page,
+  }) => {
+    await page.getByRole("tab", { name: /Try Demo/i }).click();
+
+    const loadMountainBtn = page.getByRole("button", { name: "Load Mountain Sunrise" });
+    const loadTeamBtn = page.getByRole("button", { name: "Load Team Collaboration" });
+    await expect(loadMountainBtn).toBeVisible();
+    await expect(loadTeamBtn).toBeVisible();
+    await expect(loadMountainBtn).not.toHaveAttribute("aria-label");
+    await expect(loadTeamBtn).not.toHaveAttribute("aria-label");
+
+    await loadMountainBtn.click();
+
+    // Verify accessible name updated to "Reload Mountain Sunrise" matching visible text
+    const reloadMountainBtn = page.getByRole("button", { name: "Reload Mountain Sunrise" });
+    await expect(reloadMountainBtn).toBeVisible();
+
+    // Verify focus shifted to revealed Close button instead of dropping to body
+    const closeBtn = page.locator("#panel-demo").getByRole("button", { name: "Close" });
+    await expect(closeBtn).toBeFocused();
+  });
+
+  test("Generated Alt Text & Snippets reflows without horizontal overflow at 320px width and code blocks are keyboard-focusable regions (WCAG 1.4.10, 2.1.1)", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await page.getByRole("tab", { name: /Try Demo/i }).click();
+    await page.getByRole("button", { name: "Load Mountain Sunrise" }).click();
+    await page.locator("#panel-demo").getByRole("button", { name: /Generate Alt Text/i }).click();
+
+    const heading = page.getByRole("heading", { level: 2, name: "Generated Alt Text & Snippets" });
+    await expect(heading).toBeVisible({ timeout: 15000 });
+
+    // Check 320px reflow without horizontal scroll
+    const hasHorizontalOverflow = await page.evaluate(() => {
+      return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+    });
+    expect(hasHorizontalOverflow).toBe(false);
+
+    // Check HTML and Markdown code blocks are keyboard-focusable regions
+    const htmlRegion = page.getByRole("region", { name: "HTML image tag snippet" });
+    const mdRegion = page.getByRole("region", { name: "Markdown image syntax" });
+    await expect(htmlRegion).toHaveAttribute("tabindex", "0");
+    await expect(mdRegion).toHaveAttribute("tabindex", "0");
+
+    await htmlRegion.focus();
+    await expect(htmlRegion).toBeFocused();
+    await mdRegion.focus();
+    await expect(mdRegion).toBeFocused();
+  });
+
+  test("External links opening in a new tab include programmatic (opens in a new tab) announcement (WCAG 4.1.2)", async ({
+    page,
+  }) => {
+    const githubLink = page.getByRole("link", { name: "GitHub repository (opens in a new tab)" });
+    await expect(githubLink).toBeVisible();
+    await expect(githubLink).toHaveAttribute("target", "_blank");
+
+    const w3cLink = page.getByRole("link", { name: /W3C Image Decision Tree Guidelines.*\(opens in a new tab\)/i });
+    await expect(w3cLink).toBeVisible();
+    await expect(w3cLink).toHaveAttribute("target", "_blank");
+    await expect(w3cLink.locator('[aria-hidden="true"]')).toHaveText("↗");
+  });
+
+  test("Missing API key error suggestion provides accurate instructions without referencing non-existent header button (WCAG 3.3.3)", async ({
+    page,
+  }) => {
+    // Upload a custom non-demo image to trigger backend API key check
+    const fileInput = page.locator("#image-file-input");
+    await fileInput.setInputFiles({
+      name: "custom-photo.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+        "base64"
+      ),
+    });
+
+    const generateBtn = page.getByRole("button", { name: /Generate Alt Text/i });
+    await generateBtn.click();
+
+    const alert = page.getByRole("alert");
+    await expect(alert).toBeVisible({ timeout: 10000 });
+    await expect(alert).toContainText(
+      'Please configure GEMINI_API_KEY in your local .env file or try a sample image from the "Try Demo" tab.'
+    );
+    await expect(alert).not.toContainText('click the "API Key" button in the header');
   });
 });

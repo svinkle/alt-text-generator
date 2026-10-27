@@ -21,7 +21,7 @@ describe("Header", () => {
     expect(screen.queryByText("WCAG 2.2")).not.toBeInTheDocument();
     expect(screen.queryByText("Cloud Engine")).not.toBeInTheDocument();
 
-    const githubLink = screen.getByRole("link", { name: /GitHub repository/i });
+    const githubLink = screen.getByRole("link", { name: "GitHub repository (opens in a new tab)" });
     expect(githubLink).toBeInTheDocument();
     expect(githubLink).toHaveAttribute(
       "href",

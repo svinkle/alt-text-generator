@@ -10,7 +10,7 @@ test.describe('Alt Text Generation & Output Snippet Flow', () => {
     await page.getByRole('tab', { name: /Try Demo/i }).click();
 
     // Load demo
-    await page.getByRole('button', { name: 'Load Mountain Sunrise demo image' }).click();
+    await page.getByRole('button', { name: 'Load Mountain Sunrise' }).click();
 
     // Click Generate Alt Text inside demo panel
     const generateBtn = page.locator('#panel-demo').getByRole('button', { name: /Generate Alt Text/i });

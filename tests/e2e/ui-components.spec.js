@@ -10,7 +10,7 @@ test.describe('UI Components & Layout Verification', () => {
     await expect(heading).toBeVisible();
     await expect(page.getByText('Accessible, objective image descriptions powered by progressive AI')).toBeVisible();
 
-    const githubLink = page.getByRole('link', { name: 'GitHub repository' });
+    const githubLink = page.getByRole('link', { name: 'GitHub repository (opens in a new tab)' });
     await expect(githubLink).toBeVisible();
     await expect(githubLink).toHaveAttribute('href', 'https://github.com/svinkle/alt-text-generator');
   });
@@ -38,7 +38,7 @@ test.describe('UI Components & Layout Verification', () => {
     const demoTab = page.getByRole('tab', { name: 'Try Demo' });
     await demoTab.click();
 
-    const loadBtn = page.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    const loadBtn = page.getByRole('button', { name: 'Load Mountain Sunrise' });
     await loadBtn.click();
 
     const generateBtn = page.getByRole('button', { name: 'Generate Alt Text' });
@@ -61,7 +61,7 @@ test.describe('UI Components & Layout Verification', () => {
     const demoTab = page.getByRole('tab', { name: 'Try Demo' });
     await demoTab.click();
 
-    const loadBtn = page.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    const loadBtn = page.getByRole('button', { name: 'Load Mountain Sunrise' });
     await loadBtn.click();
 
     const changeBtn = page.getByRole('button', { name: 'Change Image' });

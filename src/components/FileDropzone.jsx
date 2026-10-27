@@ -201,6 +201,11 @@ export default function FileDropzone({
 
   const prevIsUrlLoadedRef = useRef(isUrlLoaded);
   const prevIsUploadLoadedRef = useRef(isUploadLoaded);
+  // Accessibility audit remediation: [START]
+  // Shift focus to revealed Close control when a demo sample image finishes loading (WCAG 2.4.3 Focus Order)
+  // 2026-10-26, Scott Vinkle <scott@scottvinkle.com>
+  const prevIsDemoLoadedRef = useRef(isDemoLoaded);
+  // Accessibility audit remediation: [END]
 
   // Accessibility audit remediation: [START]
   // Shift focus to revealed Close control on successful "Load image" from URL (WCAG 2.4.3 Focus Order)
@@ -226,6 +231,19 @@ export default function FileDropzone({
     }
     prevIsUploadLoadedRef.current = isUploadLoaded;
   }, [isUploadLoaded, activeTab]);
+  // Accessibility audit remediation: [END]
+
+  // Accessibility audit remediation: [START]
+  // Shift focus to revealed Close button when a demo sample image is loaded in Try Demo tab (WCAG 2.4.3 Focus Order)
+  // 2026-10-26, Scott Vinkle <scott@scottvinkle.com>
+  useEffect(() => {
+    if (isDemoLoaded && !prevIsDemoLoadedRef.current && activeTab === 'demo') {
+      setTimeout(() => {
+        closeBtnRef.current?.focus();
+      }, 0);
+    }
+    prevIsDemoLoadedRef.current = isDemoLoaded;
+  }, [isDemoLoaded, activeTab]);
   // Accessibility audit remediation: [END]
 
   // Accessibility audit remediation: [START]
@@ -561,11 +579,11 @@ export default function FileDropzone({
                   </div>
 
                   {/* Accessibility audit remediation: [START]
-                      Semantic h3 heading for Upload tabpanel title (WCAG 1.3.1 Info and Relationships)
-                      2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
-                  <h3 className="block text-xl sm:text-2xl font-display font-bold text-ink dark:text-cream mb-2">
+                      Replace child h3 heading inside interactive role="button" container with styled p element (WCAG 1.3.1 Info and Relationships)
+                      2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
+                  <p className="block text-xl sm:text-2xl font-display font-bold text-ink dark:text-cream mb-2">
                     Drag & Drop Image Here
-                  </h3>
+                  </p>
                   {/* Accessibility audit remediation: [END] */}
 
                   <span className="block text-sm sm:text-base text-ink/80 dark:text-cream/80 mb-4 font-medium">
@@ -710,6 +728,9 @@ export default function FileDropzone({
                       Hiker on summit with mountain sunrise view
                     </p>
                   </div>
+                  {/* Accessibility audit remediation: [START]
+                      Remove static aria-label so accessible name derives directly from visible text in both Load and Reload states (WCAG 2.5.3 Label in Name)
+                      2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
                   <button
                     ref={natureBtnRef}
                     type="button"
@@ -720,10 +741,10 @@ export default function FileDropzone({
                         ? 'bg-amber-400 hover:bg-amber-500 text-ink'
                         : 'bg-amber-300 hover:bg-amber-400 text-ink'
                     }`}
-                    aria-label="Load Mountain Sunrise demo image"
                   >
                     {isLoading && isNatureActive ? 'Loading...' : isNatureActive ? 'Reload Mountain Sunrise' : 'Load Mountain Sunrise'}
                   </button>
+                  {/* Accessibility audit remediation: [END] */}
                 </div>
 
                 {/* Demo Card 2: Team Collaboration */}
@@ -753,6 +774,9 @@ export default function FileDropzone({
                       Colleagues discussing ideas in a conference room
                     </p>
                   </div>
+                  {/* Accessibility audit remediation: [START]
+                      Remove static aria-label so accessible name derives directly from visible text in both Load and Reload states (WCAG 2.5.3 Label in Name)
+                      2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
                   <button
                     ref={teamBtnRef}
                     type="button"
@@ -763,10 +787,10 @@ export default function FileDropzone({
                         ? 'bg-mint hover:bg-mint/90 text-ink'
                         : 'bg-mint hover:bg-mint/80 text-ink'
                     }`}
-                    aria-label="Load Team Collaboration demo image"
                   >
                     {isLoading && isTeamActive ? 'Loading...' : isTeamActive ? 'Reload Team Collaboration' : 'Load Team Collaboration'}
                   </button>
+                  {/* Accessibility audit remediation: [END] */}
                 </div>
               </div>
 

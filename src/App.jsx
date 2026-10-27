@@ -400,14 +400,20 @@ export default function App() {
               </a>
             </p>
           </div>
+          {/* Accessibility audit remediation: [START]
+              Include programmatic (opens in a new tab) announcement and hide decorative arrow on external footer link (WCAG 4.1.2)
+              2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
           <a
             href="https://www.w3.org/WAI/tutorials/images/decision-tree/"
             target="_blank"
             rel="noopener noreferrer"
             className="underline font-bold text-violet-700 dark:text-violet-400 hover:text-violet-900 dark:hover:text-violet-300 focus-ring"
           >
-            W3C Image Decision Tree Guidelines ↗
+            <span>W3C Image Decision Tree Guidelines</span>
+            <span aria-hidden="true" className="ml-1">↗</span>
+            <span className="sr-only"> (opens in a new tab)</span>
           </a>
+          {/* Accessibility audit remediation: [END] */}
         </div>
       </footer>
       {/* Accessibility audit remediation: [END] */}

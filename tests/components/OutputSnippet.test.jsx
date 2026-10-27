@@ -186,5 +186,31 @@ describe('OutputSnippet', () => {
     expect(heading).toHaveAttribute('tabindex', '-1');
     expect(document.activeElement).toBe(heading);
   });
+
+  it('renders HTML and Markdown code snippet blocks as keyboard-focusable regions with accessible labels and wraps card headers cleanly at 320px', () => {
+    render(
+      <OutputSnippet
+        altText="Sample description"
+        filename="test.jpg"
+        onAltTextChange={vi.fn()}
+      />
+    );
+
+    const htmlRegion = screen.getByRole('region', { name: 'HTML image tag snippet' });
+    expect(htmlRegion).toHaveAttribute('tabindex', '0');
+    expect(htmlRegion.className).toContain('overflow-x-auto');
+    expect(htmlRegion.className).toContain('focus-ring');
+
+    const mdRegion = screen.getByRole('region', { name: 'Markdown image syntax' });
+    expect(mdRegion).toHaveAttribute('tabindex', '0');
+    expect(mdRegion.className).toContain('overflow-x-auto');
+    expect(mdRegion.className).toContain('focus-ring');
+
+    // Verify Raw Alt Text Description header container uses flex-wrap for 320px reflow (WCAG 1.4.10)
+    const rawHeading = screen.getByRole('heading', { level: 3, name: 'Raw Alt Text Description' });
+    const headerContainer = rawHeading.parentElement.parentElement;
+    expect(headerContainer.className).toContain('flex-wrap');
+    expect(headerContainer.className).toContain('gap-3');
+  });
 });
 

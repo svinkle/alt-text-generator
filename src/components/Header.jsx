@@ -172,13 +172,13 @@ export default function Header({ engine, label, details, onOpenApiKeyModal }) {
             Accessibility audit remediation: [END] */}
 
             {/* Accessibility audit remediation: [START]
-                Add GitHub repository icon link beside theme toggle (WCAG 1.4.3, 2.4.4, 4.1.2)
-                2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
+                Add GitHub repository icon link beside theme toggle with new-tab programmatic notification (WCAG 1.4.3, 2.4.4, 4.1.2)
+                2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
             <a
               href="https://github.com/svinkle/alt-text-generator"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="GitHub repository"
+              aria-label="GitHub repository (opens in a new tab)"
               className="p-2 border-2 border-ink dark:border-[#6E6E6E] bg-white dark:bg-[#2D2D2D] text-ink dark:text-cream shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] hover:bg-cream dark:hover:bg-[#383838] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-ring flex items-center justify-center rounded cursor-pointer"
             >
               <Github className="w-4 h-4 text-ink dark:text-cream" aria-hidden="true" />

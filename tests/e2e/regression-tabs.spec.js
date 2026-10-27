@@ -52,7 +52,7 @@ test.describe('Tab Navigation & Regression Tests', () => {
     await expect(tabList).toBeVisible();
 
     // Click Mountain Sunrise demo
-    const loadMountainBtn = page.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    const loadMountainBtn = page.getByRole('button', { name: 'Load Mountain Sunrise' });
     await expect(loadMountainBtn).toBeVisible();
     await loadMountainBtn.click();
 
@@ -71,18 +71,18 @@ test.describe('Tab Navigation & Regression Tests', () => {
     const generateBtn = demoPanel.getByRole('button', { name: /Generate Alt Text/i });
     await expect(generateBtn).toBeVisible();
 
-    // Mountain Sunrise card shows loaded status
+    // Mountain Sunrise card shows loaded status and accessible name matches visible text "Reload Mountain Sunrise"
     await expect(demoPanel.getByText('Loaded').first()).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Load Mountain Sunrise demo image' })).toHaveText(/Reload Mountain Sunrise/i);
+    await expect(page.getByRole('button', { name: 'Reload Mountain Sunrise' })).toBeVisible();
 
     // Switch to Team Collaboration demo
-    const loadTeamBtn = page.getByRole('button', { name: 'Load Team Collaboration demo image' });
+    const loadTeamBtn = page.getByRole('button', { name: 'Load Team Collaboration' });
     await loadTeamBtn.click();
 
     // Tabs remain visible!
     await expect(tabList).toBeVisible();
     await expect(demoPanel.getByRole('link', { name: 'Matthew Henry' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Load Team Collaboration demo image' })).toHaveText(/Reload Team Collaboration/i);
+    await expect(page.getByRole('button', { name: 'Reload Team Collaboration' })).toBeVisible();
 
     // Click Change Image to remove selected demo
     const changeImgBtn = demoPanel.getByRole('button', { name: 'Change Image' }).first();
@@ -91,6 +91,6 @@ test.describe('Tab Navigation & Regression Tests', () => {
     // Tabs remain visible, loaded preview disappears, sample buttons reset
     await expect(tabList).toBeVisible();
     await expect(demoPanel.getByText('Photo by')).not.toBeVisible();
-    await expect(page.getByRole('button', { name: 'Load Mountain Sunrise demo image' })).toHaveText('Load Mountain Sunrise');
+    await expect(page.getByRole('button', { name: 'Load Mountain Sunrise' })).toHaveText('Load Mountain Sunrise');
   });
 });

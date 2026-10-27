@@ -61,13 +61,17 @@ function localApiPlugin(env) {
               return res.end(JSON.stringify({ altText: DEMO_ALT_TEXTS.team, engine: 'cloud-fallback' }));
             }
 
+            // Accessibility audit remediation: [START]
+            // Provide accurate error suggestion without referencing non-existent header button (WCAG 3.3.3 Error Suggestion)
+            // 2026-10-26, Scott Vinkle <scott@scottvinkle.com>
             res.statusCode = 400;
             return res.end(
               JSON.stringify({
                 error:
-                  'Gemini API key is required for custom image inference. Please configure GEMINI_API_KEY in .env or click the "API Key" button in the header.',
+                  'Gemini API key is required for custom image inference. Please configure GEMINI_API_KEY in your local .env file or try a sample image from the "Try Demo" tab.',
               })
             );
+            // Accessibility audit remediation: [END]
           }
 
           // Process image data or fetch from imageUrl

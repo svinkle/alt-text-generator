@@ -298,13 +298,13 @@ describe('FileDropzone', () => {
     expect(screen.getByText('1 MB')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Generate Alt Text/i })).toBeInTheDocument();
 
-    // Reload demo click
-    const reloadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    // Reload demo click (accessible name matches visible text "Reload Mountain Sunrise")
+    const reloadBtn = screen.getByRole('button', { name: 'Reload Mountain Sunrise' });
     fireEvent.click(reloadBtn);
     expect(onLoadSample).toHaveBeenCalledWith('nature');
 
-    // Load team demo click
-    const teamBtn = screen.getByRole('button', { name: 'Load Team Collaboration demo image' });
+    // Load team demo click (accessible name matches visible text "Load Team Collaboration")
+    const teamBtn = screen.getByRole('button', { name: 'Load Team Collaboration' });
     fireEvent.click(teamBtn);
     expect(onLoadSample).toHaveBeenCalledWith('team');
 
@@ -319,7 +319,7 @@ describe('FileDropzone', () => {
     expect(onSubmit).toHaveBeenCalled();
   });
 
-  it('restores focus to Mountain Sunrise demo launcher button when Close is clicked, and shifts focus to active tab when Change Image is clicked', () => {
+  it('shifts focus to Close button when a demo sample is loaded, restores focus to Mountain Sunrise demo button when Close is clicked, and shifts focus to active tab when Change Image is clicked', () => {
     vi.useFakeTimers();
     const onFileRemove = vi.fn();
     const selectedFile = {
@@ -330,11 +330,11 @@ describe('FileDropzone', () => {
       attribution: { photographerName: 'Daniel Moroder', profileUrl: 'https://burst.shopify.com/@daniel_moroder' }
     };
 
-    render(
+    const { rerender } = render(
       <FileDropzone
         {...defaultProps}
-        selectedFile={selectedFile}
-        previewUrl="blob:preview"
+        selectedFile={null}
+        previewUrl={null}
         onFileRemove={onFileRemove}
       />
     );
@@ -343,8 +343,29 @@ describe('FileDropzone', () => {
     const demoTab = screen.getByRole('tab', { name: /Try Demo/i });
     fireEvent.click(demoTab);
 
-    const natureBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    // Initially buttons have accessible names "Load Mountain Sunrise" and "Load Team Collaboration"
+    expect(screen.getByRole('button', { name: 'Load Mountain Sunrise' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Load Team Collaboration' })).toBeInTheDocument();
+
+    // Simulate demo image finishing load
+    rerender(
+      <FileDropzone
+        {...defaultProps}
+        selectedFile={selectedFile}
+        previewUrl="blob:preview"
+        onFileRemove={onFileRemove}
+      />
+    );
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
     const closeBtn = screen.getByRole('button', { name: 'Close' });
+    // Verify focus shifted to Close button when demo loaded (WCAG 2.4.3)
+    expect(document.activeElement).toBe(closeBtn);
+
+    const natureBtn = screen.getByRole('button', { name: 'Reload Mountain Sunrise' });
 
     fireEvent.click(closeBtn);
     expect(onFileRemove).toHaveBeenCalled();
@@ -437,7 +458,7 @@ describe('FileDropzone', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
 
-    const teamBtn = screen.getByRole('button', { name: 'Load Team Collaboration demo image' });
+    const teamBtn = screen.getByRole('button', { name: 'Reload Team Collaboration' });
     const closeBtn = screen.getByRole('button', { name: 'Close' });
 
     fireEvent.click(closeBtn);
@@ -490,7 +511,7 @@ describe('FileDropzone', () => {
 
     // In demo tab:
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
-    expect(screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' })).toHaveTextContent('Loading...');
+    expect(screen.getByRole('button', { name: 'Loading...' })).toHaveTextContent('Loading...');
 
     // Now test team demo
     const teamDemo = {
@@ -506,7 +527,7 @@ describe('FileDropzone', () => {
         isLoading={true}
       />
     );
-    expect(screen.getByRole('button', { name: 'Load Team Collaboration demo image' })).toHaveTextContent('Loading...');
+    expect(screen.getByRole('button', { name: 'Loading...' })).toHaveTextContent('Loading...');
   });
 
   it('displays tab indicator dots when files are loaded in different sources', () => {
@@ -631,12 +652,13 @@ describe('FileDropzone', () => {
     vi.useRealTimers();
   });
 
-  it('renders Drag & Drop Image Here and Enter Image URL as h3 headings without title attributes', () => {
+  it('does not nest an h3 heading inside the interactive role="button" upload dropzone, and renders Enter Image URL as h3 without title attributes', () => {
     const { rerender } = render(<FileDropzone {...defaultProps} />);
 
-    // Verify Upload panel has h3 heading
-    const uploadHeading = screen.getByRole('heading', { level: 3, name: 'Drag & Drop Image Here' });
-    expect(uploadHeading).toBeInTheDocument();
+    // Verify Upload dropzone role="button" uses a <p> instead of a nested <h3> (WCAG 1.3.1)
+    const dropzoneBtn = screen.getByRole('button', { name: /Drag & Drop Image Here/i });
+    expect(dropzoneBtn.querySelector('h3')).toBeNull();
+    expect(dropzoneBtn.querySelector('p')).toHaveTextContent('Drag & Drop Image Here');
 
     // Switch to URL panel and verify h3 heading
     fireEvent.click(screen.getByRole('tab', { name: /Image URL/i }));

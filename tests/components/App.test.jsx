@@ -49,7 +49,7 @@ describe('App Component', () => {
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
 
     // Click Load Mountain Sunrise
-    const loadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    const loadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise' });
     await act(async () => {
       fireEvent.click(loadBtn);
     });
@@ -97,7 +97,7 @@ describe('App Component', () => {
     });
 
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
-    const loadBtn = screen.getByRole('button', { name: 'Load Team Collaboration demo image' });
+    const loadBtn = screen.getByRole('button', { name: 'Load Team Collaboration' });
     await act(async () => {
       fireEvent.click(loadBtn);
     });
@@ -121,7 +121,7 @@ describe('App Component', () => {
     });
 
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
-    const loadBtn = screen.getByRole('button', { name: 'Load Team Collaboration demo image' });
+    const loadBtn = screen.getByRole('button', { name: 'Load Team Collaboration' });
 
     await act(async () => {
       fireEvent.click(loadBtn);
@@ -145,7 +145,7 @@ describe('App Component', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Load Mountain Sunrise' }));
     });
 
     await act(async () => {
@@ -197,7 +197,7 @@ describe('App Component', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Load Mountain Sunrise' }));
     });
 
     expect(screen.getByText('Daniel Moroder')).toBeInTheDocument();
@@ -368,14 +368,14 @@ describe('App Component', () => {
     // Now select via demo with fetch failure (triggers handleUrlSelect with existing blob: URL)
     global.fetch = vi.fn().mockRejectedValue(new Error('Network offline'));
     fireEvent.click(screen.getByRole('tab', { name: /Try Demo/i }));
-    const loadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    const loadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise' });
     await act(async () => {
       fireEvent.click(loadBtn);
     });
     expect(global.URL.revokeObjectURL).toHaveBeenCalled();
   });
 
-  it('clears live region statusMessage after 5 seconds and renders footer link without title', async () => {
+  it('clears live region statusMessage after 5 seconds and renders external links with programmatic (opens in a new tab) notification', async () => {
     vi.useFakeTimers();
     await act(async () => {
       render(<App />);
@@ -390,9 +390,15 @@ describe('App Component', () => {
     });
     expect(liveRegion).toHaveTextContent('');
 
-    // Verify header github link does not have a title attribute
-    const githubLink = screen.getByRole('link', { name: /GitHub repository/i });
+    // Verify header github link has programmatic (opens in a new tab) label and no title attribute
+    const githubLink = screen.getByRole('link', { name: 'GitHub repository (opens in a new tab)' });
     expect(githubLink).not.toHaveAttribute('title');
+
+    // Verify footer W3C link has programmatic (opens in a new tab) label and hides decorative arrow from assistive tech
+    const w3cLink = screen.getByRole('link', { name: /W3C Image Decision Tree Guidelines.*\(opens in a new tab\)/i });
+    expect(w3cLink).toBeInTheDocument();
+    const arrowSpan = w3cLink.querySelector('[aria-hidden="true"]');
+    expect(arrowSpan).toHaveTextContent('↗');
 
     vi.useRealTimers();
   });
@@ -416,7 +422,7 @@ describe('App Component', () => {
     const demoTab = screen.getByRole('tab', { name: /Try Demo/i });
     fireEvent.click(demoTab);
 
-    const loadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise demo image' });
+    const loadBtn = screen.getByRole('button', { name: 'Load Mountain Sunrise' });
     await act(async () => {
       fireEvent.click(loadBtn);
     });

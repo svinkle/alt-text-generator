@@ -107,8 +107,11 @@ export default function OutputSnippet({
       <div className="grid grid-cols-1 gap-6">
         {/* 1. Raw Alt Text Card */}
         <div className="brutal-card p-5 sm:p-6 bg-white relative">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
-            <div className="flex items-center gap-2">
+          {/* Accessibility audit remediation: [START]
+              Add flex-wrap and gap-3 to card header so action buttons wrap cleanly at 320px viewport width (WCAG 1.4.10 Reflow)
+              2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="p-1.5 bg-violet-100 dark:bg-violet-950 border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] text-violet-700 dark:text-violet-300">
                 <FileText className="w-4 h-4" aria-hidden="true" />
               </span>
@@ -117,7 +120,7 @@ export default function OutputSnippet({
               </h3>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {/* Accessibility audit remediation: [START]
                   Move focus to textarea on Edit toggle and ensure copy button accessible name begins with visible text (WCAG 2.4.3, 2.5.3, 4.1.3)
                   2026-10-19, Scott Vinkle <scott@scottvinkle.com> */}
@@ -157,6 +160,7 @@ export default function OutputSnippet({
               {/* Accessibility audit remediation: [END] */}
             </div>
           </div>
+          {/* Accessibility audit remediation: [END] */}
 
           {isEditing ? (
             /* Accessibility audit remediation: [START]
@@ -187,8 +191,8 @@ export default function OutputSnippet({
 
         {/* 2. HTML Snippet Card */}
         <div className="brutal-card p-5 sm:p-6 bg-white relative">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="p-1.5 bg-amber-100 dark:bg-amber-950 border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] text-amber-800 dark:text-amber-300">
                 <Code className="w-4 h-4" aria-hidden="true" />
               </span>
@@ -226,15 +230,24 @@ export default function OutputSnippet({
             {/* Accessibility audit remediation: [END] */}
           </div>
 
-          <div className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#101010] text-[#FBF8F1] border-2 border-ink dark:border-[#6E6E6E] font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
+          {/* Accessibility audit remediation: [START]
+              Make horizontally scrollable code block keyboard focusable with region role and accessible label (WCAG 2.1.1 Keyboard)
+              2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
+          <div
+            tabIndex={0}
+            role="region"
+            aria-label="HTML image tag snippet"
+            className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#101010] text-[#FBF8F1] border-2 border-ink dark:border-[#6E6E6E] font-mono text-xs sm:text-sm overflow-x-auto shadow-inner focus-ring"
+          >
             <code>{htmlSnippet}</code>
           </div>
+          {/* Accessibility audit remediation: [END] */}
         </div>
 
         {/* 3. Markdown Snippet Card */}
         <div className="brutal-card p-5 sm:p-6 bg-white relative">
-          <div className="flex items-center justify-between pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-ink dark:border-[#6E6E6E] mb-4">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="p-1.5 bg-mint-100 dark:bg-emerald-950 border-2 border-ink dark:border-[#6E6E6E] shadow-brutal-sm dark:shadow-[2px_2px_0px_0px_#6E6E6E] text-emerald-800 dark:text-emerald-300">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
               </span>
@@ -272,9 +285,18 @@ export default function OutputSnippet({
             {/* Accessibility audit remediation: [END] */}
           </div>
 
-          <div className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#101010] text-[#FBF8F1] border-2 border-ink dark:border-[#6E6E6E] font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
+          {/* Accessibility audit remediation: [START]
+              Make horizontally scrollable code block keyboard focusable with region role and accessible label (WCAG 2.1.1 Keyboard)
+              2026-10-26, Scott Vinkle <scott@scottvinkle.com> */}
+          <div
+            tabIndex={0}
+            role="region"
+            aria-label="Markdown image syntax"
+            className="p-3 sm:p-4 bg-[#1E1B18] dark:bg-[#101010] text-[#FBF8F1] border-2 border-ink dark:border-[#6E6E6E] font-mono text-xs sm:text-sm overflow-x-auto shadow-inner focus-ring"
+          >
             <code>{markdownSnippet}</code>
           </div>
+          {/* Accessibility audit remediation: [END] */}
         </div>
       </div>
 
